@@ -1,0 +1,524 @@
+{
+  "props": {
+    "pageProps": {
+      "ssrReduxState": {
+        "map": {
+          "clusters": [],
+          "location": {
+            "center": {},
+            "zoom": 12
+          },
+          "locationView": {
+            "loading": false,
+            "taxonomy": {
+              "location": {
+                "coordinates": []
+              }
+            },
+            "breadCrumbs": [],
+            "boundingBox": null,
+            "travelContent": null,
+            "siblings": [],
+            "url": ""
+          },
+          "spots": [],
+          "subregions": {
+            "subregions": [],
+            "doCluster": true
+          },
+          "regionalForecast": {},
+          "status": {
+            "loading": true,
+            "error": null
+          },
+          "rerenderMap": {
+            "doRerender": false
+          }
+        },
+        "mapV2": {
+          "location": {
+            "center": {
+              "lat": 0,
+              "lon": 0
+            },
+            "zoom": 12
+          },
+          "locationLoaded": false,
+          "boundingBox": null,
+          "error": null,
+          "loading": false,
+          "message": "",
+          "locationView": {
+            "loading": false,
+            "taxonomy": {},
+            "breadCrumbs": [],
+            "siblings": [],
+            "url": ""
+          }
+        },
+        "units": {
+          "tideHeight": null,
+          "waveHeight": null,
+          "windSpeed": null
+        },
+        "status": {
+          "code": 200
+        },
+        "animations": {
+          "scrollPositions": {
+            "spotList": {
+              "top": 0,
+              "left": 0
+            },
+            "camList": {
+              "top": 0,
+              "left": 0
+            }
+          }
+        },
+        "spot": {
+          "report": {
+            "loading": false,
+            "data": {
+              "spot": {
+                "_id": "584204214e65fad6a7709d0a",
+                "name": "77th St. Rockaways",
+                "breadcrumb": [
+                  {
+                    "name": "United States",
+                    "href": "https://www.surfline.com/surf-reports-forecasts-cams/united-states/6252001"
+                  },
+                  {
+                    "name": "New York",
+                    "href": "https://www.surfline.com/surf-reports-forecasts-cams/united-states/new-york/5128638"
+                  },
+                  {
+                    "name": "Queens",
+                    "href": "https://www.surfline.com/surf-reports-forecasts-cams/united-states/new-york/queens/5133268"
+                  },
+                  {
+                    "name": "Rockaway Point",
+                    "href": "https://www.surfline.com/surf-reports-forecasts-cams/united-states/new-york/queens/rockaway-point/5134172"
+                  }
+                ],
+                "lat": 40.584218779843496,
+                "lon": -73.80342,
+                "cameras": [
+                  {
+                    "title": "NY - 77th St Rockaways",
+                    "isPremium": true,
+                    "isPrerecorded": false,
+                    "lastPrerecordedClipStartTimeUTC": "2022-10-29T20:27:09.635Z",
+                    "lastPrerecordedClipEndTimeUTC": "2022-10-29T20:27:09.635Z",
+                    "status": {
+                      "isDown": false,
+                      "message": "",
+                      "subMessage": "",
+                      "altMessage": ""
+                    },
+                    "supportsHighlights": false,
+                    "supportsCrowds": false,
+                    "streamUrl": "https://cams.cdn-surfline.com/cdn-ec/ec-rockaway77th/playlist.m3u8",
+                    "stillUrl": "https://camstills.cdn-surfline.com/ec-rockaway77th/latest_small.jpg",
+                    "pixelatedStillUrl": "https://camstills.cdn-surfline.com/ec-rockaway77th/latest_small_pixelated.png",
+                    "rewindBaseUrl": "https://camrewinds.cdn-surfline.com/ec-rockaway77th/ec-rockaway77th",
+                    "alias": "ec-rockaway77th",
+                    "highlights": null,
+                    "_id": "583498c9e411dc743a5d5288",
+                    "control": "https://camstills.cdn-surfline.com/ec-rockaway77th/latest_small.jpg",
+                    "nighttime": false,
+                    "rewindClip": "https://camrewinds.cdn-surfline.com/ec-rockaway77th/ec-rockaway77th.1000.2022-10-29.mp4"
+                  }
+                ],
+                "subregion": {
+                  "_id": "58581a836630e24c4487917a",
+                  "forecastStatus": "active"
+                },
+                "abilityLevels": [
+                  "BEGINNER",
+                  "INTERMEDIATE",
+                  "ADVANCED"
+                ],
+                "boardTypes": [
+                  "SHORTBOARD",
+                  "FISH",
+                  "FUNBOARD",
+                  "LONGBOARD",
+                  "BODYBOARD"
+                ],
+                "metaDescription": "",
+                "titleTag": "",
+                "hasLiveWind": false,
+                "legacyId": 137586,
+                "legacyRegionId": 131699,
+                "travelDetails": {
+                  "abilityLevels": {
+                    "description": "Everyone, from posers to pros, depending on the wave size and the water temperature.",
+                    "levels": [
+                      "BEGINNER",
+                      "INTERMEDIATE",
+                      "ADVANCED"
+                    ],
+                    "summary": "BEGINNER, INTERMEDIATE, ADVANCED"
+                  },
+                  "best": {
+                    "season": {
+                      "description": "September-March",
+                      "value": [
+                        "Autumn",
+                        "Winter"
+                      ]
+                    },
+                    "tide": {
+                      "description": "It’s all good.",
+                      "value": [
+                        "Low",
+                        "Medium_Low",
+                        "Medium",
+                        "Medium_High",
+                        "High"
+                      ]
+                    },
+                    "size": {
+                      "description": "Knee high-double overhead.",
+                      "value": [
+                        "4-12"
+                      ]
+                    },
+                    "windDirection": {
+                      "description": "NNW",
+                      "value": [
+                        "N",
+                        "NNE",
+                        "NE",
+                        "NW",
+                        "NNW"
+                      ]
+                    },
+                    "swellDirection": {
+                      "description": "ESE, SE",
+                      "value": [
+                        "ESE",
+                        "SE",
+                        "SSE",
+                        "S",
+                        "SSW"
+                      ]
+                    }
+                  },
+                  "bottom": {
+                    "description": "Sand, plus whatever detritus, debris and dead stuff gets dredged off the bottom.",
+                    "value": [
+                      "Sand"
+                    ]
+                  },
+                  "crowdFactor": {
+                    "description": "Out of control in summer, when it’s small and warm. Less so in winter, when it’s big and freezing.",
+                    "rating": 8,
+                    "summary": "Heavy"
+                  },
+                  "localVibe": {
+                    "description": "There’s some heavy attitude here. Stink-eyes are the norm and violence is not unheard of. Even the seagulls are foulmouthed.",
+                    "rating": 8,
+                    "summary": "Intimidating"
+                  },
+                  "shoulderBurn": {
+                    "description": "If it’s pumping, you’ll get pummeled. No way around it.",
+                    "rating": 7,
+                    "summary": "Medium"
+                  },
+                  "spotRating": {
+                    "description": "Spoiler Alert: You can get divinely barreled a half-hour from the City. Hey, let’s all move there!",
+                    "rating": 7,
+                    "summary": "Fun"
+                  },
+                  "waterQuality": {
+                    "description": "A history of grossness: discharge from the East River, toxic dumping offshore, busy shipping channels, stormwater runoff and a nuclear power plant on the Sound; however, this spot historically passed water quality tests at least 95% of the time.",
+                    "rating": 7,
+                    "summary": "Fair"
+                  },
+                  "travelId": null,
+                  "access": "Free parking on the street a few blocks back from the beach.",
+                  "breakType": [
+                    "Beach_Break"
+                  ],
+                  "description": "The Rockaways are the closest surfable waves to New York City (about a half-hour train ride away), making this a very popular zone for urban surfers. With its sand-stirring jetties/groins, 77th Street is among the most consistent of the Rockaway beaches. Steep takeoffs and fast sections are the norm, and it can hold well-overhead surf, particularly from those big E swells that manage to fit into the window. When it’s on, there’ll be spitting lefthand tubes rifling off the rocks.",
+                  "hazards": "Localism, debris, crime, hypothermia.",
+                  "relatedArticleId": null,
+                  "status": "PUBLISHED",
+                  "boardTypes": [
+                    "SHORTBOARD",
+                    "FISH",
+                    "FUNBOARD",
+                    "LONGBOARD",
+                    "BODYBOARD"
+                  ]
+                }
+              },
+              "report": {
+                "timestamp": 1667151503,
+                "forecaster": {
+                  "name": "Rick Huegi",
+                  "iconUrl": "https://www.gravatar.com/avatar/662725436ff7cbe1c5bd6493c88604e4?d=mm",
+                  "title": "Mid Atlantic/New England Reports"
+                },
+                "body": "\u003cp\u003e\u003cstrong\u003eNassau-Queens County PM Report:\u003cbr\u003e\n\u003c/strong\u003eESE/SE swell mix continues mid-day with waist to stomach high waves with chest high sets. Winds are now light from the SSW setting up semi-clean conditions. The surf still looks fun with fair rideability at the key breaks with the dropping tide. Next low tide is at 6:30pm.\u003c/p\u003e\n\u003cp\u003e\u003cbr\u003e\u003c/p\u003e\n\u003cp\u003e\u003cstrong\u003eForecast for the Rest of Today:\u003c/strong\u003e \u0026nbsp; \u0026nbsp;\u0026nbsp;\u0026nbsp;\u003cbr\u003e\nDecently fun ESE is due to continue all day. Conditions remain cleanest through the early-mid afternoon before onshore breezes add some texture and lump. Don't expect anything pumping but we have worthwhile waves if looking to get wet today.\u0026nbsp;\u003c/p\u003e",
+                "expired": false
+              },
+              "forecast": {
+                "note": null,
+                "conditions": {
+                  "value": "FAIR",
+                  "sortableCondition": 3,
+                  "human": true,
+                  "expired": false
+                },
+                "wind": {
+                  "speed": 5,
+                  "direction": 118.6546,
+                  "directionType": "Onshore",
+                  "gust": 5
+                },
+                "waveHeight": {
+                  "min": 3,
+                  "max": 4,
+                  "plus": false,
+                  "occasional": null,
+                  "humanRelation": "Waist to chest",
+                  "human": true
+                },
+                "tide": {
+                  "previous": {
+                    "type": "HIGH",
+                    "height": 5.3,
+                    "timestamp": 1667144882,
+                    "utcOffset": -4
+                  },
+                  "current": {
+                    "type": "NORMAL",
+                    "height": 1.2,
+                    "timestamp": 1667161626,
+                    "utcOffset": -4
+                  },
+                  "next": {
+                    "type": "LOW",
+                    "height": 0.2,
+                    "timestamp": 1667168457,
+                    "utcOffset": -4
+                  }
+                },
+                "waterTemp": {
+                  "min": 60,
+                  "max": 62
+                },
+                "wetsuit": {
+                  "thickness": "3/2mm",
+                  "type": "Fullsuit"
+                },
+                "weather": {
+                  "temperature": 58,
+                  "condition": "CLEAR"
+                },
+                "swells": [
+                  {
+                    "height": 3.6,
+                    "direction": 115.94,
+                    "directionMin": 106.755,
+                    "period": 9,
+                    "index": 0
+                  },
+                  {
+                    "height": 0,
+                    "direction": 0,
+                    "directionMin": 0,
+                    "period": 0,
+                    "index": 1
+                  },
+                  {
+                    "height": 0,
+                    "direction": 0,
+                    "directionMin": 0,
+                    "period": 0,
+                    "index": 2
+                  },
+                  {
+                    "height": 0,
+                    "direction": 0,
+                    "directionMin": 0,
+                    "period": 0,
+                    "index": 3
+                  },
+                  {
+                    "height": 0,
+                    "direction": 0,
+                    "directionMin": 0,
+                    "period": 0,
+                    "index": 4
+                  },
+                  {
+                    "height": 0,
+                    "direction": 0,
+                    "directionMin": 0,
+                    "period": 0,
+                    "index": 5
+                  }
+                ]
+              },
+              "live": {
+                "wind": null
+              }
+            },
+            "associated": {
+              "localPhotosUrl": "http://www.surfline.com/photos/#!/gallery/location/north-america/long-island/nassau---queens-county/rockaway-beach-77th/",
+              "chartsUrl": "/surf-charts/wave-height/nassau-queens-county/58581a836630e24c4487917a",
+              "beachesUrl": "https://www.surfline.com/travel/united-states/new-york/queens/rockaway-point-surfing-and-beaches/5134172",
+              "subregionUrl": "https://www.surfline.com/surf-forecasts/nassau-queens-county/58581a836630e24c4487917a",
+              "href": "https://www.surfline.com/surf-report/77th-st-rockaways/584204214e65fad6a7709d0a",
+              "units": {
+                "temperature": "F",
+                "tideHeight": "FT",
+                "swellHeight": "FT",
+                "waveHeight": "FT",
+                "windSpeed": "MPH"
+              },
+              "advertising": {
+                "spotId": "137586",
+                "subregionId": "131699",
+                "sst": "61-65"
+              },
+              "analytics": {
+                "spotId": "137586",
+                "subregionId": "131699"
+              },
+              "weatherIconPath": "https://wa.cdn-surfline.com/quiver/0.21.2/weathericons",
+              "utcOffset": -4,
+              "abbrTimezone": "EDT"
+            },
+            "legacySpotId": "137586",
+            "legacySubregionId": "131699"
+          },
+          "nearby": {
+            "loading": false,
+            "data": {
+              "spots": [
+                {
+                  "_id": "5842041f4e65fad6a77089fb",
+                  "thumbnail": "https://spot-thumbnails.cdn-surfline.com/spots/default/default_1500.jpg",
+                  "rank": 0,
+                  "subregionId": "58581a836630e24c4487917a",
+                  "lat": 40.54698301868125,
+                  "lon": -73.92680340338228,
+                  "name": "Breezy Point",
+                  "tide": {
+                    "previous": {
+                      "type": "HIGH",
+                      "height": 5.3,
+                      "timestamp": 1667144882,
+                      "utcOffset": -4
+                    },
+                    "current": {
+                      "type": "NORMAL",
+                      "height": 1.2,
+                      "timestamp": 1667161567,
+                      "utcOffset": -4
+                    },
+                    "next": {
+                      "type": "LOW",
+                      "height": 0.2,
+                      "timestamp": 1667168457,
+                      "utcOffset": -4
+                    }
+                  },
+                  "waterTemp": {
+                    "min": 60,
+                    "max": 62
+                  },
+                  "cameras": [],
+                  "wind": {
+                    "speed": 4,
+                    "direction": 110.91015,
+                    "directionType": "Onshore",
+                    "gust": 4
+                  },
+                  "weather": {
+                    "temperature": 58,
+                    "condition": "CLEAR"
+                  },
+                  "legacyId": 5154,
+                  "legacyRegionId": 131699,
+                  "timezone": "America/New_York",
+                  "saveFailures": 0,
+                  "swells": [
+                    {
+                      "height": 4.5,
+                      "direction": 107.73,
+                      "directionMin": 98.78,
+                      "period": 9
+                    },
+                    {
+                      "height": 0,
+                      "direction": 0,
+                      "directionMin": 0,
+                      "period": 0
+                    },
+                    {
+                      "height": 0,
+                      "direction": 0,
+                      "directionMin": 0,
+                      "period": 0
+                    },
+                    {
+                      "height": 0,
+                      "direction": 0,
+                      "directionMin": 0,
+                      "period": 0
+                    },
+                    {
+                      "height": 0,
+                      "direction": 0,
+                      "directionMin": 0,
+                      "period": 0
+                    },
+                    {
+                      "height": 0,
+                      "direction": 0,
+                      "directionMin": 0,
+                      "period": 0
+                    }
+                  ],
+                  "offshoreDirection": 171,
+                  "parentTaxonomy": [
+                    "58f7ed51dadb30820bb38782",
+                    "58f7ed51dadb30820bb38791",
+                    "58f7ed51dadb30820bb3879c",
+                    "5908c696dadb30820b264911",
+                    "58f7ee15dadb30820bb461b4",
+                    "58f7ed71dadb30820bb3ac4f",
+                    "58f7ee15dadb30820bb461c1",
+                    "58f7ed72dadb30820bb3ad3a"
+                  ],
+                  "abilityLevels": [
+                    "INTERMEDIATE",
+                    "ADVANCED"
+                  ],
+                  "boardTypes": [
+                    "SHORTBOARD",
+                    "FISH",
+                    "FUNBOARD",
+                    "LONGBOARD",
+                    "BODYBOARD"
+                  ],
+                  "relivableRating": 0,
+                  "note": null,
+                  "rating": {
+                    "human": false,
+                    "key": "POOR_TO_FAIR",
+                    "value": 2.33,
+                    "_id": "635edde17e4b58ca17c780cc"
+                  },
+                  "surf": {
+                    "human": false,
+                    "min": 2.11505,
+                    "max": 3.0850833333333334,
+                    "plus": false
+                  }

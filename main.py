@@ -13,7 +13,7 @@ class Camera:
 
 def get_video(camera: Camera):
     # Given cam url download the stream to a file.
-    with youtube_dl.YoutubeDL({}) as ydl:
+    with youtube_dl.YoutubeDL({"max_downloads": 1, "no_playlist": True}) as ydl:
         ydl.download([camera.url])
 
 
@@ -46,6 +46,10 @@ def get_info(url):
 
 
 if __name__ == "__main__":
-    url = "https://www.surfline.com/surf-report/77th-st-rockaways/584204214e65fad6a7709d0a?camId=583498c9e411dc743a5d5288"
-    camera = get_info(url)
-    print(camera)
+    # url = "https://www.surfline.com/surf-report/77th-st-rockaways/584204214e65fad6a7709d0a?camId=583498c9e411dc743a5d5288"
+    # camera = get_info(url)
+    get_video(
+        Camera(
+            "x", "https://cams.cdn-surfline.com/cdn-ec/ec-rockaway77th/playlist.m3u8"
+        )
+    )

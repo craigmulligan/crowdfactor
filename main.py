@@ -1,8 +1,8 @@
-import youtube_dl
 import json
 import requests
 from bs4 import BeautifulSoup
 from dataclasses import dataclass
+import ffmpeg
 
 
 @dataclass
@@ -13,11 +13,13 @@ class Camera:
 
 def get_video(camera: Camera):
     # Given cam url download the stream to a file.
-    with youtube_dl.YoutubeDL({"max_downloads": 1, "no_playlist": True}) as ydl:
-        ydl.download([camera.url])
+    ffmpeg.input(camera.url).trim(duration=10).output("output.mp4").run()
 
 
 def get_info(url):
+    """
+    Gets the camera stream url via spot URL.
+    """
     # Headers are needed otherwise surfline tries to bounce you.
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"
@@ -33,6 +35,7 @@ def get_info(url):
     print(f"found: {spot_data['name']}")
     print(f"with cameras:")
 
+    # TODO improve error handling.
     if not len(spot_data["cameras"]):
         raise Exception("No Cam")
 
@@ -46,10 +49,6 @@ def get_info(url):
 
 
 if __name__ == "__main__":
-    # url = "https://www.surfline.com/surf-report/77th-st-rockaways/584204214e65fad6a7709d0a?camId=583498c9e411dc743a5d5288"
-    # camera = get_info(url)
-    get_video(
-        Camera(
-            "x", "https://cams.cdn-surfline.com/cdn-ec/ec-rockaway77th/playlist.m3u8"
-        )
-    )
+    url = "https://www.surfline.com/surf-report/77th-st-rockaways/584204214e65fad6a7709d0a?camId=583498c9e411dc743a5d5288"
+    camera = get_info(url)
+    get_video(camera)

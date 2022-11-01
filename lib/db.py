@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union, Any
 import sqlite3
 from flask import g, current_app
 
@@ -89,7 +89,7 @@ class DB:
             one=True,
         )
 
-    def query(self, query, query_args=(), one=False):
+    def query(self, query, query_args=(), one=False) -> Union[Optional[Any], Any]:
         cur = self.conn.execute(query, query_args)
         rv = cur.fetchall()
         cur.close()

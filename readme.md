@@ -33,3 +33,8 @@ ROBOFLOW_API_KEY=<key> python worker.py https://www.surfline.com/surf-report/ven
 ```
 FLASK_DEBUG=1 FLASK_APP=lib/app flask run
 ```
+
+# TODO:
+
+1. When loading page get most recent forcast for that day. With hourly ratings. Eg hour 0: rating.  
+2. Then get avg crowd count for each hour for each rating. Then combine this result with data from `1.`. *HOWEVER* this should only be for days in the future - anything in the past should just use the real values. 

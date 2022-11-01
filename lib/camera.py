@@ -140,6 +140,7 @@ class Camera:
         assert content
         props = json.loads(content.text)
         data = props["props"]["pageProps"]["ssrReduxState"]["spot"]["report"]["data"]
+        print(data["forecast"])
 
         spot_data = data["spot"]
         spot_rating = data["forecast"]["conditions"]["value"]

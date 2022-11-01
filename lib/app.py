@@ -33,7 +33,7 @@ def index():
     #
     data = db.query(
         f"""
-            select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour from crowd_log where strftime('%w', timestamp) = ? group by strftime('%H', timestamp);
+            select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour, surf_rating from crowd_log where strftime('%w', timestamp) = ? group by strftime('%H', timestamp), surf_rating;
         """,
         [str(weekday)],
     )

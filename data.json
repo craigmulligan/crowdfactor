@@ -1,0 +1,204 @@
+{
+  "associated": {
+    "location": {
+      "lon": -118.47442296131881,
+      "lat": 33.98480211231971
+    }
+  },
+  "data": {
+    "rating": [
+      {
+        "timestamp": 1667286000,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR_TO_FAIR",
+          "value": 2
+        }
+      },
+      {
+        "timestamp": 1667289600,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR_TO_FAIR",
+          "value": 2
+        }
+      },
+      {
+        "timestamp": 1667293200,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR_TO_FAIR",
+          "value": 2.17
+        }
+      },
+      {
+        "timestamp": 1667296800,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR_TO_FAIR",
+          "value": 2.33
+        }
+      },
+      {
+        "timestamp": 1667300400,
+        "utcOffset": -7,
+        "rating": {
+          "key": "FAIR",
+          "value": 2.5
+        }
+      },
+      {
+        "timestamp": 1667304000,
+        "utcOffset": -7,
+        "rating": {
+          "key": "FAIR",
+          "value": 2.5
+        }
+      },
+      {
+        "timestamp": 1667307600,
+        "utcOffset": -7,
+        "rating": {
+          "key": "FAIR",
+          "value": 2.83
+        }
+      },
+      {
+        "timestamp": 1667311200,
+        "utcOffset": -7,
+        "rating": {
+          "key": "FAIR",
+          "value": 3
+        }
+      },
+      {
+        "timestamp": 1667314800,
+        "utcOffset": -7,
+        "rating": {
+          "key": "FAIR",
+          "value": 3
+        }
+      },
+      {
+        "timestamp": 1667318400,
+        "utcOffset": -7,
+        "rating": {
+          "key": "FAIR",
+          "value": 2.75
+        }
+      },
+      {
+        "timestamp": 1667322000,
+        "utcOffset": -7,
+        "rating": {
+          "key": "FAIR",
+          "value": 2.75
+        }
+      },
+      {
+        "timestamp": 1667325600,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR_TO_FAIR",
+          "value": 2
+        }
+      },
+      {
+        "timestamp": 1667329200,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR_TO_FAIR",
+          "value": 2
+        }
+      },
+      {
+        "timestamp": 1667332800,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR_TO_FAIR",
+          "value": 2
+        }
+      },
+      {
+        "timestamp": 1667336400,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR_TO_FAIR",
+          "value": 1.83
+        }
+      },
+      {
+        "timestamp": 1667340000,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR_TO_FAIR",
+          "value": 1.67
+        }
+      },
+      {
+        "timestamp": 1667343600,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR_TO_FAIR",
+          "value": 1.5
+        }
+      },
+      {
+        "timestamp": 1667347200,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR",
+          "value": 1
+        }
+      },
+      {
+        "timestamp": 1667350800,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR",
+          "value": 1
+        }
+      },
+      {
+        "timestamp": 1667354400,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR",
+          "value": 1
+        }
+      },
+      {
+        "timestamp": 1667358000,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR",
+          "value": 1
+        }
+      },
+      {
+        "timestamp": 1667361600,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR",
+          "value": 1
+        }
+      },
+      {
+        "timestamp": 1667365200,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR",
+          "value": 1
+        }
+      },
+      {
+        "timestamp": 1667368800,
+        "utcOffset": -7,
+        "rating": {
+          "key": "POOR",
+          "value": 1
+        }
+      }
+    ]
+  }
+}

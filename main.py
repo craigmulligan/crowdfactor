@@ -21,13 +21,15 @@ class Camera:
     id: str
     title: str
     url: str
+    surf_rating: str
     frame_rate: int
     duration: int
 
-    def __init__(self, id, title, url, frame_rate=60, duration=60):
+    def __init__(self, id, title, url, surf_rating, frame_rate=60, duration=60):
         self.id = id
         self.title = title
         self.url = url
+        self.surf_rating = surf_rating
         self.frame_rate = frame_rate
         self.duration = duration
 
@@ -125,11 +127,12 @@ class Camera:
         soup = BeautifulSoup(page.text, "html.parser")
         content = soup.find("script", id="__NEXT_DATA__")
         assert content
-        data = json.loads(content.text)
-        spot_data = data["props"]["pageProps"]["ssrReduxState"]["spot"]["report"][
-            "data"
-        ]["spot"]
-        print(f"found: {spot_data['name']}")
+        props = json.loads(content.text)
+        data = props["props"]["pageProps"]["ssrReduxState"]["spot"]["report"]["data"]
+
+        spot_data = data["spot"]
+        spot_rating = data["forecast"]["conditions"]["value"]
+        print(f"found: {spot_data['name']} - with current rating: {spot_rating}")
 
         camera_id = Camera.get_camera_id(url)
 
@@ -152,7 +155,10 @@ class Camera:
         if camera["status"]["isDown"]:
             raise Exception("Cam is down.")
 
-        return Camera(camera["_id"], camera["title"], camera["streamUrl"])
+        if camera["nighttime"]:
+            raise Exception("Its night time.")
+
+        return Camera(camera["_id"], camera["title"], camera["streamUrl"], spot_rating)
 
 
 if __name__ == "__main__":
@@ -171,12 +177,12 @@ if __name__ == "__main__":
     camera = Camera.get_from_url(url)
     # setup workspace
     # This cleans up any old files from previous runs.
-    camera.workspace()
+    # camera.workspace()
 
-    # # # First save the 10s of live feed to video file
-    camera.write_video()
-    # # # # Them transform video to images
-    camera.write_images()
-    # Then analyze images.
-    counters = camera.analyze()
-    print("crowd count: ", camera.crowd_counter(counters))
+    # # # # First save the 10s of live feed to video file
+    # camera.write_video()
+    # # # # # Them transform video to images
+    # camera.write_images()
+    # # Then analyze images.
+    # counters = camera.analyze()
+    # print("crowd count: ", camera.crowd_counter(counters))

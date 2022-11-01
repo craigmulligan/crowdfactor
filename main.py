@@ -177,12 +177,12 @@ if __name__ == "__main__":
     camera = Camera.get_from_url(url)
     # setup workspace
     # This cleans up any old files from previous runs.
-    # camera.workspace()
+    camera.workspace()
 
-    # # # # First save the 10s of live feed to video file
-    # camera.write_video()
-    # # # # # Them transform video to images
-    # camera.write_images()
-    # # Then analyze images.
-    # counters = camera.analyze()
-    # print("crowd count: ", camera.crowd_counter(counters))
+    # # # First save the 10s of live feed to video file
+    camera.write_video()
+    # # # # Them transform video to images
+    camera.write_images()
+    # Then analyze images.
+    counters = camera.analyze()
+    print("crowd count: ", camera.crowd_counter(counters))

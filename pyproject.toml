@@ -12,6 +12,7 @@ ffmpeg-python = "^0.2.0"
 torch = "^1.13.0"
 av = "^10.0.0"
 roboflow = "^0.2.18"
+Flask = "^2.2.2"
 
 [tool.poetry.dev-dependencies]
 

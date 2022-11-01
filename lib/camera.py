@@ -16,6 +16,14 @@ from roboflow import Roboflow
 ROBOFLOW_API_KEY = os.environ.get("ROBOFLOW_API_KEY")
 
 
+class NightTimeError(Exception):
+    pass
+
+
+class CameraDownError(Exception):
+    pass
+
+
 class Camera:
     id: str
     title: str
@@ -156,10 +164,10 @@ class Camera:
             camera = cameras[0]
 
         if camera["status"]["isDown"]:
-            raise Exception("Cam is down.")
+            raise CameraDownError("Cam is down.")
 
         if camera["nighttime"]:
-            raise Exception("Its night time.")
+            raise NightTimeError("Its night time.")
 
         return Camera(
             camera["_id"],

@@ -49,5 +49,5 @@ def seed(db):
             db.insert(
                 h,  # make crowd count equal to hour so it's easy to assert.
                 "FAIR",
-                f"2022-10-{d:02}T{h}:00:00",
+                f"2022-10-{d:02}T{h:02}:00:00",
             )

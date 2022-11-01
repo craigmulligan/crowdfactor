@@ -1,6 +1,7 @@
 from typing import Dict
 from flask import Flask
 from lib.db import DB
+from lib.graph import Graph
 from flask import render_template
 from datetime import datetime
 
@@ -12,7 +13,7 @@ app.teardown_appcontext(DB.tear_down)
 
 
 @app.route("/")
-def hello_world():
+def index():
     # get current datetime
     dt = datetime.now()
     weekday = dt.isoweekday()
@@ -26,7 +27,17 @@ def hello_world():
         """,
         one=True,
     )
-    print(current)
     assert isinstance(current, Dict)
 
-    return render_template("index.html", **current)
+    # Group by hour + day of the week.
+    #
+    data = db.query(
+        f"""
+            select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour from crowd_log where strftime('%w', timestamp) = ? group by strftime('%H', timestamp);
+        """,
+        [str(weekday)],
+    )
+
+    graph = Graph.render(data)
+
+    return render_template("index.html", **current, graph=graph)

@@ -357,6 +357,20 @@ testing = ["pytest-benchmark", "pytest"]
 dev = ["tox", "pre-commit"]
 
 [[package]]
+name = "pygal"
+version = "3.0.0"
+description = "A Python svg graph plotting library"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+docs = ["sphinx", "sphinx-rtd-theme", "pygal-sphinx-directives"]
+lxml = ["lxml"]
+png = ["cairosvg"]
+test = ["pyquery", "flask", "cairosvg", "lxml", "pygal-maps-world", "pygal-maps-fr", "pygal-maps-ch", "coveralls", "pytest-runner", "pytest-cov", "pytest-flake8", "pytest-isort", "pytest"]
+
+[[package]]
 name = "pyparsing"
 version = "2.4.7"
 description = "Python parsing module"
@@ -598,7 +612,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "a1ab15ca30015016baee4e72d46cec317b608d095439e559fd987a63f6e4200f"
+content-hash = "ffc8b1fe47714e6297c0251192ad9fdedbd706fee9c7b120daa4bbdb764a5762"
 
 [metadata.files]
 attrs = []
@@ -633,6 +647,7 @@ opencv-python-headless = []
 packaging = []
 pillow = []
 pluggy = []
+pygal = []
 pyparsing = []
 pytest = []
 python-dateutil = []

@@ -89,8 +89,8 @@ class DB:
             one=True,
         )
 
-    def query(self, query, one=False):
-        cur = self.conn.execute(query)
+    def query(self, query, query_args=(), one=False):
+        cur = self.conn.execute(query, query_args)
         rv = cur.fetchall()
         cur.close()
         return (rv[0] if rv else None) if one else rv

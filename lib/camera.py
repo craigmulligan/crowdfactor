@@ -26,7 +26,7 @@ class Camera:
     duration: int
 
     def __init__(
-        self, id, title, url, surf_rating, roboflow_api_key, frame_rate=10, duration=1
+        self, id, title, url, surf_rating, roboflow_api_key, frame_rate=25, duration=30
     ):
         self.id = id
         self.title = title
@@ -92,7 +92,7 @@ class Camera:
                 if prediction["class"] in classes:
                     counter.update([prediction["class"]])
 
-            print("ran prediction", counter)
+            print("ran prediction", counter, counter.total())
 
             counters.append(counter)
 

@@ -1,6 +1,6 @@
-import time
+from typing import Optional
 import sqlite3
-from flask import g
+from flask import g, current_app
 
 
 class DB:
@@ -15,13 +15,17 @@ class DB:
         )
 
     @staticmethod
-    def get_db(filename):
+    def get_db():
         """
         only used in flask.
         """
+        db_name = "thelocal.db"
+        if current_app.config.get("TESTING"):
+            db_name = ":memory:"
+
         db = getattr(g, "_database", None)
         if db is None:
-            db = g._database = DB(filename)
+            db = g._database = DB(db_name)
         return db
 
     @staticmethod
@@ -36,7 +40,7 @@ class DB:
         """
         self.conn.execute(
             """
-            CREATE TABLE IF NOT EXISTS crowd_log (timestamp INTEGER PRIMARY KEY, crowd_count INTEGER, surf_rating TEXT);
+            CREATE TABLE IF NOT EXISTS crowd_log (timestamp TEXT PRIMARY KEY, crowd_count INTEGER, surf_rating TEXT);
         """
         )
 
@@ -52,21 +56,38 @@ class DB:
         """
         )
 
-    def insert(self, crowd_count: int, surf_rating: str):
-        timestamp = int(time.time())
-
-        self.conn.execute(
-            """
-            insert into crowd_log (timestamp, crowd_count, surf_rating) values (?, ?, ?)
-        """,
-            (
-                timestamp,
-                crowd_count,
-                surf_rating,
-            ),
-        )
+    def insert(self, crowd_count: int, surf_rating: str, dt: Optional[str] = None):
+        if dt is not None:
+            self.conn.execute(
+                """
+                insert into crowd_log (timestamp, crowd_count, surf_rating) values (?, ?, ?)
+                """,
+                (
+                    dt,
+                    crowd_count,  # make crowd count equal to hour so it's easy to assert.
+                    surf_rating,
+                ),
+            )
+        else:
+            self.conn.execute(
+                """
+                insert into crowd_log (timestamp, crowd_count, surf_rating) values (datetime("now"), ?, ?)
+            """,
+                (
+                    crowd_count,
+                    surf_rating,
+                ),
+            )
 
         self.conn.commit()
+
+    def latest_reading(self):
+        return self.query(
+            """
+                select surf_rating, crowd_count, strftime('%w-%H', timestamp) as timestamp from crowd_log order by strftime('%s', timestamp) desc limit 1;
+            """,
+            one=True,
+        )
 
     def query(self, query, one=False):
         cur = self.conn.execute(query)

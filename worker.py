@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
         url = sys.argv[1]
 
-        db = DB.get_db("./thelocal.db")
+        db = DB.get_db()
         # ensure db schema
         db.setup()
 

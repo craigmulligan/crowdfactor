@@ -8,11 +8,11 @@ class DB:
 
     def setup(self):
         """
-        initializes tables
+        initializes schema
         """
         self.conn.execute(
             """
-            CREATE TABLE IF NOT EXISTS crowd_log (timestamp INTEGER PRIMARY KEY, crowd_count INTEGER, surf_rating INTEGER);
+            CREATE TABLE IF NOT EXISTS crowd_log (timestamp INTEGER PRIMARY KEY, crowd_count INTEGER, surf_rating TEXT);
         """
         )
 
@@ -28,12 +28,14 @@ class DB:
         """
         )
 
-    def insert(self, crowd_count: int, surf_rating: int):
+    def insert(self, crowd_count: int, surf_rating: str):
         timestamp = int(time.time())
+
+        print(timestamp, crowd_count, surf_rating)
 
         self.conn.execute(
             """
-            insert into crowd_count (timestamp, crowd_count, surf_rating) values (?, ?, ?),
+            insert into crowd_log (timestamp, crowd_count, surf_rating) values (?, ?, ?)
         """,
             (
                 timestamp,
@@ -43,3 +45,6 @@ class DB:
         )
 
         self.conn.commit()
+
+    def read(self):
+        return self.conn.execute("select * from crowd_log;")

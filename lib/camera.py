@@ -26,6 +26,7 @@ class CameraDownError(Exception):
 
 class Camera:
     id: str
+    spot_id: str
     title: str
     url: str
     surf_rating: str
@@ -34,12 +35,21 @@ class Camera:
     duration: int
 
     def __init__(
-        self, id, title, url, surf_rating, roboflow_api_key, frame_rate=25, duration=30
+        self,
+        id,
+        title,
+        url,
+        spot_id,
+        surf_rating,
+        roboflow_api_key,
+        frame_rate=25,
+        duration=30,
     ):
         self.id = id
         self.title = title
         self.url = url
         self.surf_rating = surf_rating
+        self.spot_id = spot_id
         self.frame_rate = frame_rate
         self.duration = duration
         self.roboflow_api_key = roboflow_api_key
@@ -87,7 +97,7 @@ class Camera:
 
         for filename in glob.glob(f"{self.data_dir}/*.jpg"):
             # checking if it is a file
-            predictions = model.predict(filename, confidence=50, overlap=50)
+            predictions = model.predict(filename, confidence=50, overlap=50)  # type: ignore
             if predictions is None:
                 continue
 
@@ -174,6 +184,7 @@ class Camera:
             camera["_id"],
             camera["title"],
             camera["streamUrl"],
+            spot_data["_id"],
             spot_rating,
             roboflow_api_key,
         )

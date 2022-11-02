@@ -1,7 +1,13 @@
 from lib.app import app as flask_app
 from lib.db import DB
+from lib.seed import seed as seed_db
 import random
 import pytest
+
+
+@pytest.fixture()
+def spot_id():
+    return "1234"
 
 
 @pytest.fixture(scope="session")
@@ -37,17 +43,8 @@ def client(app):
 
 
 @pytest.fixture()
-def seed(db):
+def seed(db, spot_id):
     """
     seed the db with dummy data.
     """
-    # for range over the 3rd to 10th oct.
-    # which is Monday-Sunday
-    for d in range(3, 10):
-        for h in range(24):
-            # for each hour in the day.
-            db.insert(
-                h,  # make crowd count equal to hour so it's easy to assert.
-                "FAIR",
-                f"2022-10-{d:02}T{h:02}:00:00",
-            )
+    seed_db(spot_id)

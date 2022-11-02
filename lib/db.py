@@ -40,7 +40,7 @@ class DB:
         """
         self.conn.execute(
             """
-            CREATE TABLE IF NOT EXISTS crowd_log (timestamp TEXT PRIMARY KEY, crowd_count INTEGER, surf_rating TEXT);
+            CREATE TABLE IF NOT EXISTS crowd_log (timestamp TEXT PRIMARY KEY, crowd_count INTEGER, surf_rating TEXT, spot_id TEXT);
         """
         )
 
@@ -52,31 +52,37 @@ class DB:
 
         self.conn.execute(
             """
+            CREATE INDEX IF NOT EXISTS crowd_log_spot_id_idx ON crowd_log(spot_id);
+        """
+        )
+
+        self.conn.execute(
+            """
             CREATE INDEX IF NOT EXISTS crowd_log_surf_rating_idx ON crowd_log(surf_rating);
         """
         )
 
-    def insert(self, crowd_count: int, surf_rating: str, dt: Optional[str] = None):
+    def insert(
+        self, crowd_count: int, surf_rating: str, spot_id: str, dt: Optional[str] = None
+    ):
         if dt is not None:
             self.conn.execute(
                 """
-                insert into crowd_log (timestamp, crowd_count, surf_rating) values (?, ?, ?)
+                insert into crowd_log (timestamp, crowd_count, surf_rating, spot_id) values (?, ?, ?, ?)
                 """,
                 (
                     dt,
                     crowd_count,  # make crowd count equal to hour so it's easy to assert.
                     surf_rating,
+                    spot_id,
                 ),
             )
         else:
             self.conn.execute(
                 """
-                insert into crowd_log (timestamp, crowd_count, surf_rating) values (datetime("now"), ?, ?)
+                insert into crowd_log (timestamp, crowd_count, surf_rating, spot_id) values (datetime("now"), ?, ?, ?)
             """,
-                (
-                    crowd_count,
-                    surf_rating,
-                ),
+                (crowd_count, surf_rating, spot_id),
             )
 
         self.conn.commit()
@@ -84,7 +90,7 @@ class DB:
     def latest_reading(self):
         return self.query(
             """
-                select surf_rating, crowd_count, strftime('%w-%H', timestamp) as timestamp from crowd_log order by strftime('%s', timestamp) desc limit 1;
+                select surf_rating, crowd_count, strftime('%w-%H', timestamp) as timestamp, spot_id from crowd_log order by strftime('%s', timestamp) desc limit 1;
             """,
             one=True,
         )

@@ -4,14 +4,35 @@ from lib import forecast
 from lib.db import DB
 from lib.seed import seed as seed_db
 import pytest
+from datetime import date, datetime, timedelta
+import time
 
 
 @pytest.fixture()
 def mock_forecast(monkeypatch):
-    mock = Mock(return_value={})
-    with monkeypatch.context() as m:
-        m.setattr(forecast, "get_latest", mock)
-        yield mock
+    today = datetime.combine(date.today(), datetime.min.time())
+    intervals = [(today + timedelta(hours=x)) for x in range(24)]
+    data = []
+
+    for i, ts in enumerate(intervals):
+        condition = "FAIR"
+
+        if i > 5:
+            condition = "GOOD"
+
+        data.append(
+            {
+                "timestamp": int(ts.timestamp()),
+                "utcOffset": 0,  # TODO need to handle timezones
+                "rating": {
+                    "key": condition,
+                },
+            }
+        )
+
+    mock = Mock(return_value=data)
+    monkeypatch.setattr(forecast, "get_latest", mock)
+    yield mock
 
 
 @pytest.fixture()

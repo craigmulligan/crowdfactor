@@ -3,8 +3,9 @@ from flask import Flask
 from lib.db import DB
 from lib.graph import Graph
 from lib import forecast
-from flask import render_template
+from flask import render_template, request
 from datetime import datetime
+import time
 
 
 app = Flask(__name__)
@@ -41,6 +42,6 @@ def index(spot_id):
     )
     assert data
 
-    graph = Graph.render(data)
+    graph = Graph.render(data, spot_forecast)
 
     return render_template("index.html", **current, graph=graph)

@@ -23,7 +23,7 @@ def mock_forecast(monkeypatch):
         data.append(
             {
                 "timestamp": int(ts.timestamp()),
-                "utcOffset": 0,  # TODO need to handle timezones
+                "utcOffset": -7,
                 "rating": {
                     "key": condition,
                 },

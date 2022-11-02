@@ -1,7 +1,7 @@
 from typing import List, Optional, TypedDict
 from lib.forecast import Forecast
 import pygal
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 
 class CrowdPrediction(TypedDict):
@@ -57,7 +57,8 @@ class Graph:
             val = find(rating, ts.hour)
             offset = f["utcOffset"]
 
-            local_ts = ts - timedelta(hours=offset)
+            local_tz = timezone(timedelta(hours=offset))
+            local_ts = ts.replace(tzinfo=local_tz)
 
             if local_ts.hour % 2:
                 x_labels.append(f"{local_ts.hour:02}:00")

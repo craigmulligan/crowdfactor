@@ -22,6 +22,19 @@ poetry install
 poetry shell
 ```
 
+### Running the worker:
+
 ```
-ROBOFLOW_API_KEY=<key> python main.py https://www.surfline.com/surf-report/venice-breakwater/590927576a2e4300134fbed8\?camId\=5834a1b6e411dc743a5d52f3
+ROBOFLOW_API_KEY=<key> python worker.py https://www.surfline.com/surf-report/venice-breakwater/590927576a2e4300134fbed8\?camId\=5834a1b6e411dc743a5d52f3
 ```
+
+### Running the server:
+
+```
+FLASK_DEBUG=1 FLASK_APP=lib/app flask run
+```
+
+# TODO:
+
+1. When loading page get most recent forecast for that day. With hourly ratings. Eg hour 0: rating.
+2. Then get avg crowd count for each hour for each rating. Then combine this result with data from `1.`. *HOWEVER* this should only be for days in the future - anything in the past should just use the real values. 

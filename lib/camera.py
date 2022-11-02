@@ -1,7 +1,6 @@
 import os
 from typing import Optional, cast, Dict
 import json
-import sys
 import shutil
 import glob
 from urllib.parse import parse_qs
@@ -17,21 +16,43 @@ from roboflow import Roboflow
 ROBOFLOW_API_KEY = os.environ.get("ROBOFLOW_API_KEY")
 
 
+class NightTimeError(Exception):
+    pass
+
+
+class CameraDownError(Exception):
+    pass
+
+
 class Camera:
     id: str
+    spot_id: str
     title: str
     url: str
     surf_rating: str
+    roboflow_api_key: str
     frame_rate: int
     duration: int
 
-    def __init__(self, id, title, url, surf_rating, frame_rate=60, duration=60):
+    def __init__(
+        self,
+        id,
+        title,
+        url,
+        spot_id,
+        surf_rating,
+        roboflow_api_key,
+        frame_rate=25,
+        duration=30,
+    ):
         self.id = id
         self.title = title
         self.url = url
         self.surf_rating = surf_rating
+        self.spot_id = spot_id
         self.frame_rate = frame_rate
         self.duration = duration
+        self.roboflow_api_key = roboflow_api_key
 
     @property
     def data_dir(self):
@@ -66,7 +87,7 @@ class Camera:
                 frame.to_image().save(f"{self.data_dir}/frame-%04d.jpg" % frame.index)
 
     def analyze(self):
-        rf = Roboflow(api_key=ROBOFLOW_API_KEY)
+        rf = Roboflow(api_key=self.roboflow_api_key)
         project = rf.workspace().project("the-local")
         model = project.version(2).model
         assert model
@@ -76,7 +97,7 @@ class Camera:
 
         for filename in glob.glob(f"{self.data_dir}/*.jpg"):
             # checking if it is a file
-            predictions = model.predict(filename, confidence=50, overlap=50)
+            predictions = model.predict(filename, confidence=50, overlap=50)  # type: ignore
             if predictions is None:
                 continue
 
@@ -89,7 +110,7 @@ class Camera:
                 if prediction["class"] in classes:
                     counter.update([prediction["class"]])
 
-            print("ran prediction", counter)
+            print("ran prediction", counter, counter.total())
 
             counters.append(counter)
 
@@ -115,7 +136,7 @@ class Camera:
         return None
 
     @staticmethod
-    def get_from_url(url: str):
+    def get_from_url(url: str, roboflow_api_key: str):
         """
         Gets the camera stream url via spot URL.
         """
@@ -129,6 +150,7 @@ class Camera:
         assert content
         props = json.loads(content.text)
         data = props["props"]["pageProps"]["ssrReduxState"]["spot"]["report"]["data"]
+        print(data["forecast"])
 
         spot_data = data["spot"]
         spot_rating = data["forecast"]["conditions"]["value"]
@@ -153,36 +175,16 @@ class Camera:
             camera = cameras[0]
 
         if camera["status"]["isDown"]:
-            raise Exception("Cam is down.")
+            raise CameraDownError("Cam is down.")
 
         if camera["nighttime"]:
-            raise Exception("Its night time.")
+            raise NightTimeError("Its night time.")
 
-        return Camera(camera["_id"], camera["title"], camera["streamUrl"], spot_rating)
-
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        raise Exception(
-            "a <url> is required eg: https://www.surfline.com/surf-report/venice-breakwater/590927576a2e4300134fbed8"
+        return Camera(
+            camera["_id"],
+            camera["title"],
+            camera["streamUrl"],
+            spot_data["_id"],
+            spot_rating,
+            roboflow_api_key,
         )
-
-    if ROBOFLOW_API_KEY is None:
-        raise Exception(
-            "Missing ROBOFLOW_API_KEY - make sure to set it as an environment variable"
-        )
-
-    url = sys.argv[1]
-
-    camera = Camera.get_from_url(url)
-    # setup workspace
-    # This cleans up any old files from previous runs.
-    camera.workspace()
-
-    # # # First save the 10s of live feed to video file
-    camera.write_video()
-    # # # # Them transform video to images
-    camera.write_images()
-    # Then analyze images.
-    counters = camera.analyze()
-    print("crowd count: ", camera.crowd_counter(counters))

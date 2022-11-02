@@ -288,38 +288,6 @@ optional = false
 python-versions = ">=3.8"
 
 [[package]]
-name = "nvidia-cublas-cu11"
-version = "11.10.3.66"
-description = "CUBLAS native runtime libraries"
-category = "main"
-optional = false
-python-versions = ">=3"
-
-[[package]]
-name = "nvidia-cuda-nvrtc-cu11"
-version = "11.7.99"
-description = "NVRTC native runtime libraries"
-category = "main"
-optional = false
-python-versions = ">=3"
-
-[[package]]
-name = "nvidia-cuda-runtime-cu11"
-version = "11.7.99"
-description = "CUDA Runtime native Libraries"
-category = "main"
-optional = false
-python-versions = ">=3"
-
-[[package]]
-name = "nvidia-cudnn-cu11"
-version = "8.5.0.96"
-description = "cuDNN runtime libraries"
-category = "main"
-optional = false
-python-versions = ">=3"
-
-[[package]]
 name = "opencv-python-headless"
 version = "4.6.0.66"
 description = "Wrapper package for OpenCV python bindings."
@@ -546,24 +514,6 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
-name = "torch"
-version = "1.13.0"
-description = "Tensors and Dynamic neural networks in Python with strong GPU acceleration"
-category = "main"
-optional = false
-python-versions = ">=3.7.0"
-
-[package.dependencies]
-nvidia-cublas-cu11 = "11.10.3.66"
-nvidia-cuda-nvrtc-cu11 = "11.7.99"
-nvidia-cuda-runtime-cu11 = "11.7.99"
-nvidia-cudnn-cu11 = "8.5.0.96"
-typing-extensions = "*"
-
-[package.extras]
-opt-einsum = ["opt-einsum (>=3.3)"]
-
-[[package]]
 name = "tqdm"
 version = "4.64.1"
 description = "Fast, Extensible Progress Meter"
@@ -626,7 +576,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "fcb5a97441096dbf122bc8a94f33bea545b7afff17f2d9e1988a8042660b1407"
+content-hash = "3b09324ed5e7301440d4fe19d54aa176d0bb5bf1e31de895043c1c1d41d7ca56"
 
 [metadata.files]
 attrs = []
@@ -654,10 +604,6 @@ kiwisolver = []
 markupsafe = []
 matplotlib = []
 numpy = []
-nvidia-cublas-cu11 = []
-nvidia-cuda-nvrtc-cu11 = []
-nvidia-cuda-runtime-cu11 = []
-nvidia-cudnn-cu11 = []
 opencv-python-headless = []
 packaging = []
 pillow = []
@@ -675,7 +621,6 @@ setuptools-scm = []
 six = []
 soupsieve = []
 tomli = []
-torch = []
 tqdm = []
 typing-extensions = []
 urllib3 = []

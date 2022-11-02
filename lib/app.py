@@ -1,11 +1,11 @@
-from typing import Dict
 from flask import Flask
 from lib.db import DB
 from lib.graph import Graph
 from lib import forecast
+from lib import utils
 from flask import render_template
 from datetime import datetime, timezone
-
+from os import environ
 
 app = Flask(__name__)
 
@@ -13,9 +13,11 @@ app = Flask(__name__)
 app.teardown_appcontext(DB.tear_down)
 
 
-@app.route("/<spot_id>")
-def index(spot_id):
+@app.route("/")
+def index():
     # get current datetime
+    SURFLINE_URL = environ["SURFLINE_URL"]
+    spot_id = utils.get_spot_id(SURFLINE_URL)
     spot_forecast = forecast.get_latest(spot_id)
     dt = datetime.now().replace(tzinfo=timezone.utc)
     weekday = dt.isoweekday()

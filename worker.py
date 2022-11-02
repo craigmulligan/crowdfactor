@@ -9,26 +9,25 @@ if __name__ == "__main__":
     # context ensures we cleanup db connections
     # etc.
     with app.app_context():
-        if len(sys.argv) < 2:
-            raise Exception(
-                "a <url> is required eg: https://www.surfline.com/surf-report/venice-breakwater/590927576a2e4300134fbed8"
-            )
-
         ROBOFLOW_API_KEY = os.environ.get("ROBOFLOW_API_KEY")
+        SURFLINE_URL = os.environ.get("SURFLINE_URL_SPOT_ID")
 
         if ROBOFLOW_API_KEY is None:
             raise Exception(
                 "Missing ROBOFLOW_API_KEY - make sure to set it as an environment variable"
             )
 
-        url = sys.argv[1]
+        if SURFLINE_URL is None:
+            raise Exception(
+                "Missing SURFLINE_SPOT_ID - make sure to set it as an environment variable"
+            )
 
         db = DB.get_db()
         # ensure db schema
         db.setup()
 
         try:
-            camera = Camera.get_from_url(url, ROBOFLOW_API_KEY)
+            camera = Camera.get_from_url(SURFLINE_URL, ROBOFLOW_API_KEY)
         except (CameraDownError, NightTimeError) as e:
             # Valid errors
             print(e)

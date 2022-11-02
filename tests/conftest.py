@@ -5,7 +5,6 @@ from lib.db import DB
 from lib.seed import seed as seed_db
 import pytest
 from datetime import date, datetime, timedelta
-import time
 
 
 @pytest.fixture()
@@ -37,7 +36,17 @@ def mock_forecast(monkeypatch):
 
 @pytest.fixture()
 def spot_id():
-    return "1234"
+    return "590927576a2e4300134fbed8"
+
+
+@pytest.fixture()
+def surfline_url(spot_id):
+    return f"https://www.surfline.com/surf-report/venice-breakwater/{spot_id}?camId=5834a1b6e411dc743a5d52f3"
+
+
+@pytest.fixture(autouse=True)
+def setup_env(monkeypatch, surfline_url):
+    monkeypatch.setenv("SURFLINE_URL", surfline_url)
 
 
 @pytest.fixture(scope="session")

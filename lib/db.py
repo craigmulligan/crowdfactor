@@ -87,12 +87,21 @@ class DB:
 
         self.conn.commit()
 
-    def latest_reading(self):
+    def latest_reading(self, spot_id):
         return self.query(
             """
-                select surf_rating, crowd_count, strftime('%w-%H', timestamp) as timestamp, spot_id from crowd_log order by strftime('%s', timestamp) desc limit 1;
+                select surf_rating, crowd_count, timestamp from crowd_log where spot_id = ? order by timestamp desc limit 1;
             """,
+            [spot_id],
             one=True,
+        )
+
+    def predictions(self, spot_id: str, weekday: int):
+        return self.query(
+            f"""
+                select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour, surf_rating from crowd_log where strftime('%w', timestamp) = ? and spot_id = ? group by strftime('%H', timestamp), surf_rating;
+            """,
+            [str(weekday), spot_id],
         )
 
     def query(self, query, query_args=(), one=False) -> Union[Optional[Any], Any]:

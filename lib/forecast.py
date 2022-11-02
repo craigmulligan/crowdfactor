@@ -2,17 +2,18 @@ from typing import TypedDict, List
 import requests
 
 
-class Condition(TypedDict):
+class Rating(TypedDict):
     key: str
     value: int
 
 
-class Rating(TypedDict):
+class Forecast(TypedDict):
     timestamp: int
-    rating: Condition
+    rating: Rating
+    utcOffset: int
 
 
-def get_latest(spot_id) -> List[Rating]:
+def get_latest(spot_id) -> List[Forecast]:
     # Headers are needed otherwise surfline tries to bounce you.
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"

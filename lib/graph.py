@@ -1,7 +1,7 @@
 from typing import List, Optional, TypedDict
-from lib.forecast import Rating
+from lib.forecast import Forecast
 import pygal
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class CrowdPrediction(TypedDict):
@@ -44,7 +44,7 @@ class Graph:
     @staticmethod
     def render(
         predictions: List[CrowdPrediction],
-        forecast: List[Rating],
+        forecast: List[Forecast],
     ):
         find = prediction_finder(predictions)
 
@@ -52,15 +52,22 @@ class Graph:
         values = []
 
         for f in forecast:
-            h = datetime.fromtimestamp(f["timestamp"]).hour
+            ts = datetime.fromtimestamp(f["timestamp"])
             rating = f["rating"]["key"]
-            val = find(rating, h)
-            if h % 2:
-                x_labels.append(f"{h:02}:00")
+            val = find(rating, ts.hour)
+            offset = f["utcOffset"]
+
+            local_ts = ts - timedelta(hours=offset)
+
+            if local_ts.hour % 2:
+                x_labels.append(f"{local_ts.hour:02}:00")
             else:
                 x_labels.append(None)
 
-            values.append({"value": val, "color": style_map[rating], "label": rating})
+            label = f"""
+            {rating} - {local_ts.strftime('%d/%m/%Y')}
+            """
+            values.append({"value": val, "color": style_map[rating], "label": label})
 
         chart = pygal.Bar(
             height=300,

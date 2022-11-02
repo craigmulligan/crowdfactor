@@ -3,9 +3,8 @@ from flask import Flask
 from lib.db import DB
 from lib.graph import Graph
 from lib import forecast
-from flask import render_template, request
-from datetime import datetime
-import time
+from flask import render_template
+from datetime import datetime, timezone
 
 
 app = Flask(__name__)
@@ -18,9 +17,8 @@ app.teardown_appcontext(DB.tear_down)
 def index(spot_id):
     # get current datetime
     spot_forecast = forecast.get_latest(spot_id)
-    dt = datetime.now()
+    dt = datetime.now().replace(tzinfo=timezone.utc)
     weekday = dt.isoweekday()
-
     print("Weekday is:", weekday)
 
     db = DB.get_db()

@@ -2,6 +2,7 @@ from typing import Dict
 from flask import Flask
 from lib.db import DB
 from lib.graph import Graph
+from lib import forecast
 from flask import render_template
 from datetime import datetime
 
@@ -15,6 +16,7 @@ app.teardown_appcontext(DB.tear_down)
 @app.route("/<spot_id>")
 def index(spot_id):
     # get current datetime
+    spot_forecast = forecast.get_latest(spot_id)
     dt = datetime.now()
     weekday = dt.isoweekday()
 

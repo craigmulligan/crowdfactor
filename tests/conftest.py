@@ -1,8 +1,17 @@
+from unittest.mock import Mock
 from lib.app import app as flask_app
+from lib import forecast
 from lib.db import DB
 from lib.seed import seed as seed_db
-import random
 import pytest
+
+
+@pytest.fixture()
+def mock_forecast(monkeypatch):
+    mock = Mock(return_value={})
+    with monkeypatch.context() as m:
+        m.setattr(forecast, "get_latest", mock)
+        yield mock
 
 
 @pytest.fixture()

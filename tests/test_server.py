@@ -1,8 +1,9 @@
-def test_index(client, db, seed, spot_id):
+def test_index(client, db, seed, spot_id, mock_forecast):
     """
     Asserts the index page renders data correctly from the db.
     """
     response = client.get(f"/{spot_id}")
+    mock_forecast.assert_called_once_with(spot_id)
     latest = db.latest_reading()
 
     assert response.status_code == 200

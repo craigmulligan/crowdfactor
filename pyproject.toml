@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "thelocal"
+name = "crowdfactor"
 version = "0.1.0"
 description = "Uses a surfline video stream to improve surf spot timing"
 authors = ["Craig Mulligan <git@craigmulligan.com>"]

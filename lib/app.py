@@ -18,6 +18,7 @@ app.teardown_appcontext(DB.tear_down)
 def index(spot_id):
     # get current datetime
     spot_forecast = forecast.get_latest(spot_id)
+    print(spot_forecast)
     dt = datetime.now()
     weekday = dt.isoweekday()
 
@@ -31,6 +32,7 @@ def index(spot_id):
         [spot_id],
         one=True,
     )
+    print(current)
     assert isinstance(current, Dict)
 
     # Group by hour + day of the week.

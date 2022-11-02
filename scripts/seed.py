@@ -10,4 +10,4 @@ if __name__ == "__main__":
         db = DB.get_db()
         # ensure db schema
         db.setup()
-        seed("1234")
+        seed("590927576a2e4300134fbed8")

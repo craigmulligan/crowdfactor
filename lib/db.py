@@ -19,7 +19,7 @@ class DB:
         """
         only used in flask.
         """
-        db_name = "thelocal.db"
+        db_name = "crowdfactor.db"
         if current_app.config.get("TESTING"):
             db_name = ":memory:"
 

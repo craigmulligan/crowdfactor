@@ -4,13 +4,13 @@ import pygal
 from datetime import datetime
 
 
-class CrowdHistory(TypedDict):
+class CrowdPrediction(TypedDict):
     hour: str
     surf_rating: str
     avg_crowd_count: int
 
 
-def historical_loader(input: List[CrowdHistory]):
+def prediction_finder(input: List[CrowdPrediction]):
     """
     Input is a the average crowd count grouped by hour + surf_rating
 
@@ -26,40 +26,52 @@ def historical_loader(input: List[CrowdHistory]):
     return inner
 
 
-# def x_formatter(val: float):
-#     return f"{int(val)} in the water"
-
-
-def x_formatter(val: float):
-    return f"{int(val):02}:00"
+style_map = {
+    "FLAT": "",
+    "VERY_POOR": "",
+    "POOR": "#408fff",
+    "POOR_TO_FAIR": "#30d2e8",
+    "FAIR": "#1ad64c",
+    "FAIR TO GOOD": "#ffcd1e",
+    "GOOD": "orange",
+    "VERY GOOD": "red",
+    "GOOD TO EPIC": "pink",
+    "EPIC": "purple",
+}
 
 
 class Graph:
     @staticmethod
-    def render(input: List[CrowdHistory], forecast: List[Rating]):
-        loader = historical_loader(input)
-        hist = pygal.Histogram(height=300)
-        hist.title = "Average crowds for surf on tuesday."
-        hist.show_legend = False
+    def render(
+        predictions: List[CrowdPrediction],
+        forecast: List[Rating],
+    ):
+        find = prediction_finder(predictions)
 
-        conditions = {}
+        x_labels = []
+        values = []
 
         for f in forecast:
             h = datetime.fromtimestamp(f["timestamp"]).hour
             rating = f["rating"]["key"]
-            crowd_count = loader(rating, h)
-            val = (
-                {"value": crowd_count},
-                {"value": h, "label": f"{int(h):02}:00"},
-                {"value": h, "label": f"{int(h + 1):02}:00"},
-            )
-            # val = (crowd_count, h, h + 1)
-            if conditions.get(rating) is None:
-                conditions[rating] = [val]
+            val = find(rating, h)
+            if h % 2:
+                x_labels.append(f"{h:02}:00")
             else:
-                conditions[rating].append(val)
+                x_labels.append(None)
 
-        for k, v in conditions.items():
-            hist.add(k, v)
+            values.append({"value": val, "color": style_map[rating], "label": rating})
 
-        return hist.render_data_uri()
+        chart = pygal.Bar(
+            height=300,
+            x_labels=x_labels,
+            truncate_label=-1,
+            spacing=-1,
+        )
+
+        chart.title = "Average crowd predictions for today"
+        chart.show_legend = False
+        chart.x_labels = x_labels
+        chart.add("crowd factor", values)
+
+        return chart.render_data_uri()

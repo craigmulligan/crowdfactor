@@ -18,7 +18,6 @@ app.teardown_appcontext(DB.tear_down)
 def index(spot_id):
     # get current datetime
     spot_forecast = forecast.get_latest(spot_id)
-    print(spot_forecast)
     dt = datetime.now()
     weekday = dt.isoweekday()
 
@@ -27,23 +26,22 @@ def index(spot_id):
     db = DB.get_db()
     current = db.query(
         """
-            select surf_rating, crowd_count, strftime('%w-%H', timestamp) as timestamp from crowd_log where spot_id = ? order by timestamp desc limit 1;
+            select surf_rating, crowd_count, timestamp from crowd_log where spot_id = ? order by timestamp desc limit 1;
         """,
         [spot_id],
         one=True,
     )
-    print(current)
     assert isinstance(current, Dict)
 
-    # Group by hour + day of the week.
-    data = db.query(
+    # Group by hour + day of the week and surf_rating.
+    # So we can predict based crowds based on the forecasted surf_rating
+    predictions = db.query(
         f"""
             select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour, surf_rating from crowd_log where strftime('%w', timestamp) = ? and spot_id = ? group by strftime('%H', timestamp), surf_rating;
         """,
         [str(weekday), spot_id],
     )
-    assert data
-
-    graph = Graph.render(data, spot_forecast)
+    assert predictions
+    graph = Graph.render(predictions, spot_forecast)
 
     return render_template("index.html", **current, graph=graph)

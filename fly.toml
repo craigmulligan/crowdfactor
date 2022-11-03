@@ -6,7 +6,7 @@ kill_signal = "SIGINT"
 kill_timeout = 5
 
 [processes]
-web = "gunicorn 'lib/app:app' -b 0.0.0.0:8080"
+web = "gunicorn 'server:app' -b 0.0.0.0:8080"
 
 [env]
 SURFLINE_SPOT_ID = "590927576a2e4300134fbed8"

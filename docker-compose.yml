@@ -5,7 +5,7 @@ services:
     ports:
       - "8080:5000"
     volumes:
-      - .:/home/user/app
+      - 'resin-data:/data'
     command: "gunicorn 'server:app' -b 0.0.0.0:5000"
     env_file: .env
   worker:
@@ -13,4 +13,7 @@ services:
     command: "bash ./start.sh" 
     env_file: .env
     volumes:
-      - .:/home/user/app
+      - 'resin-data:/data'
+
+volumes:
+    resin-data:

@@ -22,10 +22,8 @@ def index():
     weekday = dt.isoweekday()
 
     db = DB.get_db()
-    # TODO: make sure reading is
     reading = db.latest_reading(spot_id)
-    assert reading
-    if reading is None:
+    if not reading:
         raise Exception(f"No readings for {spot_id} yet.")
 
     ts = datetime.strptime(reading["timestamp"], utils.DATETIME_FORMAT).replace(

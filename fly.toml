@@ -7,10 +7,9 @@ kill_timeout = 5
 
 [processes]
 web = "gunicorn 'lib/app:app' -b 0.0.0.0:8080"
-cron = "cron -f"
 
 [env]
-SURFLINE_URL = "https://www.surfline.com/surf-report/venice-breakwater/590927576a2e4300134fbed8?camId=5834a1b6e411dc743a5d52f3"
+SURFLINE_SPOT_ID = "590927576a2e4300134fbed8"
 DB_URL = "/mnt/db/crowdfactor.sqlite"
 
 [experimental]

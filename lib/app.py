@@ -14,6 +14,11 @@ app.config.from_object(Config())
 app.teardown_appcontext(DB.tear_down)
 
 
+@app.route("/test")
+def test():
+    return "hi!"
+
+
 @app.route("/")
 def index():
     # get current datetime

@@ -15,4 +15,4 @@ RUN poetry install --no-dev
 
 COPY . .
 
-EXPOSE 8080 
+EXPOSE 8000

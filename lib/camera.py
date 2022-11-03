@@ -1,6 +1,5 @@
 import os
 from typing import Optional, cast, Dict
-import json
 import shutil
 import glob
 from urllib.parse import parse_qs
@@ -8,7 +7,6 @@ from collections import Counter
 
 # Third-party
 import av
-from bs4 import BeautifulSoup
 import ffmpeg
 import requests
 from roboflow import Roboflow
@@ -136,27 +134,18 @@ class Camera:
         return None
 
     @staticmethod
-    def get_from_url(url: str, roboflow_api_key: str):
+    def get(spot_id: str, roboflow_api_key: str, camera_id: Optional[str] = None):
         """
         Gets the camera stream url via spot URL.
         """
-        # Headers are needed otherwise surfline tries to bounce you.
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"
-        }
-        page = requests.get(url, allow_redirects=True, headers=headers)
-        soup = BeautifulSoup(page.text, "html.parser")
-        content = soup.find("script", id="__NEXT_DATA__")
-        assert content
-        props = json.loads(content.text)
-        data = props["props"]["pageProps"]["ssrReduxState"]["spot"]["report"]["data"]
-        print(data["forecast"])
-
+        res = requests.get(
+            f"https://services.surfline.com/kbyg/spots/reports?spotId={spot_id}&corrected=false"
+        )
+        res.raise_for_status()
+        data = res.json()
         spot_data = data["spot"]
         spot_rating = data["forecast"]["conditions"]["value"]
         print(f"found: {spot_data['name']} - with current rating: {spot_rating}")
-
-        camera_id = Camera.get_camera_id(url)
 
         # TODO improve error handling.
         if not len(spot_data["cameras"]):

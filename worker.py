@@ -10,14 +10,14 @@ if __name__ == "__main__":
     # etc.
     with app.app_context():
         ROBOFLOW_API_KEY = os.environ.get("ROBOFLOW_API_KEY")
-        SURFLINE_URL = os.environ.get("SURFLINE_URL_SPOT_ID")
+        SURFLINE_SPOT_ID = os.environ.get("SURFLINE_SPOT_ID")
 
         if ROBOFLOW_API_KEY is None:
             raise Exception(
                 "Missing ROBOFLOW_API_KEY - make sure to set it as an environment variable"
             )
 
-        if SURFLINE_URL is None:
+        if SURFLINE_SPOT_ID is None:
             raise Exception(
                 "Missing SURFLINE_SPOT_ID - make sure to set it as an environment variable"
             )
@@ -27,7 +27,7 @@ if __name__ == "__main__":
         db.setup()
 
         try:
-            camera = Camera.get_from_url(SURFLINE_URL, ROBOFLOW_API_KEY)
+            camera = Camera.get(SURFLINE_SPOT_ID, ROBOFLOW_API_KEY)
         except (CameraDownError, NightTimeError) as e:
             # Valid errors
             print(e)

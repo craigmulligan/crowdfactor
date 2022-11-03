@@ -3,7 +3,7 @@ import sqlite3
 from flask import g, current_app
 from os import environ
 
-DB_URL = environ.get("DB_URL", "crowdfactor.db")
+DB_URL = environ.get("DB_URL", "data/crowdfactor.db")
 
 
 class DB:

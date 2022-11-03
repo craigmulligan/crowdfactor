@@ -3,10 +3,10 @@ services:
   web:
     build: .
     ports:
-      - "80:8080"
+      - "8000:80"
     volumes:
       - 'resin-data:/data'
-    command: "gunicorn 'server:app' -b 0.0.0.0:8080"
+    command: "gunicorn 'server:app' -b 0.0.0.0:8000"
     env_file: .env
   worker:
     build: . 

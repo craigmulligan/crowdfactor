@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    ports:
+      - "8080:5000"
+    volumes:
+      - .:/home/user/app
+    command: "gunicorn 'server:app' -b 0.0.0.0:5000"
+    env_file: .env
+  worker:
+    build: "."
+    command: cron -f 
+    env_file: .env
+    volumes:
+      - .:/home/user/app

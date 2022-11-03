@@ -63,5 +63,5 @@ def seed(spot_id):
                 crowd_count,  # make crowd count equal to hour so it's easy to assert.
                 conditions[0],
                 spot_id,
-                f"2022-10-{d:02}T{h:02}:00:00",
+                f"2022-10-{d:02} {h:02}:00:00",
             )

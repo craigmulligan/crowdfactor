@@ -9,4 +9,4 @@ def test_index(client, db, seed, spot_id, mock_forecast):
     assert response.status_code == 200
     assert latest["surf_rating"] == "GOOD"
     assert latest["crowd_count"] == 6
-    assert latest["timestamp"] == "2022-10-29T23:00:00"
+    assert latest["timestamp"] == "2022-10-29 23:00:00"

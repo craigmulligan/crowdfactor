@@ -3,6 +3,8 @@ import sys
 from lib.camera import Camera, NightTimeError, CameraDownError
 from lib.db import DB
 from lib.app import app
+from lib.utils import DATETIME_FORMAT
+from datetime import datetime, timezone
 
 if __name__ == "__main__":
     # Running in flask app
@@ -45,7 +47,13 @@ if __name__ == "__main__":
         counters = camera.analyze()
         crowd_count = camera.crowd_counter(counters)
 
-        db.insert(crowd_count, camera.surf_rating, camera.spot_id)
+        now = datetime.now().replace(tzinfo=timezone.utc)
+        db.insert(
+            crowd_count,
+            camera.surf_rating,
+            camera.spot_id,
+            now.strftime(DATETIME_FORMAT),
+        )
         print(
             f"saved to db - crowd_count: {crowd_count}, surf_rating: {camera.surf_rating}"
         )

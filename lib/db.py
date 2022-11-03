@@ -66,28 +66,18 @@ class DB:
         """
         )
 
-    def insert(
-        self, crowd_count: int, surf_rating: str, spot_id: str, dt: Optional[str] = None
-    ):
-        if dt is not None:
-            self.conn.execute(
-                """
-                insert into crowd_log (timestamp, crowd_count, surf_rating, spot_id) values (?, ?, ?, ?)
-                """,
-                (
-                    dt,
-                    crowd_count,  # make crowd count equal to hour so it's easy to assert.
-                    surf_rating,
-                    spot_id,
-                ),
-            )
-        else:
-            self.conn.execute(
-                """
-                insert into crowd_log (timestamp, crowd_count, surf_rating, spot_id) values (datetime("now"), ?, ?, ?)
+    def insert(self, crowd_count: int, surf_rating: str, spot_id: str, dt: str):
+        self.conn.execute(
+            """
+            insert into crowd_log (timestamp, crowd_count, surf_rating, spot_id) values (?, ?, ?, ?)
             """,
-                (crowd_count, surf_rating, spot_id),
-            )
+            (
+                dt,
+                crowd_count,
+                surf_rating,
+                spot_id,
+            ),
+        )
 
         self.conn.commit()
 

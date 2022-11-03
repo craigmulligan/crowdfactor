@@ -3,12 +3,13 @@ from lib.db import DB
 from lib.graph import Graph
 from lib import forecast
 from lib import utils
+from lib.config import Config
 from flask import render_template
 from datetime import datetime, timezone
-from os import environ
 
 app = Flask(__name__)
 
+app.config.from_object(Config())
 # Ensure the db connection is torn down..
 app.teardown_appcontext(DB.tear_down)
 
@@ -16,7 +17,7 @@ app.teardown_appcontext(DB.tear_down)
 @app.route("/")
 def index():
     # get current datetime
-    spot_id = environ["SURFLINE_SPOT_ID"]
+    spot_id = app.config["SURFLINE_SPOT_ID"]
     spot_forecast = forecast.get_latest(spot_id)
     dt = datetime.now().replace(tzinfo=timezone.utc)
     weekday = dt.isoweekday()

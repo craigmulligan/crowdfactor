@@ -1,9 +1,6 @@
 from typing import Optional, Union, Any
 import sqlite3
 from flask import g, current_app
-from os import environ
-
-DB_URL = environ.get("DB_URL", "data/crowdfactor.db")
 
 
 class DB:
@@ -20,12 +17,10 @@ class DB:
     @staticmethod
     def get_db():
         """
-        only used in flask.
+        Get db from app context
+        else create a new connection.
         """
-        db_url = DB_URL
-
-        if current_app.config.get("TESTING"):
-            db_url = ":memory:"
+        db_url = current_app.config.get("DB_URL")
 
         db = getattr(g, "_database", None)
         if db is None:
@@ -34,6 +29,10 @@ class DB:
 
     @staticmethod
     def tear_down(_):
+        """
+        When app context is torn down
+        close the db connection.
+        """
         db = getattr(g, "_database", None)
         if db is not None:
             db.conn.close()

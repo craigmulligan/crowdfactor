@@ -34,14 +34,9 @@ def mock_forecast(monkeypatch):
     yield mock
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def spot_id():
     return "590927576a2e4300134fbed8"
-
-
-@pytest.fixture(autouse=True)
-def setup_env(monkeypatch, spot_id):
-    monkeypatch.setenv("SURFLINE_SPOT_ID", spot_id)
 
 
 @pytest.fixture()
@@ -50,12 +45,15 @@ def surfline_url(spot_id):
 
 
 @pytest.fixture(scope="session")
-def app(request):
+def app(request, spot_id):
     """Session-wide test `Flask` application."""
     # Establish an application context before running the tests.
     flask_app.config.update(
         {
             "TESTING": True,
+            "DB_URL": ":memory:",
+            "SURFLINE_SPOT_ID": spot_id,
+            "ROBOFLOW_API_KEY": "xyz",
         }
     )
     ctx = flask_app.app_context()
@@ -82,7 +80,7 @@ def client(app):
 
 
 @pytest.fixture()
-def seed(db, spot_id):
+def seed(spot_id):
     """
     seed the db with dummy data.
     """

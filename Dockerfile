@@ -14,3 +14,5 @@ RUN poetry config virtualenvs.create false
 RUN poetry install --no-dev
 
 COPY . .
+
+EXPOSE 8000

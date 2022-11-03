@@ -80,7 +80,7 @@ def client(app):
 
 
 @pytest.fixture()
-def seed(db, spot_id):
+def seed(spot_id):
     """
     seed the db with dummy data.
     """

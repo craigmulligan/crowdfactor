@@ -1,9 +1,6 @@
 from typing import Optional, Union, Any
 import sqlite3
 from flask import g, current_app
-from os import environ
-
-DB_URL = environ.get("DB_URL", "data/crowdfactor.db")
 
 
 class DB:
@@ -22,7 +19,7 @@ class DB:
         """
         only used in flask.
         """
-        db_url = DB_URL
+        db_url = current_app.config.get("DB_URL")
 
         if current_app.config.get("TESTING"):
             db_url = ":memory:"

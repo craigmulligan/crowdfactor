@@ -28,8 +28,12 @@ def index():
     if reading is None:
         raise Exception(f"No readings for {spot_id} yet.")
 
-    ts = datetime.strptime(reading["timestamp"], utils.DATETIME_FORMAT)
-    reading["timestamp"] = utils.local_timestamp(ts, spot_forecast[0]["utcOffset"])
+    ts = datetime.strptime(reading["timestamp"], utils.DATETIME_FORMAT).replace(
+        tzinfo=timezone.utc
+    )
+    reading["timestamp"] = utils.local_timestamp(
+        ts, spot_forecast[0]["utcOffset"]
+    ).strftime(utils.DATETIME_FORMAT)
 
     # Group by hour + day of the week and surf_rating.
     # So we can predict based crowds based on the forecasted surf_rating

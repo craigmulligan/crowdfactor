@@ -26,9 +26,9 @@ def run():
             "Missing SURFLINE_SPOT_ID - make sure to set it as an environment variable"
         )
 
-    # db = DB.get_db()
+    db = DB.get_db()
     # # ensure db schema
-    # db.setup()
+    db.setup()
 
     camera = Camera.get(SURFLINE_SPOT_ID, ROBOFLOW_API_KEY)
 
@@ -45,12 +45,12 @@ def run():
     crowd_count = camera.crowd_counter(counters)
 
     now = datetime.now().replace(tzinfo=timezone.utc)
-    # db.insert(
-    #     crowd_count,
-    #     camera.surf_rating,
-    #     camera.spot_id,
-    #     now.strftime(DATETIME_FORMAT),
-    # )
+    db.insert(
+        crowd_count,
+        camera.surf_rating,
+        camera.spot_id,
+        now.strftime(DATETIME_FORMAT),
+    )
     print(
         f"saved to db - crowd_count: {crowd_count}, surf_rating: {camera.surf_rating}"
     )

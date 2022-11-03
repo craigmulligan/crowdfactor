@@ -14,6 +14,3 @@ RUN poetry config virtualenvs.create false
 RUN poetry install --no-dev
 
 COPY . .
-
-RUN echo "*/2 * * * * /usr/bin/python /home/user/app/worker.py > /dev/stdout" > /etc/cron.d/crowdfactor-crontab
-RUN chmod 0644 /etc/cron.d/crowdfactor-crontab && crontab /etc/cron.d/crowdfactor-crontab

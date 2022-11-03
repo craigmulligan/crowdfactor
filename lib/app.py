@@ -16,17 +16,21 @@ app.teardown_appcontext(DB.tear_down)
 @app.route("/")
 def index():
     # get current datetime
-    SURFLINE_URL = environ["SURFLINE_URL"]
-    spot_id = utils.get_spot_id(SURFLINE_URL)
+    spot_id = environ["SURFLINE_SPOT_ID"]
     spot_forecast = forecast.get_latest(spot_id)
     dt = datetime.now().replace(tzinfo=timezone.utc)
     weekday = dt.isoweekday()
 
     db = DB.get_db()
+    # TODO: make sure reading is
     reading = db.latest_reading(spot_id)
     assert reading
     if reading is None:
         raise Exception(f"No readings for {spot_id} yet.")
+
+    reading["timestamp"] = utils.local_timestamp(
+        reading["timestamp"], spot_forecast[0]["utcOffset"]
+    )
 
     # Group by hour + day of the week and surf_rating.
     # So we can predict based crowds based on the forecasted surf_rating

@@ -1,5 +1,6 @@
 from typing import List, Optional, TypedDict
 from lib.forecast import Forecast
+from lib import utils
 import pygal
 from datetime import datetime, timedelta, timezone
 
@@ -57,8 +58,7 @@ class Graph:
             val = find(rating, ts.hour)
             offset = f["utcOffset"]
 
-            local_tz = timezone(timedelta(hours=offset))
-            local_ts = ts.replace(tzinfo=local_tz)
+            local_ts = utils.local_timestamp(ts, offset)
 
             if local_ts.hour % 2:
                 x_labels.append(f"{local_ts.hour:02}:00")

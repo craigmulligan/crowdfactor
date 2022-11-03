@@ -10,7 +10,7 @@ services:
     env_file: .env
   worker:
     build: . 
-    command: "bash ./start.sh" 
+    command: "python worker.py" 
     env_file: .env
     volumes:
       - 'resin-data:/data'

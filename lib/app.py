@@ -40,6 +40,8 @@ def index():
     if not predictions:
         raise Exception(f"No readings for {spot_id} and weekday {weekday} yet.")
 
-    graph = Graph.render(predictions, spot_forecast)
+    readings = db.readings(spot_id, dt.strftime(utils.DATETIME_FORMAT))
+
+    graph = Graph.render(predictions, spot_forecast, readings)
 
     return render_template("index.html", **reading, graph=graph)

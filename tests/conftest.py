@@ -44,7 +44,7 @@ def surfline_url(spot_id):
     return f"https://www.surfline.com/surf-report/venice-breakwater/{spot_id}?camId=5834a1b6e411dc743a5d52f3"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def app(request, spot_id):
     """Session-wide test `Flask` application."""
     # Establish an application context before running the tests.
@@ -66,7 +66,7 @@ def app(request, spot_id):
     return flask_app
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(autouse=True)
 def db(app):
     """Session-wide test database."""
     db = DB.get_db()
@@ -80,10 +80,16 @@ def client(app):
 
 
 @pytest.fixture()
-def seed(spot_id):
+def seed_window():
+    start = datetime(2021, 1, 1)
+    end = datetime(2021, 12, 31)
+    return (start, end)
+
+
+@pytest.fixture()
+def seed(spot_id, seed_window):
     """
     seed the db with dummy data.
     """
-    start = datetime(2021, 1, 1)
-    end = datetime(2021, 12, 31)
-    seed_db(spot_id, start, end)
+
+    seed_db(spot_id, *seed_window)

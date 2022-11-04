@@ -43,7 +43,7 @@ class DB:
         """
         self.conn.execute(
             """
-            CREATE TABLE IF NOT EXISTS crowd_log (timestamp TEXT PRIMARY KEY, crowd_count INTEGER, surf_rating TEXT, spot_id TEXT);
+            CREATE TABLE IF NOT EXISTS crowd_log (timestamp TEXT PRIMARY KEY, crowd_count INTEGER, surf_rating TEXT, spot_id TEXT, model_version INTEGER);
         """
         )
 
@@ -65,17 +65,19 @@ class DB:
         """
         )
 
-    def insert(self, crowd_count: int, surf_rating: str, spot_id: str, dt: str):
+    def insert(
+        self,
+        crowd_count: int,
+        surf_rating: str,
+        spot_id: str,
+        dt: str,
+        model_version: int,
+    ):
         self.conn.execute(
             """
-            insert into crowd_log (timestamp, crowd_count, surf_rating, spot_id) values (?, ?, ?, ?)
+            insert into crowd_log (timestamp, crowd_count, surf_rating, spot_id, model_version) values (?, ?, ?, ?, ?)
             """,
-            (
-                dt,
-                crowd_count,
-                surf_rating,
-                spot_id,
-            ),
+            (dt, crowd_count, surf_rating, spot_id, model_version),
         )
 
         self.conn.commit()
@@ -106,7 +108,7 @@ class DB:
         """
         return self.query(
             f"""
-                select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour from crowd_log where timestamp = ? and spot_id = ? group by strftime('%H', timestamp), surf_rating;
+                select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour from crowd_log where date(timestamp) = date(?) and spot_id = ? group by strftime('%H', timestamp), surf_rating;
             """,
             [today, spot_id],
         )

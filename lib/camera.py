@@ -84,10 +84,10 @@ class Camera:
             if i % self.frame_rate == 0:
                 frame.to_image().save(f"{self.data_dir}/frame-%04d.jpg" % frame.index)
 
-    def analyze(self):
+    def analyze(self, model_version):
         rf = Roboflow(api_key=self.roboflow_api_key)
         project = rf.workspace().project("the-local")
-        model = project.version(2).model
+        model = project.version(model_version).model
         assert model
         classes = ["people", "surfer-riding", "surfer-lying", "surfer-paddling"]
         print("predicting...")

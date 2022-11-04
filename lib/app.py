@@ -27,9 +27,7 @@ def index():
     if not reading:
         raise Exception(f"No readings for {spot_id} yet.")
 
-    ts = datetime.strptime(reading["timestamp"], utils.DATETIME_FORMAT).replace(
-        tzinfo=timezone.utc
-    )
+    ts = datetime.strptime(reading["timestamp"], utils.DATETIME_FORMAT)
     reading["timestamp"] = utils.local_timestamp(
         ts, spot_forecast[0]["utcOffset"]
     ).strftime(utils.DATETIME_FORMAT)

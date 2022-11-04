@@ -14,6 +14,7 @@ def run():
     finally saving the lastest reading to the db.
     """
     ROBOFLOW_API_KEY = current_app.config.get("ROBOFLOW_API_KEY")
+    ROBOFLOW_MODEL_VERSION = 2
     SURFLINE_SPOT_ID = current_app.config.get("SURFLINE_SPOT_ID")
 
     if ROBOFLOW_API_KEY is None:
@@ -41,7 +42,7 @@ def run():
     # # # # Them transform video to images
     camera.write_images()
     # Then analyze images.
-    counters = camera.analyze()
+    counters = camera.analyze(ROBOFLOW_MODEL_VERSION)
     crowd_count = camera.crowd_counter(counters)
 
     now = datetime.now().replace(tzinfo=timezone.utc)
@@ -50,6 +51,7 @@ def run():
         camera.surf_rating,
         camera.spot_id,
         now.strftime(DATETIME_FORMAT),
+        ROBOFLOW_MODEL_VERSION,
     )
     print(
         f"saved to db - crowd_count: {crowd_count}, surf_rating: {camera.surf_rating}"

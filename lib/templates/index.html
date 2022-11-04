@@ -1,9 +1,25 @@
 <!doctype html>
-<title>Surf crowd factor</title>
-<div><embed src={{ graph|safe }} /></div>
-<div>
-  <h2>Last spot check:</h2>
-  <h1>surf rating: {{surf_rating}}</h1>
-  <h1>crowd count: {{crowd_count}}</h1>
-  <p>Ran at: {{timestamp}}</p>
-</div>
+
+<head>
+  <title>Surf crowd factor</title>
+  <style>
+    body {
+      font-family: monospace;
+    }
+
+    .spot-check {
+      margin: auto 0;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div><embed src={{ graph|safe }} /></div>
+  <div class="spot-check">
+    <h1>Last spot check</h1>
+    <h2>surf rating: {{surf_rating}}</h2>
+    <h2>crowd count: {{crowd_count}}</h2>
+    <h3>ran at: {{timestamp}}</h3>
+  </div>
+</body>

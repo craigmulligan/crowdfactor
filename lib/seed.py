@@ -1,10 +1,18 @@
 from lib.db import DB
+from lib import utils
 from collections import deque
 import random
+from datetime import timedelta, datetime
+
+
+def daterange(date1, date2):
+    for n in range(int((date2 - date1).days) + 1):
+        yield date1 + timedelta(n)
 
 
 def seed(spot_id):
     db = DB.get_db()
+    db.setup()
     # for range over the 3rd to 10th oct.
     # which is Monday-Sunday
     conditions = deque(
@@ -44,11 +52,12 @@ def seed(spot_id):
         "EPIC": 30,
     }
 
-    # Oct 3 - 30th
-    # 4 weeks of data
-    for d in range(3, 30):
+    start_dt = datetime(2015, 12, 20)
+    end_dt = datetime(2016, 1, 11)
+
+    for dt in daterange(start_dt, end_dt):
         conditions.rotate(1)
-        random.seed(d)
+        random.seed(dt.timestamp())
         r = range(0, 24)
         total_hours = len(r)
         factor = total_hours / len(conditions)
@@ -63,5 +72,6 @@ def seed(spot_id):
                 crowd_count,  # make crowd count equal to hour so it's easy to assert.
                 conditions[0],
                 spot_id,
-                f"2022-10-{d:02} {h:02}:00:00",
+                dt.replace(hour=h).strftime(utils.DATETIME_FORMAT),
+                2,
             )

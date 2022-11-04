@@ -2,7 +2,7 @@ from typing import List, Optional, TypedDict
 from lib.forecast import Forecast
 from lib import utils
 import pygal
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 
 class CrowdCount(TypedDict):
@@ -30,17 +30,27 @@ def prediction_finder(input: List[CrowdPrediction]):
     return inner
 
 
+def reading_finder(input: List[CrowdCount]):
+    def inner(hour: int) -> Optional[int]:
+        for i in input:
+            if int(i["hour"]) == hour:
+                return i["avg_crowd_count"]
+        return None
+
+    return inner
+
+
 style_map = {
-    "FLAT": "",
-    "VERY_POOR": "",
-    "POOR": "#408fff",
-    "POOR_TO_FAIR": "#30d2e8",
-    "FAIR": "#1ad64c",
-    "FAIR TO GOOD": "#ffcd1e",
-    "GOOD": "orange",
-    "VERY GOOD": "red",
-    "GOOD TO EPIC": "pink",
-    "EPIC": "purple",
+    "FLAT": (255, 165, 0),  # incorrect orange.,
+    "VERY_POOR": (255, 165, 0),  # incorrect orange.
+    "POOR": (64, 143, 255),
+    "POOR_TO_FAIR": (48, 210, 232),
+    "FAIR": (26, 214, 76),
+    "FAIR TO GOOD": (255, 205, 30),
+    "GOOD": (255, 165, 0),  # incorrect orange.
+    "VERY GOOD": (255, 0, 0),  # incorrect red.
+    "GOOD TO EPIC": (255, 192, 203),  # incorrect pink
+    "EPIC": (128, 0, 128),  # incorrect purple
 }
 
 
@@ -51,17 +61,19 @@ class Graph:
         forecast: List[Forecast],
         readings: List[CrowdCount],
     ):
-        find = prediction_finder(predictions)
+        find_prediction = prediction_finder(predictions)
+        find_reading = reading_finder(readings)
 
         x_labels = []
-        values = []
+        predictions_series = []
+        readings_series = []
 
         for f in forecast:
             ts = datetime.fromtimestamp(f["timestamp"])
             rating = f["rating"]["key"]
-            val = find(rating, ts.hour)
+            prediction = find_prediction(rating, ts.hour)
+            reading = find_reading(ts.hour)
             offset = f["utcOffset"]
-
             local_ts = utils.local_timestamp(ts, offset)
 
             if local_ts.hour % 2:
@@ -69,21 +81,39 @@ class Graph:
             else:
                 x_labels.append(None)
 
-            label = f"""
-            {rating} - {local_ts.strftime('%d/%m/%Y')}
-            """
-            values.append({"value": val, "color": style_map[rating], "label": label})
+            label = f"{rating}\n - {local_ts.strftime('%d/%m/%Y')}"
 
-        chart = pygal.Bar(
-            height=300,
-            x_labels=x_labels,
-            truncate_label=-1,
-            spacing=-1,
-        )
+            r, g, b = style_map[rating]
 
-        chart.title = "Average crowd predictions for today"
+            predictions_series.append(
+                {
+                    "value": (prediction, local_ts.hour, local_ts.hour + 1),
+                    "color": f"rgba({r}, {g}, {b}, 0.5)",
+                    "label": label,
+                }
+            )
+
+            readings_series.append(
+                {
+                    "value": [reading, local_ts.hour, local_ts.hour + 1],
+                    "color": f"rgba({r}, {g}, {b}, 0.5)",
+                    "label": label,
+                }
+            )
+
+        chart = pygal.Histogram()
         chart.show_legend = False
-        chart.x_labels = x_labels
-        chart.add("crowd factor", values)
+        chart.title = "Crowd factor for today"
+        chart.height = 300
+
+        chart.add(
+            "Predicted crowd",
+            predictions_series,
+        )
+        chart.add(
+            "Predicted crowd",
+            predictions_series,
+        )
+        chart.add("Recorded crowd", readings_series)
 
         return chart.render_data_uri()

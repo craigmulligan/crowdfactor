@@ -84,4 +84,6 @@ def seed(spot_id):
     """
     seed the db with dummy data.
     """
-    seed_db(spot_id)
+    start = datetime(2021, 1, 1)
+    end = datetime(2021, 12, 31)
+    seed_db(spot_id, start, end)

@@ -10,7 +10,7 @@ def daterange(date1, date2):
         yield date1 + timedelta(n)
 
 
-def seed(spot_id):
+def seed(spot_id, start: datetime, end: datetime):
     db = DB.get_db()
     db.setup()
     # for range over the 3rd to 10th oct.
@@ -18,14 +18,14 @@ def seed(spot_id):
     conditions = deque(
         [
             "FLAT",
-            "VERY POOR",
+            "VERY_POOR",
             "POOR",
-            "POOR TO FAIR",
+            "POOR_TO_FAIR",
             "FAIR",
-            "FAIR TO GOOD",
+            "FAIR_TO_GOOD",
             "GOOD",
             "VERY_GOOD",
-            "GOOD TO EPIC",
+            "GOOD_TO_EPIC",
             "EPIC",
         ]
     )
@@ -45,18 +45,16 @@ def seed(spot_id):
         "POOR": 5,
         "POOR_TO_FAIR": 7,
         "FAIR": 10,
-        "FAIR TO GOOD": 15,
+        "FAIR_TO_GOOD": 15,
         "GOOD": 15,
-        "VERY GOOD": 20,
-        "GOOD TO EPIC": 25,
+        "VERY_GOOD": 20,
+        "GOOD_TO_EPIC": 25,
         "EPIC": 30,
     }
 
-    start_dt = datetime(2015, 12, 20)
-    end_dt = datetime(2016, 1, 11)
-
-    for dt in daterange(start_dt, end_dt):
-        conditions.rotate(1)
+    for dt in daterange(start, end):
+        r = random.randint(0, len(conditions))
+        conditions.rotate(r)
         random.seed(dt.timestamp())
         r = range(0, 24)
         total_hours = len(r)

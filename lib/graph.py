@@ -5,10 +5,13 @@ import pygal
 from datetime import datetime, timedelta, timezone
 
 
-class CrowdPrediction(TypedDict):
+class CrowdCount(TypedDict):
     hour: str
-    surf_rating: str
     avg_crowd_count: int
+
+
+class CrowdPrediction(CrowdCount):
+    surf_rating: str
 
 
 def prediction_finder(input: List[CrowdPrediction]):
@@ -46,6 +49,7 @@ class Graph:
     def render(
         predictions: List[CrowdPrediction],
         forecast: List[Forecast],
+        readings: List[CrowdCount],
     ):
         find = prediction_finder(predictions)
 

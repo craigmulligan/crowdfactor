@@ -90,11 +90,25 @@ class DB:
         )
 
     def predictions(self, spot_id: str, weekday: int):
+        """
+        Get average of reading per hour for weekday, grouped by surf rating.
+        """
         return self.query(
             f"""
                 select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour, surf_rating from crowd_log where strftime('%w', timestamp) = ? and spot_id = ? group by strftime('%H', timestamp), surf_rating;
             """,
             [str(weekday), spot_id],
+        )
+
+    def readings(self, spot_id: str, today: str):
+        """
+        Get average of reading per hour for today.
+        """
+        return self.query(
+            f"""
+                select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour from crowd_log where timestamp = ? and spot_id = ? group by strftime('%H', timestamp), surf_rating;
+            """,
+            [today, spot_id],
         )
 
     def query(self, query, query_args=(), one=False) -> Union[Optional[Any], Any]:

@@ -14,6 +14,11 @@ class CrowdPrediction(CrowdCount):
     surf_rating: str
 
 
+def get_max(input: List[CrowdPrediction]):
+    values = [v["avg_crowd_count"] for v in input]
+    return max(values)
+
+
 def prediction_finder(input: List[CrowdPrediction]):
     """
     Input is a the average crowd count grouped by hour + surf_rating
@@ -67,6 +72,8 @@ class Graph:
         x_labels = []
         predictions_series = []
         readings_series = []
+        forecast_series = []
+        values = []
 
         for f in forecast:
             ts = datetime.fromtimestamp(f["timestamp"])
@@ -75,6 +82,12 @@ class Graph:
             reading = find_reading(ts.hour)
             offset = f["utcOffset"]
             local_ts = utils.local_timestamp(ts, offset)
+
+            if reading:
+                values.append(reading)
+
+            if prediction:
+                values.append(prediction)
 
             if local_ts.hour % 2:
                 x_labels.append(f"{local_ts.hour:02}:00")
@@ -85,35 +98,54 @@ class Graph:
 
             r, g, b = style_map[rating]
 
+            forecast_series.append(
+                {
+                    "value": (None, local_ts.hour, local_ts.hour + 1),
+                    "style": f"fill: rgba({r}, {g}, {b}, 0.3); stroke: none;",
+                    "label": label,
+                }
+            )
+
             predictions_series.append(
                 {
                     "value": (prediction, local_ts.hour, local_ts.hour + 1),
-                    "color": f"rgba({r}, {g}, {b}, 0.5)",
-                    "label": label,
+                    "style": f"stroke-dasharray: 5, 10; stroke: rgba({r}, {g}, {b}); fill: rgba({r}, {g}, {b}, 0.2);",
+                    "label": rating,
                 }
             )
 
             readings_series.append(
                 {
                     "value": [reading, local_ts.hour, local_ts.hour + 1],
-                    "color": f"rgba({r}, {g}, {b}, 0.5)",
-                    "label": label,
+                    "color": f"rgba({r}, {g}, {b}, 1)",
+                    "label": rating,
                 }
             )
+
+        max_value = max(values)
+
+        for f in forecast_series:
+            # Make all the forecast values takeup the whole
+            # Histogram
+            _, start, end = f["value"]
+            f["value"] = (max_value, start, end)
 
         chart = pygal.Histogram()
         chart.show_legend = False
         chart.title = "Crowd factor for today"
         chart.height = 300
 
+        chart.add("Forecast", forecast_series, stroke=False)
         chart.add(
             "Predicted crowd",
             predictions_series,
+            stroke_style={"width": 5, "dasharray": "3, 6, 12, 24"},
         )
         chart.add(
             "Predicted crowd",
             predictions_series,
         )
+
         chart.add("Recorded crowd", readings_series)
 
         return chart.render_data_uri()

@@ -47,16 +47,17 @@ def reading_finder(input: List[CrowdCount]):
 
 
 style_map = {
-    "FLAT": (255, 165, 0),  # incorrect orange.,
-    "VERY_POOR": (255, 165, 0),  # incorrect orange.
+    # Not sure they use the ones where I couldn't find the colors.
+    "FLAT": (0, 0, 0),  # incorrect black.
+    "VERY_POOR": (128, 128, 128),  # incorrect grey.
     "POOR": (64, 143, 255),
     "POOR_TO_FAIR": (48, 210, 232),
     "FAIR": (26, 214, 76),
     "FAIR TO GOOD": (255, 205, 30),
-    "GOOD": (255, 165, 0),  # incorrect orange.
-    "VERY GOOD": (255, 0, 0),  # incorrect red.
-    "GOOD TO EPIC": (255, 192, 203),  # incorrect pink
-    "EPIC": (128, 0, 128),  # incorrect purple
+    "GOOD": (255, 137, 0),
+    "VERY GOOD": (255, 137, 0),  # incorrect (same as very good)
+    "GOOD TO EPIC": (255, 137, 0),  # incorrect (same as good)
+    "EPIC": (213, 69, 48),
 }
 
 

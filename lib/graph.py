@@ -119,7 +119,7 @@ class Graph:
         if values:
             max_value = max(values)
         else:
-            max_value = 0
+            max_value = 1
 
         for f in forecast_series:
             # Make all the forecast values takeup the whole

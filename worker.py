@@ -15,4 +15,4 @@ if __name__ == "__main__":
             except Exception as e:
                 logging.exception("Unexpected error running worker")
 
-            sleep(60)
+            sleep(600)

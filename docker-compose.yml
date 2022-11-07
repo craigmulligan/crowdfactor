@@ -9,6 +9,7 @@ services:
     command: "gunicorn 'server:app' -b 0.0.0.0:80"
 
   worker:
+    build: .
     command: "python worker.py" 
     volumes:
       - 'resin-data:/data'

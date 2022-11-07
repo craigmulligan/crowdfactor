@@ -15,11 +15,6 @@ class CrowdPrediction(CrowdCount):
     surf_rating: str
 
 
-def get_max(input: List[CrowdPrediction]):
-    values = [v["avg_crowd_count"] for v in input]
-    return max(values)
-
-
 def prediction_finder(input: List[CrowdPrediction]):
     """
     Input is a the average crowd count grouped by hour + surf_rating
@@ -121,7 +116,10 @@ class Graph:
                 }
             )
 
-        max_value = max(values)
+        if values:
+            max_value = max(values)
+        else:
+            max_value = 0
 
         for f in forecast_series:
             # Make all the forecast values takeup the whole

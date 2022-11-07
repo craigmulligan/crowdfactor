@@ -107,7 +107,7 @@ class Graph:
 
             predictions_series.append(
                 {
-                    "value": (round(prediction, 2), local_ts.hour, local_ts.hour + 1),
+                    "value": (prediction, local_ts.hour, local_ts.hour + 1),
                     "style": f"stroke-dasharray: 5, 10; stroke: rgba({r}, {g}, {b}); fill: rgba({r}, {g}, {b}, 0.2);",
                     "label": rating,
                 }

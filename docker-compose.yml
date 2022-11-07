@@ -3,13 +3,12 @@ services:
   web:
     build: .
     ports:
-      - "80:8000"
+      - "80:80"
     volumes:
       - 'resin-data:/data'
-    command: "gunicorn 'server:app' -b 0.0.0.0:8000"
+    command: "gunicorn 'server:app' -b 0.0.0.0:80"
 
   worker:
-    build: . 
     command: "python worker.py" 
     volumes:
       - 'resin-data:/data'

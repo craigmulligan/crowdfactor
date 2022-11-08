@@ -1,3 +1,4 @@
+import logging
 from lib.camera import Camera
 from lib.db import DB
 from flask import current_app
@@ -53,6 +54,6 @@ def run():
         now.strftime(DATETIME_FORMAT),
         ROBOFLOW_MODEL_VERSION,
     )
-    print(
+    logging.info(
         f"saved to db - crowd_count: {crowd_count}, surf_rating: {camera.surf_rating}"
     )

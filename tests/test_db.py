@@ -23,7 +23,6 @@ def test_readings(client, db, seed, spot_id, seed_window):
     _, end = seed_window
     readings = db.readings(spot_id, end)
 
-    print(readings)
     reading = [p for p in readings if int(p["hour"]) == 0][0]
 
     assert reading["avg_crowd_count"] == 6

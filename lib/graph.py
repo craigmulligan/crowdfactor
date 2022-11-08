@@ -32,7 +32,14 @@ def prediction_finder(input: List[CrowdPrediction]):
 
 
 def reading_finder(input: List[CrowdCount]):
-    def inner(hour: int) -> Optional[float]:
+    def inner(hour: int, local_time: datetime) -> Optional[float]:
+        # NOTE: timestamps are in utc.
+        # So if we get all readings where timestamp = date('today')
+        # this mean when we convert to local_ts we could have
+        # an hour in the future.
+        if hour > local_time.hour:
+            return None
+
         for i in input:
             if int(i["hour"]) == hour:
                 return round(i["avg_crowd_count"])
@@ -77,19 +84,13 @@ class Graph:
             ts = datetime.fromtimestamp(f["timestamp"])
             rating = f["rating"]["key"]
             prediction = find_prediction(rating, ts.hour)
-            reading = find_reading(ts.hour)
+            reading = find_reading(ts.hour, local_time)
             offset = f["utcOffset"]
             local_ts = utils.local_timestamp(ts, offset)
 
-            print(readings)
-
             if reading:
-                # NOTE: timestamps are in utc.
-                # So if we get all readings where timestamp = date('today')
-                # this mean when we convert to local_ts we could have
-                # an hour in the future.
-                if local_ts.hour <= local_time.hour:
-                    values.append(reading)
+
+                values.append(reading)
 
             if prediction:
                 values.append(prediction)

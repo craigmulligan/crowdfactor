@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Optional, cast, Dict
 import shutil
@@ -90,7 +91,6 @@ class Camera:
         model = project.version(model_version).model
         assert model
         classes = ["people", "surfer-riding", "surfer-lying", "surfer-paddling"]
-        print("predicting...")
         counters = []
 
         for filename in glob.glob(f"{self.data_dir}/*.jpg"):
@@ -107,8 +107,6 @@ class Camera:
 
                 if prediction["class"] in classes:
                     counter.update([prediction["class"]])
-
-            print("ran prediction", counter, counter.total())
 
             counters.append(counter)
 
@@ -145,7 +143,7 @@ class Camera:
         data = res.json()
         spot_data = data["spot"]
         spot_rating = data["forecast"]["conditions"]["value"]
-        print(f"found: {spot_data['name']} - with current rating: {spot_rating}")
+        logging.info(f"found: {spot_data['name']} - with current rating: {spot_rating}")
 
         # TODO improve error handling.
         if not len(spot_data["cameras"]):

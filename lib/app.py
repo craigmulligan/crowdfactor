@@ -20,9 +20,9 @@ def index():
     spot_id = app.config["SURFLINE_SPOT_ID"]
     spot_forecast = forecast.get_latest(spot_id)
     spot_info = forecast.get_spot_info(spot_id)
-    now = datetime.now().replace(tzinfo=timezone.utc)
+    now = datetime.utcnow().replace(tzinfo=timezone.utc)
     now_local = utils.local_timestamp(now, spot_info["utcOffset"])
-    weekday = now.isoweekday()
+    weekday = now_local.isoweekday()
 
     db = DB.get_db()
     reading = db.latest_reading(spot_id)

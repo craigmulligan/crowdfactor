@@ -32,17 +32,11 @@ def prediction_finder(input: List[CrowdPrediction]):
 
 
 def reading_finder(input: List[CrowdCount]):
-    def inner(hour: int, local_time: datetime) -> Optional[float]:
-        # NOTE: timestamps are in utc.
-        # So if we get all readings where timestamp = date('today')
-        # this mean when we convert to local_ts we could have
-        # an hour in the future.
-        if hour > local_time.hour:
-            return None
-
+    def inner(hour: int) -> Optional[float]:
         for i in input:
             if int(i["hour"]) == hour:
                 return round(i["avg_crowd_count"])
+
         return None
 
     return inner
@@ -61,6 +55,17 @@ style_map = {
     "GOOD TO EPIC": (255, 137, 0),  # incorrect (same as good)
     "EPIC": (213, 69, 48),
 }
+
+
+def is_today_local(hour, local_time):
+    # NOTE: timestamps are in utc.
+    # So if we get all readings where timestamp = date('today')
+    # this mean when we convert to local_ts we could have
+    # an hour in the future.
+    if hour <= local_time.hour:
+        return True
+
+    return False
 
 
 class Graph:
@@ -83,13 +88,18 @@ class Graph:
         for f in forecast:
             ts = datetime.fromtimestamp(f["timestamp"])
             rating = f["rating"]["key"]
+
             prediction = find_prediction(rating, ts.hour)
-            reading = find_reading(ts.hour, local_time)
+            reading = find_reading(ts.hour)
+
             offset = f["utcOffset"]
             local_ts = utils.local_timestamp(ts, offset)
 
-            if reading:
+            if not is_today_local(local_ts.hour, local_time):
+                # timezones man.
+                reading = None
 
+            if reading:
                 values.append(reading)
 
             if prediction:

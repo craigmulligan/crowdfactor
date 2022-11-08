@@ -106,15 +106,13 @@ class Graph:
 
             x_labels.append({"value": local_ts.hour, "label": f"{local_ts.hour:02}:00"})
 
-            label = f"{rating}\n - {local_ts.strftime('%d/%m/%Y')}"
-
             r, g, b = style_map[rating]
 
             forecast_series.append(
                 {
                     "value": (None, local_ts.hour, local_ts.hour + 1),
                     "style": f"fill: rgba({r}, {g}, {b}, 0.3); stroke: none;",
-                    "label": label,
+                    "label": f"conditions: {rating}",
                 }
             )
 
@@ -122,7 +120,7 @@ class Graph:
                 {
                     "value": (prediction, local_ts.hour, local_ts.hour + 1),
                     "style": f"stroke-dasharray: 5, 10; stroke: rgba({r}, {g}, {b}); fill: rgba({r}, {g}, {b}, 0.2);",
-                    "label": rating,
+                    "label": f"conditions: {rating}, crowd: {prediction}",
                 }
             )
 
@@ -130,7 +128,7 @@ class Graph:
                 {
                     "value": [reading, local_ts.hour, local_ts.hour + 1],
                     "color": f"rgba({r}, {g}, {b}, 1)",
-                    "label": rating,
+                    "label": f"conditions: {rating}, crowd: {reading}",
                 }
             )
 
@@ -146,6 +144,7 @@ class Graph:
             f["value"] = (max_value, start, end)
 
         chart = pygal.Histogram(
+            force_uri_protocol="https",
             x_labels_major_every=2,
             show_minor_x_labels=False,
             truncate_label=5,
@@ -158,17 +157,17 @@ class Graph:
         chart.height = 300
         chart.x_labels = x_labels
 
-        chart.add("Forecast", forecast_series)
+        chart.add(
+            "Forecast",
+            forecast_series,
+            formatter=lambda _: "",
+        )
         chart.add(
             "Predicted crowd",
             predictions_series,
+            formatter=lambda _: "",
             stroke_style={"width": 5, "dasharray": "3, 6, 12, 24"},
         )
-        chart.add(
-            "Predicted crowd",
-            predictions_series,
-        )
-
-        chart.add("Recorded crowd", readings_series)
+        chart.add("Recorded crowd", readings_series, formatter=lambda _: "")
 
         return chart.render_data_uri()

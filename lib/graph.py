@@ -2,7 +2,7 @@ from typing import List, Optional, TypedDict
 from lib.forecast import Forecast
 from lib import utils
 import pygal
-from datetime import datetime
+from datetime import datetime, timezone
 from pygal.style import CleanStyle
 
 
@@ -86,14 +86,13 @@ class Graph:
         values = []
 
         for f in forecast:
-            ts = datetime.fromtimestamp(f["timestamp"])
+            ts = datetime.fromtimestamp(f["timestamp"]).replace(tzinfo=timezone.utc)
             rating = f["rating"]["key"]
+            offset = f["utcOffset"]
+            local_ts = utils.local_timestamp(ts, offset)
 
             prediction = find_prediction(rating, ts.hour)
             reading = find_reading(ts.hour)
-
-            offset = f["utcOffset"]
-            local_ts = utils.local_timestamp(ts, offset)
 
             if not is_today_local(local_ts.hour, local_time):
                 # timezones man.

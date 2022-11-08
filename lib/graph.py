@@ -62,6 +62,7 @@ class Graph:
         predictions: List[CrowdPrediction],
         forecast: List[Forecast],
         readings: List[CrowdCount],
+        local_time: datetime,
     ):
         find_prediction = prediction_finder(predictions)
         find_reading = reading_finder(readings)
@@ -80,8 +81,15 @@ class Graph:
             offset = f["utcOffset"]
             local_ts = utils.local_timestamp(ts, offset)
 
+            print(readings)
+
             if reading:
-                values.append(reading)
+                # NOTE: timestamps are in utc.
+                # So if we get all readings where timestamp = date('today')
+                # this mean when we convert to local_ts we could have
+                # an hour in the future.
+                if local_ts.hour <= local_time.hour:
+                    values.append(reading)
 
             if prediction:
                 values.append(prediction)

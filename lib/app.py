@@ -20,8 +20,9 @@ def index():
     spot_id = app.config["SURFLINE_SPOT_ID"]
     spot_forecast = forecast.get_latest(spot_id)
     spot_info = forecast.get_spot_info(spot_id)
-    dt = datetime.now().replace(tzinfo=timezone.utc)
-    weekday = dt.isoweekday()
+    now = datetime.now().replace(tzinfo=timezone.utc)
+    now_local = utils.local_timestamp(now, spot_info["utcOffset"])
+    weekday = now.isoweekday()
 
     db = DB.get_db()
     reading = db.latest_reading(spot_id)
@@ -39,8 +40,8 @@ def index():
     if not predictions:
         raise Exception(f"No readings for {spot_id} and weekday {weekday} yet.")
 
-    readings = db.readings(spot_id, dt.strftime(utils.DATETIME_FORMAT))
+    readings = db.readings(spot_id, now.strftime(utils.DATETIME_FORMAT))
 
-    graph = Graph.render(predictions, spot_forecast, readings)
+    graph = Graph.render(predictions, spot_forecast, readings, now_local)
 
     return render_template("index.html", **reading, graph=graph, spot_info=spot_info)

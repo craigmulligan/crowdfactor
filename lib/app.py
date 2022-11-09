@@ -21,8 +21,10 @@ def index():
     spot_forecast = forecast.get_latest(spot_id)
     spot_info = forecast.get_spot_info(spot_id)
     now = datetime.utcnow().replace(tzinfo=timezone.utc)
-    now_local = utils.local_timestamp(now, spot_info["utcOffset"])
-    weekday = now_local.isoweekday()
+    weekday = now.isoweekday()
+
+    window_start = utils.epoch_to_string(spot_forecast[0]["timestamp"])
+    window_end = utils.epoch_to_string(spot_forecast[-1]["timestamp"])
 
     db = DB.get_db()
     reading = db.latest_reading(spot_id)
@@ -30,18 +32,16 @@ def index():
         raise Exception(f"No readings for {spot_id} yet.")
 
     ts = datetime.strptime(reading["timestamp"], utils.DATETIME_FORMAT)
-    reading["timestamp"] = utils.local_timestamp(ts, spot_info["utcOffset"]).strftime(
-        utils.DATETIME_FORMAT
-    )
 
     # Group by hour + day of the week and surf_rating.
     # So we can predict based crowds based on the forecasted surf_rating
     predictions = db.predictions(spot_id, weekday)
-    if not predictions:
-        raise Exception(f"No readings for {spot_id} and weekday {weekday} yet.")
+    readings = db.readings(spot_id, window_start, window_end)
 
-    readings = db.readings(spot_id, now.strftime(utils.DATETIME_FORMAT))
+    graph = Graph.render(predictions, readings, spot_forecast)
 
-    graph = Graph.render(predictions, spot_forecast, readings, now_local)
-
+    # Make sure reading is in local tz.
+    reading["timestamp"] = utils.local_timestamp(ts, spot_info["utcOffset"]).strftime(
+        utils.DATETIME_FORMAT
+    )
     return render_template("index.html", **reading, graph=graph, spot_info=spot_info)

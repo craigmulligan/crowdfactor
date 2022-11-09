@@ -1,4 +1,5 @@
-from typing import Optional, Union, Any
+from typing import Optional, Union, Any, List
+from lib.graph import CrowdCount, CrowdPrediction
 import sqlite3
 from flask import g, current_app
 
@@ -91,7 +92,7 @@ class DB:
             one=True,
         )
 
-    def predictions(self, spot_id: str, weekday: int):
+    def predictions(self, spot_id: str, weekday: int) -> List[CrowdPrediction]:
         """
         Get average of reading per hour for weekday, grouped by surf rating.
         """
@@ -100,18 +101,22 @@ class DB:
                 select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour, surf_rating from crowd_log where strftime('%w', timestamp) = ? and spot_id = ? group by strftime('%H', timestamp), surf_rating;
             """,
             [str(weekday), spot_id],
-        )
+        )  # type:ignore
 
-    def readings(self, spot_id: str, today: str):
+    def readings(self, spot_id: str, start: str, end: str) -> List[CrowdCount]:
         """
         Get average of reading per hour for today.
         """
         return self.query(
             f"""
-                select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour from crowd_log where date(timestamp) = date(?) and spot_id = ? group by strftime('%H', timestamp), surf_rating;
+                SELECT avg(crowd_count) AS avg_crowd_count, strftime('%H', timestamp) AS hour 
+                FROM crowd_log where timestamp
+                BETWEEN ? AND ?
+                AND spot_id = ? 
+                GROUP BY strftime('%H', timestamp), surf_rating;
             """,
-            [today, spot_id],
-        )
+            [start, end, spot_id],
+        )  # type:ignore
 
     def query(self, query, query_args=(), one=False) -> Union[Optional[Any], Any]:
         cur = self.conn.execute(query, query_args)

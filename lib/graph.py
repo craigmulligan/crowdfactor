@@ -74,7 +74,7 @@ class Graph:
         values = []
 
         for f in forecast:
-            ts = datetime.fromtimestamp(f["timestamp"]).replace(tzinfo=timezone.utc)
+            ts = datetime.utcfromtimestamp(f["timestamp"]).replace(tzinfo=timezone.utc)
             rating = f["rating"]["key"]
             offset = f["utcOffset"]
             local_ts = utils.local_timestamp(ts, offset)

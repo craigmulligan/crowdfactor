@@ -57,24 +57,12 @@ style_map = {
 }
 
 
-def is_today_local(hour, local_time):
-    # NOTE: timestamps are in utc.
-    # So if we get all readings where timestamp = date('today')
-    # this mean when we convert to local_ts we could have
-    # an hour in the future.
-    if hour <= local_time.hour:
-        return True
-
-    return False
-
-
 class Graph:
     @staticmethod
     def render(
         predictions: List[CrowdPrediction],
-        forecast: List[Forecast],
         readings: List[CrowdCount],
-        local_time: datetime,
+        forecast: List[Forecast],
     ):
         find_prediction = prediction_finder(predictions)
         find_reading = reading_finder(readings)
@@ -93,10 +81,6 @@ class Graph:
 
             prediction = find_prediction(rating, ts.hour)
             reading = find_reading(ts.hour)
-
-            if not is_today_local(local_ts.hour, local_time):
-                # timezones man.
-                reading = None
 
             if reading:
                 values.append(reading)
@@ -119,7 +103,7 @@ class Graph:
             predictions_series.append(
                 {
                     "value": (prediction, local_ts.hour, local_ts.hour + 1),
-                    "style": f"stroke-dasharray: 5, 10; stroke: rgba({r}, {g}, {b}); fill: rgba({r}, {g}, {b}, 0.2);",
+                    "style": f"stroke-dasharray: 5, 10; stroke: rgba({r}, {g}, {b}); fill: rgba({r}, {g}, {b}, 0.3);",
                     "label": f"conditions: {rating}, crowd: {prediction}",
                 }
             )

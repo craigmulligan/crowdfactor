@@ -14,7 +14,7 @@ def epoch_to_string(timestamp: int) -> str:
     Returns utc string for epoch
     """
     return (
-        datetime.fromtimestamp(timestamp)
+        datetime.utcfromtimestamp(timestamp)
         .replace(tzinfo=timezone.utc)
         .strftime(DATETIME_FORMAT)
     )

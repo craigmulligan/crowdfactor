@@ -22,7 +22,7 @@ def test_predictions(client, db, seed, spot_id, seed_window):
         p for p in predictions if int(p["hour"]) == 0 and p["surf_rating"] == "EPIC"
     ][0]
 
-    assert prediction["avg_crowd_count"] == 6.5
+    assert round(prediction["avg_crowd_count"], 2) == 18.47
 
 
 def test_readings(client, db, seed, spot_id, seed_window):

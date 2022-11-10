@@ -20,11 +20,9 @@ def index():
     spot_id = app.config["SURFLINE_SPOT_ID"]
     spot_forecast = forecast.get_latest(spot_id)
     spot_info = forecast.get_spot_info(spot_id)
-    now = datetime.utcnow().replace(tzinfo=timezone.utc)
-    weekday = now.isoweekday()
 
-    window_start = utils.epoch_to_string(spot_forecast[0]["timestamp"])
-    window_end = utils.epoch_to_string(spot_forecast[-1]["timestamp"])
+    window_start = utils.epoch_to_datetime(spot_forecast[0]["timestamp"])
+    window_end = utils.epoch_to_datetime(spot_forecast[-1]["timestamp"])
 
     db = DB.get_db()
     reading = db.latest_reading(spot_id)
@@ -35,7 +33,7 @@ def index():
 
     # Group by hour + day of the week and surf_rating.
     # So we can predict based crowds based on the forecasted surf_rating
-    predictions = db.predictions(spot_id, weekday)
+    predictions = db.predictions(spot_id, window_start, window_end)
     readings = db.readings(spot_id, window_start, window_end)
 
     graph = Graph.render(predictions, readings, spot_forecast)

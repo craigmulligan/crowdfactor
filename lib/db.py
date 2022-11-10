@@ -98,9 +98,13 @@ class DB:
         """
         return self.query(
             f"""
-                select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour, surf_rating from crowd_log where strftime('%w', timestamp) = ? and spot_id = ? group by strftime('%H', timestamp), surf_rating;
+                select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour, surf_rating, strftime('%w', timestamp) as weekday, timestamp
+                from crowd_log 
+                where spot_id = ? 
+                and strftime('%w', timestamp) = ? 
+                group by strftime('%H', timestamp), surf_rating;
             """,
-            [str(weekday), spot_id],
+            [spot_id, str(weekday)],
         )  # type:ignore
 
     def readings(self, spot_id: str, start: str, end: str) -> List[CrowdCount]:

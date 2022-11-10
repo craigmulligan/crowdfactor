@@ -29,3 +29,10 @@ ROBOFLOW_API_KEY=<key> SURFLINE_URL=https://www.surfline.com/surf-report/venice-
 ```
 FLASK_DEBUG=1 FLASK_APP=lib/app flask run
 ```
+
+```
+select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour, surf_rating, strftime('%w-%H', timestamp), timestamp 
+from crowd_log
+where strftime('%w-%H', timestamp) BETWEEN '3-00' AND '3-00'
+group by strftime('%H', timestamp), surf_rating;
+```

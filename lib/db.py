@@ -100,19 +100,26 @@ class DB:
         """
         Get average of reading per hour for weekday, grouped by surf rating.
         """
-        # Get the weekday-hour to weekday-hour
-        window_start = f"{start.weekday()}-{start.hour}"
-        window_end = f"{end.weekday()}-{end.hour}"
+        # NB isoweekday is needed not .weekday()
+        # This is because sqlite3 uses sunday as 0.
+        window_start = f"{start.isoweekday()}-{start.hour:02}"
+        window_end = f"{end.isoweekday()}-{end.hour:02}"
+        past = start.strftime(DATETIME_FORMAT)
 
         return self.query(
             f"""
-                select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour, surf_rating, strftime('%w-%H', timestamp) as weekday, timestamp
+                select 
+                    avg(crowd_count) as avg_crowd_count, 
+                    strftime('%H', timestamp) as hour, 
+                    surf_rating, 
+                    strftime('%w-%H', timestamp) as weekday
                 from crowd_log
                 where spot_id = ? 
+                and timestamp < ?
                 and strftime('%w-%H', timestamp) BETWEEN ? AND ? 
                 group by strftime('%H', timestamp), surf_rating;
             """,
-            [spot_id, window_start, window_end],
+            [spot_id, past, window_start, window_end],
         )  # type:ignore
 
     def readings(
@@ -126,7 +133,7 @@ class DB:
                 SELECT avg(crowd_count) AS avg_crowd_count, strftime('%H', timestamp) AS hour 
                 FROM crowd_log 
                 where timestamp BETWEEN ? AND ?
-                AND spot_id = ? 
+                AND spot_id = ?
                 GROUP BY strftime('%H', timestamp), surf_rating;
             """,
             [start.strftime(DATETIME_FORMAT), end.strftime(DATETIME_FORMAT), spot_id],

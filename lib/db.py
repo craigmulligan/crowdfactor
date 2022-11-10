@@ -1,7 +1,9 @@
 from typing import Optional, Union, Any, List
 from lib.graph import CrowdCount, CrowdPrediction
+from datetime import datetime
 import sqlite3
 from flask import g, current_app
+from lib.utils import DATETIME_FORMAT
 
 
 class DB:
@@ -92,34 +94,42 @@ class DB:
             one=True,
         )
 
-    def predictions(self, spot_id: str, weekday: int) -> List[CrowdPrediction]:
+    def predictions(
+        self, spot_id: str, start: datetime, end: datetime
+    ) -> List[CrowdPrediction]:
         """
         Get average of reading per hour for weekday, grouped by surf rating.
         """
+        # Get the weekday-hour to weekday-hour
+        window_start = f"{start.weekday()}-{start.hour}"
+        window_end = f"{end.weekday()}-{end.hour}"
+
         return self.query(
             f"""
-                select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour, surf_rating, strftime('%w', timestamp) as weekday, timestamp
-                from crowd_log 
+                select avg(crowd_count) as avg_crowd_count, strftime('%H', timestamp) as hour, surf_rating, strftime('%w-%H', timestamp) as weekday, timestamp
+                from crowd_log
                 where spot_id = ? 
-                and strftime('%w', timestamp) = ? 
+                and strftime('%w-%H', timestamp) BETWEEN ? AND ? 
                 group by strftime('%H', timestamp), surf_rating;
             """,
-            [spot_id, str(weekday)],
+            [spot_id, window_start, window_end],
         )  # type:ignore
 
-    def readings(self, spot_id: str, start: str, end: str) -> List[CrowdCount]:
+    def readings(
+        self, spot_id: str, start: datetime, end: datetime
+    ) -> List[CrowdCount]:
         """
         Get average of reading per hour for today.
         """
         return self.query(
             f"""
                 SELECT avg(crowd_count) AS avg_crowd_count, strftime('%H', timestamp) AS hour 
-                FROM crowd_log where timestamp
-                BETWEEN ? AND ?
+                FROM crowd_log 
+                where timestamp BETWEEN ? AND ?
                 AND spot_id = ? 
                 GROUP BY strftime('%H', timestamp), surf_rating;
             """,
-            [start, end, spot_id],
+            [start.strftime(DATETIME_FORMAT), end.strftime(DATETIME_FORMAT), spot_id],
         )  # type:ignore
 
     def query(self, query, query_args=(), one=False) -> Union[Optional[Any], Any]:

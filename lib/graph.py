@@ -64,7 +64,6 @@ class Graph:
         readings: List[CrowdCount],
         forecast: List[Forecast],
     ):
-        print(predictions)
         find_prediction = prediction_finder(predictions)
         find_reading = reading_finder(readings)
 

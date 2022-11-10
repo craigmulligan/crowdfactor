@@ -9,12 +9,15 @@ def local_timestamp(timestamp: datetime, offset: int) -> datetime:
     return ts
 
 
-def epoch_to_string(timestamp: int) -> str:
+def datetime_to_string(dt: datetime) -> str:
     """
     Returns utc string for epoch
     """
-    return (
-        datetime.utcfromtimestamp(timestamp)
-        .replace(tzinfo=timezone.utc)
-        .strftime(DATETIME_FORMAT)
-    )
+    return dt.strftime(DATETIME_FORMAT)
+
+
+def epoch_to_datetime(timestamp: int) -> datetime:
+    """
+    Returns utc string for epoch
+    """
+    return datetime.utcfromtimestamp(timestamp).replace(tzinfo=timezone.utc)

@@ -8,9 +8,12 @@ As a surfer you are constantly trying to assess the best time to surf. This not 
 
 ## How it works
 
+
+Every 10 mins, Crowdfactor will stream a minute of footage from the configured [surfline camera](https://www.surfline.com/surf-report/venice-breakwater/590927576a2e4300134fbed8). It then feeds that footage into a computer vision model to count the number of surfers in the water. 
+
 ![Vision model counting surfers](./img/prediction.png)
 
-Every 10 mins, Crowdfactor will stream a minute of footage from the configured [surfline camera](https://www.surfline.com/surf-report/venice-breakwater/590927576a2e4300134fbed8). It then feeds that footage into a computer vision model to count the number of surfers in the water. The surfer count is then saved to a database along with the [surf rating](https://www.surfline.com/surf-news/surflines-rating-surf-heights-quality/1417) at the time of recording. From this database you can then make predictions based on the day of the week, time and surf rating. For instance if it's a Wednesday 11am and the conditions are poor, you can take an average of the previous crowd recordings on Wednesday at 11am when conditions have been poor to make a prediction. These predictions visualised along side the real recordings for the day on a [dashboard](https://9d6cb911e0cb153469c25e3e910ac831.balena-devices.com/).
+The surfer count is then saved to a database along with the [surf rating](https://www.surfline.com/surf-news/surflines-rating-surf-heights-quality/1417) at the time of recording. From this database you can then make predictions based on the day of the week, time and surf rating. For instance if it's a Wednesday 11am and the conditions are poor, you can take an average of the previous crowd recordings on Wednesday at 11am when conditions have been poor to make a prediction. These predictions visualised along side the real recordings for the day on a [dashboard](https://9d6cb911e0cb153469c25e3e910ac831.balena-devices.com/).
 
 ![Dashboard](./img/dashboard.png)
 

@@ -49,10 +49,10 @@ style_map = {
     "POOR": (64, 143, 255),
     "POOR_TO_FAIR": (48, 210, 232),
     "FAIR": (26, 214, 76),
-    "FAIR TO GOOD": (255, 205, 30),
+    "FAIR_TO_GOOD": (255, 205, 30),
     "GOOD": (255, 137, 0),
-    "VERY GOOD": (255, 137, 0),  # incorrect (same as very good)
-    "GOOD TO EPIC": (255, 137, 0),  # incorrect (same as good)
+    "VERY_GOOD": (255, 137, 0),  # incorrect (same as very good)
+    "GOOD_TO_EPIC": (255, 137, 0),  # incorrect (same as good)
     "EPIC": (213, 69, 48),
 }
 

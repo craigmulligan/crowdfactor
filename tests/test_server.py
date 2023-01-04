@@ -1,4 +1,5 @@
-def test_index(client, db, seed, spot_id, mock_forecast):
+
+def test_index(client, db, seed, spot_id, mock_forecast, mock_spot_info):
     """
     Asserts the index page renders data correctly from the db.
     """

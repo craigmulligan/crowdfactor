@@ -5,6 +5,7 @@ import shutil
 import glob
 from urllib.parse import parse_qs
 from collections import Counter
+from dataclasses import dataclass
 
 # Third-party
 import av
@@ -22,16 +23,34 @@ class NightTimeError(Exception):
 class CameraDownError(Exception):
     pass
 
+@dataclass
+class Conditions:
+    surf_rating: str 
+
+    wind_speed: float 
+    wind_gust: float 
+    wind_direction: float 
+
+    water_temp_max: float
+    water_temp_min: float
+
+    weather_temp: float
+    weather_condition: str 
+
+    wave_height_min: float
+    wave_height_max: float
+
 
 class Camera:
     id: str
     spot_id: str
     title: str
     url: str
-    surf_rating: str
     roboflow_api_key: str
+    conditions: Conditions
     frame_rate: int
     duration: int
+
 
     def __init__(
         self,
@@ -39,19 +58,19 @@ class Camera:
         title,
         url,
         spot_id,
-        surf_rating,
         roboflow_api_key,
+        conditions,
         frame_rate=25,
         duration=30,
     ):
         self.id = id
         self.title = title
         self.url = url
-        self.surf_rating = surf_rating
         self.spot_id = spot_id
         self.frame_rate = frame_rate
         self.duration = duration
         self.roboflow_api_key = roboflow_api_key
+        self.conditions = conditions
 
     @property
     def data_dir(self):
@@ -143,8 +162,23 @@ class Camera:
         res.raise_for_status()
         data = res.json()
         spot_data = data["spot"]
-        spot_rating = data["forecast"]["conditions"]["value"]
-        logging.info(f"found: {spot_data['name']} - with current rating: {spot_rating}")
+        forecast = data["forecast"]
+
+        conditions = Conditions(
+            surf_rating = forecast["conditions"]["value"],
+            wind_speed = forecast["wind"]["speed"],
+            wind_gust = forecast["wind"]["gust"],
+            wind_direction = forecast["wind"]["direction"],
+            water_temp_max = forecast["waterTemp"]["max"] ,
+            water_temp_min = forecast["waterTemp"]["min"] ,
+            weather_temp = forecast["weather"]["temperature"] ,
+            weather_condition = forecast["weather"]["condition"] ,
+            wave_height_min = forecast["waveHeight"]["min"],
+            wave_height_max = forecast["waveHeight"]["max"]
+        )
+
+
+        logging.info(f"found: {spot_data['name']} - with current rating: {conditions.surf_rating}")
 
         # TODO improve error handling.
         if not len(spot_data["cameras"]):
@@ -169,10 +203,10 @@ class Camera:
             raise NightTimeError("Its night time.")
 
         return Camera(
-            camera["_id"],
-            camera["title"],
-            camera["streamUrl"],
-            spot_data["_id"],
-            spot_rating,
-            roboflow_api_key,
+            id=camera["_id"],
+            title=camera["title"],
+            url=camera["streamUrl"],
+            spot_id=spot_data["_id"],
+            roboflow_api_key=roboflow_api_key,
+            conditions=conditions
         )

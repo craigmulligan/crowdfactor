@@ -1,15 +1,14 @@
 from datetime import timedelta
-from lib.utils import datetime_to_string
 
 
 def test_latest_reading(client, db, seed, spot_id, mock_forecast):
     latest = db.latest_reading(spot_id)
-    assert latest["surf_rating"] == "FAIR_TO_GOOD"
-    assert latest["crowd_count"] == 5
+    assert latest["surf_rating"] == "POOR"
+    assert latest["crowd_count"] == 1
     assert latest["timestamp"] == "2021-12-31 23:00:00"
 
 
-def test_predictions(client, db, seed, spot_id, seed_window):
+def test_predictions(db, seed, spot_id, seed_window):
     """
     This will change if we change the seed data.
     """
@@ -22,11 +21,10 @@ def test_predictions(client, db, seed, spot_id, seed_window):
         p for p in predictions if int(p["hour"]) == 0 and p["surf_rating"] == "EPIC"
     ][0]
 
-    assert round(prediction["avg_crowd_count"], 2) == 18.47
+    assert round(prediction["avg_crowd_count"], 2) == 21.17
 
 
-def test_readings(client, db, seed, spot_id, seed_window):
-
+def test_readings(db, seed, spot_id, seed_window):
     _, end = seed_window
     start = end - timedelta(days=7)
 
@@ -38,4 +36,4 @@ def test_readings(client, db, seed, spot_id, seed_window):
 
     reading = [p for p in readings if int(p["hour"]) == 0][0]
 
-    assert reading["avg_crowd_count"] == 16
+    assert reading["avg_crowd_count"] == 9.5

@@ -45,7 +45,7 @@ def run():
     # Then analyze images.
     counters = camera.analyze(ROBOFLOW_MODEL_VERSION)
     crowd_count = camera.crowd_counter(counters)
-
+    
     now = datetime.now().replace(tzinfo=timezone.utc)
     db.insert(
         crowd_count,

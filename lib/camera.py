@@ -87,15 +87,16 @@ class Camera:
 
     def analyze(self, model_version):
         rf = Roboflow(api_key=self.roboflow_api_key)
-        project = rf.workspace().project("the-local")
+        project = rf.workspace().project("surfer-spotting")
         model = project.version(model_version).model
         assert model
-        classes = ["people", "surfer-riding", "surfer-lying", "surfer-paddling"]
+        classes = ["surfer"]
         counters = []
 
         for filename in glob.glob(f"{self.data_dir}/*.jpg"):
             # checking if it is a file
-            predictions = model.predict(filename, confidence=50, overlap=50)  # type: ignore
+            predictions = model.predict(filename, confidence=35, overlap=50)  # type: ignore
+
             if predictions is None:
                 continue
 

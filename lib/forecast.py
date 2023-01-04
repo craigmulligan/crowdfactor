@@ -1,6 +1,7 @@
 from typing import TypedDict, List
 import requests
 from lib.cache import shelve_it
+import json
 
 
 class Rating(TypedDict):

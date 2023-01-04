@@ -49,11 +49,11 @@ def run():
     now = datetime.now().replace(tzinfo=timezone.utc)
     db.insert(
         crowd_count,
-        camera.surf_rating,
+        camera.conditions,
         camera.spot_id,
         now.strftime(DATETIME_FORMAT),
         ROBOFLOW_MODEL_VERSION,
     )
     logging.info(
-        f"saved to db - crowd_count: {crowd_count}, surf_rating: {camera.surf_rating}"
+        f"saved to db - crowd_count: {crowd_count}, surf_rating: {camera.conditions.surf_rating}"
     )

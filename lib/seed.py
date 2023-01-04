@@ -3,6 +3,7 @@ from lib import utils
 from collections import deque
 import random
 from datetime import timedelta, datetime
+from lib.camera import Conditions
 
 
 def daterange(date1, date2):
@@ -64,11 +65,23 @@ def seed(spot_id, start: datetime, end: datetime):
                 conditions.rotate(1)
             # for each hour in the day.
 
+            c = Conditions(
+                wind_direction=149.1,
+                wind_speed=34,
+                wind_gust=6,
+                water_temp_max=18,
+                water_temp_min=14,
+                weather_temp=22,
+                weather_condition="MIST",
+                wave_height_max=2,
+                wave_height_min=1,
+                surf_rating=conditions[0],
+            )
             crowd_count = random.randint(0, conditions_max[conditions[0]])
 
             db.insert(
-                crowd_count,  # make crowd count equal to hour so it's easy to assert.
-                conditions[0],
+                crowd_count,
+                c,
                 spot_id,
                 dt.replace(hour=h).strftime(utils.DATETIME_FORMAT),
                 2,

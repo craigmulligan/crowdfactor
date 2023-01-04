@@ -1,9 +1,11 @@
 from typing import Optional, Union, Any, List
 from lib.graph import CrowdCount, CrowdPrediction
+from lib.camera import Conditions
 from datetime import datetime
 import sqlite3
 from flask import g, current_app
 from lib.utils import DATETIME_FORMAT
+import logging
 
 
 class DB:
@@ -44,43 +46,116 @@ class DB:
         """
         initializes schema
         """
-        self.conn.execute(
+        user_version = self.query(
             """
-            CREATE TABLE IF NOT EXISTS crowd_log (timestamp TEXT PRIMARY KEY, crowd_count INTEGER, surf_rating TEXT, spot_id TEXT, model_version INTEGER);
-        """
+            PRAGMA user_version;
+        """,
+            one=True,
         )
 
-        self.conn.execute(
-            """
-            CREATE INDEX IF NOT EXISTS crowd_log_crowd_count_idx ON crowd_log(crowd_count);
-        """
-        )
+        if user_version is None:
+            raise Exception("no user_version is unexpected")
 
-        self.conn.execute(
-            """
-            CREATE INDEX IF NOT EXISTS crowd_log_spot_id_idx ON crowd_log(spot_id);
-        """
-        )
+        version = user_version["user_version"]
+        latest_version = 2
 
-        self.conn.execute(
-            """
-            CREATE INDEX IF NOT EXISTS crowd_log_surf_rating_idx ON crowd_log(surf_rating);
-        """
-        )
+        while True:
+            logging.info(f"DB schema version:{version}")
+            if version == 0:
+                self.query(
+                    """
+                    CREATE TABLE IF NOT EXISTS crowd_log (timestamp TEXT PRIMARY KEY, crowd_count INTEGER, surf_rating TEXT, spot_id TEXT, model_version INTEGER);
+                """
+                )
+
+                self.query(
+                    """
+                    CREATE INDEX IF NOT EXISTS crowd_log_crowd_count_idx ON crowd_log(crowd_count);
+                """
+                )
+
+                self.query(
+                    """
+                    CREATE INDEX IF NOT EXISTS crowd_log_spot_id_idx ON crowd_log(spot_id);
+                """
+                )
+
+                self.query(
+                    """
+                    CREATE INDEX IF NOT EXISTS crowd_log_surf_rating_idx ON crowd_log(surf_rating);
+                """
+                )
+                version += 1
+                self.query(f"PRAGMA user_version = {version}")
+            elif version == 1:
+                colums = [
+                    ("wave_height_min", "REAL"),
+                    ("wave_height_max", "REAL"),
+                    ("weather_temp", "REAL"),
+                    ("weather_condition", "TEXT"),
+                    ("water_temp_max", "REAL"),
+                    ("water_temp_min", "REAL"),
+                    ("wind_direction", "REAL"),
+                    ("wind_gust", "REAL"),
+                    ("wind_speed", "REAL"),
+                ]
+
+                for column in colums:
+                    self.query(
+                        f"""
+                        ALTER TABLE crowd_log 
+                          ADD {column[0]} {column[1]};
+                    """
+                    )
+                version += 1
+                self.query(f"PRAGMA user_version = {version}")
+            if version == latest_version:
+                logging.info("DB schema up to date.")
+                break
 
     def insert(
         self,
         crowd_count: int,
-        surf_rating: str,
+        conditions: Conditions,
         spot_id: str,
         dt: str,
         model_version: int,
     ):
         self.conn.execute(
             """
-            insert into crowd_log (timestamp, crowd_count, surf_rating, spot_id, model_version) values (?, ?, ?, ?, ?)
+            insert into crowd_log (
+                timestamp, 
+                crowd_count, 
+                spot_id, 
+                model_version,
+                surf_rating,
+                wind_speed,
+                wind_gust,
+                wind_direction,
+                water_temp_max,
+                water_temp_min,
+                weather_temp,
+                weather_condition,
+                wave_height_min,
+                wave_height_max
+            ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (dt, crowd_count, surf_rating, spot_id, model_version),
+            (
+                dt,
+                crowd_count,
+                spot_id,
+                model_version,
+                conditions.surf_rating,
+                conditions.wind_speed,
+                conditions.wind_gust,
+                conditions.wind_direction,
+                conditions.water_temp_max,
+                conditions.water_temp_min,
+                conditions.weather_temp,
+                conditions.weather_condition,
+                conditions.wave_height_min,
+                conditions.wave_height_max,
+            ),
         )
 
         self.conn.commit()

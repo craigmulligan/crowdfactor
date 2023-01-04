@@ -6,6 +6,9 @@ from lib import utils
 from lib.config import Config
 from flask import render_template
 from datetime import datetime, timezone
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 

@@ -180,13 +180,12 @@ class Camera:
 
         logging.info(f"found: {spot_data['name']} - with current rating: {conditions.surf_rating}")
 
-        # TODO improve error handling.
         if not len(spot_data["cameras"]):
-            raise Exception("No Cam")
+            raise Exception(f"Surf spot: {spot_id} does not have a camera.")
 
+        # Default to the first one. 
         camera = spot_data["cameras"][0]
 
-        # Always just use the first one for now.
         if camera_id is not None:
             cameras = [
                 camera for camera in spot_data["cameras"] if camera["_id"] == camera_id

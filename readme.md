@@ -24,6 +24,16 @@ These predictions are visualised along side the real recordings and the forecast
 
 ## Usage:
 
+First find your spot on [surfline](https://www.surfline.com), copy the spot_id from the URL. Then create a [roboflow account](https://roboflow.com/) and get an API key. 
+
+Then run it the project with docker-compose:
+
+```
+docker-compose up -d
+```
+
+## Development
+
 ```
 poetry install
 ```
@@ -41,5 +51,5 @@ SURFLINE_SPOT_ID=590927576a2e4300134fbed8 ROBOFLOW_API_KEY=<secret> FLASK_DEBUG=
 ### Running the server:
 
 ```
-SURFLINE_SPOT_ID=590927576a2e4300134fbed8 ROBOFLOW_API_KEY=<secret> FLASK_DEBUG=1 FLASK_APP=lib/app flask run 
+SURFLINE_SPOT_ID=590927576a2e4300134fbed8 ROBOFLOW_API_KEY=<secret> FLASK_DEBUG=1 FLASK_APP=lib/app flask run
 ```

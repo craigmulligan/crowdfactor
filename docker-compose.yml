@@ -7,12 +7,18 @@ services:
     volumes:
       - 'resin-data:/data'
     command: "gunicorn 'server:app' -b 0.0.0.0:80"
+    environment:
+       - SURFLINE_SPOT_ID 
+       - ROBOFLOW_API_KEY
 
   worker:
     build: .
     command: "python worker.py" 
     volumes:
       - 'resin-data:/data'
+    environment:
+       - SURFLINE_SPOT_ID 
+       - ROBOFLOW_API_KEY
 
 volumes:
     resin-data:

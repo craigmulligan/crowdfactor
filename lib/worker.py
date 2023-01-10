@@ -18,12 +18,12 @@ def run():
     ROBOFLOW_MODEL_VERSION = 2
     SURFLINE_SPOT_ID = current_app.config.get("SURFLINE_SPOT_ID")
 
-    if ROBOFLOW_API_KEY is None:
+    if not ROBOFLOW_API_KEY:
         raise Exception(
             "Missing ROBOFLOW_API_KEY - make sure to set it as an environment variable"
         )
 
-    if SURFLINE_SPOT_ID is None:
+    if not SURFLINE_SPOT_ID:
         raise Exception(
             "Missing SURFLINE_SPOT_ID - make sure to set it as an environment variable"
         )

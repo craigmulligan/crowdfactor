@@ -29,8 +29,10 @@ First find your spot on [surfline](https://www.surfline.com), copy the spot_id f
 Then run it the project with docker-compose:
 
 ```
-docker-compose up -d
+SURFLINE_SPOT_ID=<spot_id> ROBOFLOW_API_KEY=<roboflow_key> docker-compose up -d
 ```
+
+You can view the dashboard at `http://localhost`.
 
 ## Development
 

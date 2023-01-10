@@ -169,6 +169,15 @@ class DB:
             one=True,
         )
 
+    def logs(self, spot_id, limit=100):
+        return self.query(
+            """
+                select *, strftime('%w', timestamp) as weekday, strftime("%H") as hour from crowd_log where spot_id = ? and wind_speed is not NULL order by timestamp desc limit ?;
+            """,
+            [spot_id, limit],
+        )
+
+
     def predictions(
         self, spot_id: str, start: datetime, end: datetime
     ) -> List[CrowdPrediction]:

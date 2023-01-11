@@ -1,7 +1,6 @@
 import logging
 from lib.app import app
-from lib.train import train
-from lib import worker
+from lib.ml import train
 
 if __name__ == "__main__":
     with app.app_context():

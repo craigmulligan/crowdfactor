@@ -57,7 +57,7 @@ class DB:
             raise Exception("no user_version is unexpected")
 
         version = user_version["user_version"]
-        latest_version = 2
+        latest_version = 3
 
         while True:
             logging.info(f"DB schema version:{version}")
@@ -107,6 +107,27 @@ class DB:
                           ADD {column[0]} {column[1]};
                     """
                     )
+                version += 1
+                self.query(f"PRAGMA user_version = {version}")
+            if version == 2:
+                # create a table to hold the last training job.
+                self.query(
+                    """
+                    CREATE TABLE IF NOT EXISTS training_log (timestamp TEXT, score REAL, name TEXT);
+                """
+                )
+                self.query(
+                    """
+                    CREATE INDEX IF NOT EXISTS training_log_timestamp_idx ON training_log(timestamp);
+                """
+                )
+                self.query(
+                    """
+                    CREATE INDEX IF NOT EXISTS training_log_name_idx ON training_log(name);
+                """
+                )
+
+
                 version += 1
                 self.query(f"PRAGMA user_version = {version}")
             if version == latest_version:
@@ -169,13 +190,7 @@ class DB:
             one=True,
         )
 
-    def logs(self, spot_id, limit=100):
-        return self.query(
-            """
-                select *, strftime('%w', timestamp) as weekday, strftime("%H") as hour from crowd_log where spot_id = ? and wind_speed is not NULL order by timestamp desc limit ?;
-            """,
-            [spot_id, limit],
-        )
+
 
 
     def predictions(
@@ -222,6 +237,25 @@ class DB:
             """,
             [start.strftime(DATETIME_FORMAT), end.strftime(DATETIME_FORMAT), spot_id],
         )  # type:ignore
+
+    def logs(self, spot_id, since: Optional[str] = None):
+        if since is None: 
+            since = "1970-01-01 00:00:00"
+
+        return self.query(
+            """
+                select *, strftime('%w', timestamp) as weekday, strftime("%H") as hour from crowd_log where spot_id = ? and timestamp > ? and wind_speed is not NULL order by timestamp desc;
+            """,
+            [spot_id, since],
+        )
+
+    def latest_training_log(self, name):
+        result = self.query("select * from training_log where name = ? order by timestamp desc limit 1", [name], one=True)
+        if result is None:
+            return None
+
+    def insert_training_log(self, timestamp: str, score: float, name):
+        return self.query("insert into model values (timestamp, score, name)", [timestamp, score, name])
 
     def query(self, query, query_args=(), one=False) -> Union[Optional[Any], Any]:
         cur = self.conn.execute(query, query_args)

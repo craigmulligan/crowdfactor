@@ -4,11 +4,28 @@ from collections import deque
 import random
 from datetime import timedelta, datetime
 from lib.camera import Conditions
+import csv
 
 
 def daterange(date1, date2):
     for n in range(int((date2 - date1).days) + 1):
         yield date1 + timedelta(n)
+
+
+def seed_training_data():
+    db = DB.get_db()
+    db.setup()
+
+    with open("tests/data/training-data.csv") as f:
+        reader = csv.DictReader(f)
+        values = [tuple(r.values()) for r in reader]
+        print(values[0])
+        db.conn.executemany(
+            f"""
+            INSERT INTO crowd_log (timestamp,crowd_count,surf_rating,spot_id,model_version,wave_height_min,wave_height_max,weather_temp,weather_condition,water_temp_max,water_temp_min,wind_direction,wind_gust,wind_speed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        """,
+            values,
+        )
 
 
 def seed(spot_id, start: datetime, end: datetime):

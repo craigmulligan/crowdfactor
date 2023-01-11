@@ -3,7 +3,7 @@ from unittest.mock import Mock
 from lib.app import app as flask_app
 from lib import forecast
 from lib.db import DB
-from lib.seed import seed as seed_db
+from lib.seed import seed as seed_db, seed_training_data as seed_db_training_data
 import pytest
 from datetime import date, datetime, timedelta
 import tempfile, os, uuid
@@ -68,7 +68,7 @@ def app(request, spot_id):
 
 @pytest.fixture(autouse=True)
 def db(app):
-    """Session-wide test database."""
+    """per test database."""
     db = DB.get_db()
     db.setup()
     return db
@@ -92,3 +92,12 @@ def seed(spot_id, seed_window):
     seed the db with dummy data.
     """
     seed_db(spot_id, *seed_window)
+
+
+@pytest.fixture()
+def seed_training_data():
+    """
+    seed the db with training data 
+    """
+    seed_db_training_data()
+

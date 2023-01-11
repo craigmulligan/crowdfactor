@@ -254,8 +254,8 @@ class DB:
         if result is None:
             return None
 
-    def insert_training_log(self, timestamp: str, score: float, name):
-        return self.query("insert into model values (timestamp, score, name)", [timestamp, score, name])
+    def insert_training_log(self, timestamp: datetime, score: float, name):
+        return self.query("insert into model values (timestamp, score, name)", [timestamp.strftime(DATETIME_FORMAT), score, name])
 
     def query(self, query, query_args=(), one=False) -> Union[Optional[Any], Any]:
         cur = self.conn.execute(query, query_args)

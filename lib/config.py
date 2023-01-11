@@ -13,8 +13,10 @@ class Config:
 
         DB_URL = os.environ.get("DB_URL", "data/crowdfactor.db")
         CACHE_URL = os.environ.get("CACHE_URL", "data/cache")
+        MODEL_URL = os.environ.get("MODEL_URL", "data/model")
 
         self.ROBOFLOW_API_KEY = ROBOFLOW_API_KEY
         self.SURFLINE_SPOT_ID = SURFLINE_SPOT_ID
         self.DB_URL = DB_URL
         self.CACHE_URL = CACHE_URL
+        self.MODEL_URL = MODEL_URL

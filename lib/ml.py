@@ -69,6 +69,10 @@ class Model:
         return  train_test_split(
          X, Y, test_size=test_size, random_state=random_state,
         )
+
+    @staticmethod
+    def get_url() -> str:
+        return current_app.config["MODEL_URL"]
         
     @staticmethod
     def load():
@@ -76,7 +80,14 @@ class Model:
         We might change it to read the old model if we need to do 
         incremental learning at some point.
         """
-        return Model()
+        model = Model()
+        try:
+            with open(Model.get_url(),'rb') as f:
+                model.m = pickle.load(f)
+        except FileNotFoundError:
+            pass 
+
+        return model
 
     def log(self, score: float):
         """

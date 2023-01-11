@@ -250,12 +250,10 @@ class DB:
         )
 
     def latest_training_log(self, name):
-        result = self.query("select * from training_log where name = ? order by timestamp desc limit 1", [name], one=True)
-        if result is None:
-            return None
+        return self.query("select * from training_log where name = ? order by timestamp desc limit 1", [name], one=True)
 
     def insert_training_log(self, timestamp: datetime, score: float, name):
-        return self.query("insert into model values (timestamp, score, name)", [timestamp.strftime(DATETIME_FORMAT), score, name])
+        return self.query("insert into training_log (timestamp, score, name) values (?, ?, ?)", [timestamp.strftime(DATETIME_FORMAT), score, name])
 
     def query(self, query, query_args=(), one=False) -> Union[Optional[Any], Any]:
         cur = self.conn.execute(query, query_args)

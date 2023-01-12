@@ -32,7 +32,7 @@ class Model:
         # Note we set random_state here.
         # So we have consistent results for testing.
         # I assume we want to remove this when not in tests.
-        self.m = PassiveAggressiveRegressor(random_state=1, warm_start=True)
+        self.m = PassiveAggressiveRegressor(warm_start=True)
 
     @staticmethod
     def get_training_data(test_size=None, random_state=None):
@@ -50,7 +50,7 @@ class Model:
         if not logs:
             raise Exception("No training data")
 
-        labels = ["surf_rating", "weather_temp", "wind_speed"]
+        labels = ["surf_rating", "weather_temp", "weekday", "hour"]
         feature = "crowd_count"
 
         x_data = []
@@ -89,6 +89,7 @@ class Model:
         We might change it to read the old model if we need to do 
         incremental learning at some point.
         """
+        print(Model.get_url())
         try:
             with open(Model.get_url(),'rb') as f:
                 return pickle.load(f)

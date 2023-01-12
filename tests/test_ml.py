@@ -16,7 +16,7 @@ def test_predict(spot_id, pretrained_model):
 
     assert len(predictions) == 24 
     first_prediction = predictions[0]
-    assert isinstance(first_prediction["crowd_count_predicted"], float)
+    assert isinstance(first_prediction["crowd_count_predicted"], int)
 
 
 def test_train_and_persist(spot_id, db, seed, app):

@@ -3,8 +3,8 @@ from datetime import timedelta
 
 def test_latest_reading(client, db, seed, spot_id, mock_forecast):
     latest = db.latest_reading(spot_id)
-    assert latest["surf_rating"] == "POOR"
-    assert latest["crowd_count"] == 3 
+    assert latest["surf_rating"] == "FAIR_TO_GOOD"
+    assert latest["crowd_count"] == 2
     assert latest["timestamp"] == "2021-12-31 23:00:00"
 
 
@@ -21,7 +21,7 @@ def test_predictions(db, seed, spot_id, seed_window):
         p for p in predictions if int(p["hour"]) == 0 and p["surf_rating"] == "EPIC"
     ][0]
 
-    assert round(prediction["avg_crowd_count"], 2) == 15.4
+    assert round(prediction["avg_crowd_count"], 2) == 17.2
 
 
 def test_readings(db, seed, spot_id, seed_window):
@@ -36,4 +36,4 @@ def test_readings(db, seed, spot_id, seed_window):
 
     reading = [p for p in readings if int(p["hour"]) == 0][0]
 
-    assert reading["avg_crowd_count"] == 10.0 
+    assert reading["avg_crowd_count"] == 4.0 

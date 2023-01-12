@@ -70,6 +70,8 @@ def seed(spot_id, start: datetime, end: datetime):
         "EPIC": 30,
     }
 
+    weather_conditions = ["MIST"]
+
     for dt in daterange(start, end):
         r = random.randint(0, len(conditions))
         conditions.rotate(r)
@@ -81,6 +83,7 @@ def seed(spot_id, start: datetime, end: datetime):
             if h % factor == 0:
                 conditions.rotate(1)
             # for each hour in the day.
+            weather_conditions = random.choice(weather_conditions)
             crowd_count = random.randint(0, conditions_max[conditions[0]])
             temp = random.randint(0, 30)
             wind_speed = random.randint(0, 40)
@@ -95,7 +98,7 @@ def seed(spot_id, start: datetime, end: datetime):
                 water_temp_max=temp - 2,
                 water_temp_min=temp - 6,
                 weather_temp=temp,
-                weather_condition="MIST",
+                weather_condition=weather_conditions,
                 wave_height_max=wave_height_min + 2,
                 wave_height_min=wave_height_min,
                 surf_rating=conditions[0],

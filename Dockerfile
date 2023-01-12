@@ -1,12 +1,12 @@
-FROM python:3.10
+FROM balenalib/amd64-debian-python:3.11-bookworm
 
 EXPOSE 8080
 
 WORKDIR /home/user/app
 
-RUN apt-get update && apt-get install ffmpeg cron -y && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install ffmpeg -y && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --quiet --progress-bar off poetry
+RUN pip install --no-cache-dir poetry
 
 COPY pyproject.toml poetry.lock ./
 

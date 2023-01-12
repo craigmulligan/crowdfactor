@@ -244,7 +244,7 @@ class DB:
 
         return self.query(
             """
-                select *, strftime('%w', timestamp) as weekday, strftime("%H") as hour from crowd_log where spot_id = ? and timestamp > ? and wind_speed is not NULL order by timestamp desc;
+                select *, cast(strftime('%w', timestamp) as INTEGER) as weekday, cast(strftime("%H") as INTEGER) as hour from crowd_log where spot_id = ? and timestamp > ? and wind_speed is not NULL order by timestamp desc;
             """,
             [spot_id, since],
         )

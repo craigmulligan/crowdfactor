@@ -7,14 +7,13 @@ from lib.camera import CameraDownError, NightTimeError
 
 if __name__ == "__main__":
     interval = 600
-
-    try:
-        logging.info("training model")
-        ml.train()
-    except Exception as e:
-        logging.exception("Unexpected error training model")
-
     with app.app_context():
+        try:
+            logging.info("training model")
+            ml.train()
+        except Exception as e:
+            logging.exception("Unexpected error training model")
+
         while True:
             try:
                 worker.run()

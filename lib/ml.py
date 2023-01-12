@@ -79,7 +79,6 @@ def predict(rating_forecast, weather_forecast):
 
     return predictions
 
-
 def train():
     """
     Loads any new data since last training. 
@@ -87,13 +86,18 @@ def train():
     persists it model to disk
     logs a training event with new score.
     """
-    x_train, x_test, y_train, y_test = Model.get_training_data()
+    try:
+        x_train, x_test, y_train, y_test = Model.get_training_data()
+    except NoTraingDataError:
+        return False
+
     model = Model.load()
     model.train(x_train, y_train)
 
     model.persist()
     score = model.score(x_test, y_test)
     model.log(score)
+    return True
 
 
 class Model:
@@ -157,7 +161,7 @@ class Model:
     @staticmethod
     def get_url() -> str:
         return current_app.config["MODEL_URL"]
-        
+
     @staticmethod
     def load():
         """

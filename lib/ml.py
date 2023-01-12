@@ -23,6 +23,24 @@ SurfRating = Enum(
     ],
 )
 
+WeatherConditions = Enum(
+    "SurfRating",
+    [
+        "NIGHT_CLEAR",
+        "NIGHT_MIST",
+        "NIGHT_LIGHT_SHOWERS",
+        "NIGHT_MOSTLY_CLOUDY",
+        "NIGHT_BRIEF_SHOWERS",
+        "NIGHT_OVERCAST",
+        "CLEAR",
+        "MIST",
+        "LIGHT_SHOWERS",
+        "MOSTLY_CLOUDY",
+        "BRIEF_SHOWERS",
+        "OVERCAST",
+    ],
+)
+
 class Model:
     """
     A model that can be incrementally retrained.
@@ -50,7 +68,7 @@ class Model:
         if not logs:
             raise Exception("No training data")
 
-        labels = ["surf_rating", "weather_temp", "weekday", "hour"]
+        labels = ["surf_rating", "weather_temp", "weather_condition",  "weekday", "hour"]
         feature = "crowd_count"
 
         x_data = []
@@ -64,6 +82,8 @@ class Model:
                 if key in labels:
                     if key == "surf_rating":
                        x.append(SurfRating[value].value) 
+                    elif key == "weather_condition":
+                       x.append(WeatherConditions[value].value) 
                     else:
                        x.append(value)
                 if key == feature:
@@ -74,6 +94,8 @@ class Model:
 
         X = np.array(x_data)
         Y = np.array(y_data)
+
+        print("x", x_data[0])
 
         return  train_test_split(
          X, Y, test_size=test_size, random_state=random_state,
@@ -89,7 +111,6 @@ class Model:
         We might change it to read the old model if we need to do 
         incremental learning at some point.
         """
-        print(Model.get_url())
         try:
             with open(Model.get_url(),'rb') as f:
                 return pickle.load(f)
@@ -112,13 +133,9 @@ class Model:
             pickle.dump(self, f)
 
     def train(self, x_train, y_train):
-        """
-        NB: training currently wipes all previous data.
-        so we need to fit the 
-        """
         self.m.partial_fit(x_train, y_train)
 
-    def predict(self, x_data):
+    def predict(self, x_data) -> float:
         prediction = self.m.predict(x_data)
         try:
             iterator = iter(prediction) # type: ignore

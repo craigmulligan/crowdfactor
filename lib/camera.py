@@ -8,7 +8,6 @@ from collections import Counter
 from dataclasses import dataclass
 
 # Third-party
-import av
 import ffmpeg
 from roboflow import Roboflow
 from lib.forecast import get_spot_report
@@ -60,7 +59,7 @@ class Camera:
         spot_id,
         roboflow_api_key,
         conditions,
-        frame_rate=25,
+        frame_rate=2,
         duration=30,
     ):
         self.id = id
@@ -96,13 +95,19 @@ class Camera:
         ffmpeg.input(self.url).trim(duration=self.duration).output(
             self.video_file_name
         ).run()
-
-    def write_images(self):
-        container = av.open(self.video_file_name)
-
-        for i, frame in enumerate(container.decode(video=0)):
-            if i % self.frame_rate == 0:
-                frame.to_image().save(f"{self.data_dir}/frame-%04d.jpg" % frame.index)
+        try:
+            (ffmpeg.input(self.url)
+                  .trim(duration=self.duration)
+                  .filter('fps', fps=self.frame_rate)
+                  .output(f"{self.data_dir}/frame-%04d.jpg", 
+                          video_bitrate='5000k',
+                          s='64x64',
+                          sws_flags='bilinear',
+                          start_number=0)
+                  .run(capture_stdout=True, capture_stderr=True))
+        except ffmpeg.Error as e:
+            logging.info('stdout:', e.stdout.decode('utf8'))
+            logging.error('stderr:', e.stderr.decode('utf8'))
 
     def analyze(self, model_version):
         rf = Roboflow(api_key=self.roboflow_api_key)

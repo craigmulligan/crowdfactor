@@ -38,10 +38,8 @@ def run():
     # This cleans up any old files from previous runs.
     camera.workspace()
 
-    # # # First save the 10s of live feed to video file
+    # # # First save the 10s of live feed to series of video
     camera.write_video()
-    # # # # Them transform video to images
-    camera.write_images()
     # Then analyze images.
     counters = camera.analyze(ROBOFLOW_MODEL_VERSION)
     crowd_count = camera.crowd_counter(counters)

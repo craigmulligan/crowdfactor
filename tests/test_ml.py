@@ -1,8 +1,22 @@
-from lib.ml import Model
+from lib.ml import Model, predict
 import pytest
 import os.path
 from datetime import datetime, timedelta
 from lib.seed import seed as seed_db
+from lib.forecast import get_spot_surf_rating, get_spot_weather
+
+def test_predict(spot_id, pretrained_model):
+    """
+    Given a spot_id, spot_forecast + weather_forecast.
+    predict the crowd count for each day 
+    """
+    weather_forecast = get_spot_weather(spot_id)
+    rating_forecast = get_spot_surf_rating(spot_id)
+    predictions = predict(rating_forecast, weather_forecast)
+
+    assert len(predictions) == 24 
+    first_prediction = predictions[0]
+    assert isinstance(first_prediction["crowd_count_predicted"], float)
 
 
 def test_train_and_persist(spot_id, db, seed, app):

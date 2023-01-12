@@ -3,9 +3,13 @@ import numpy as np
 from sklearn.linear_model import PassiveAggressiveRegressor
 from sklearn.model_selection import train_test_split
 from lib.db import DB
-from datetime import datetime
+from datetime import datetime, timezone
 from flask import current_app
+from lib import utils
 import pickle
+
+class NoTraingDataError(Exception):
+    pass
 
 SurfRating = Enum(
     "SurfRating",
@@ -41,6 +45,57 @@ WeatherConditions = Enum(
     ],
 )
 
+def predict(rating_forecast, weather_forecast):
+    """
+    Given a spot_id, spot_forecast + weather_forecast.
+    predict the crowd count for each day
+    """
+    model = Model.load()
+    if len(rating_forecast) != len(weather_forecast):
+        raise Exception("Forecasts are not the same length.")
+
+    predictions = []
+    for rating, weather in zip(rating_forecast, weather_forecast): 
+        ts = datetime.utcfromtimestamp(rating["timestamp"]).replace(tzinfo=timezone.utc)
+        weekday = ts.isoweekday()
+        offset = rating["utcOffset"]
+        local_ts = utils.local_timestamp(ts, offset)
+        hour = ts.hour
+        rating_name = rating["rating"]["key"]
+        rating_value = SurfRating[rating_name].value
+
+        weather_temperature = weather["temperature"] 
+        weather_condition = weather["condition"]
+        weather_condition_value = WeatherConditions[weather_condition].value
+
+        crowd_count_predicted = model.predict(rating_value, weather_temperature, weather_condition_value, weekday, hour)
+
+        predictions.append({
+            "timestamp_utc": ts,  
+            "timestamp_local": local_ts,
+            "surf_rating": rating_name,
+            "crowd_count_predicted": round(crowd_count_predicted)
+        })
+
+    return predictions
+
+
+def train():
+    """
+    Loads any new data since last training. 
+    trains the model
+    persists it model to disk
+    logs a training event with new score.
+    """
+    x_train, x_test, y_train, y_test = Model.get_training_data()
+    model = Model.load()
+    model.train(x_train, y_train)
+
+    model.persist()
+    score = model.score(x_test, y_test)
+    model.log(score)
+
+
 class Model:
     """
     A model that can be incrementally retrained.
@@ -66,7 +121,7 @@ class Model:
         logs = db.logs(SURFLINE_SPOT_ID, since)
 
         if not logs:
-            raise Exception("No training data")
+            raise NoTraingDataError("No training data")
 
         labels = ["surf_rating", "weather_temp", "weather_condition",  "weekday", "hour"]
         feature = "crowd_count"
@@ -94,8 +149,6 @@ class Model:
 
         X = np.array(x_data)
         Y = np.array(y_data)
-
-        print("x", x_data[0])
 
         return  train_test_split(
          X, Y, test_size=test_size, random_state=random_state,

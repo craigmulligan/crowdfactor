@@ -3,6 +3,7 @@ from lib.app import app as flask_app
 from lib import forecast
 from lib.db import DB
 from lib.seed import seed as seed_db, seed_training_data as seed_db_training_data
+from lib.ml import Model
 import pytest
 from datetime import datetime, timezone
 import tempfile, os, uuid
@@ -10,15 +11,24 @@ import requests_mock
 import json
 
 @pytest.fixture()
-def mock_forecast(monkeypatch, spot_id):
-    mock = Mock(wraps=forecast.get_latest)
-    monkeypatch.setattr(forecast, "get_latest", mock)
+def mock_surf_rating_forecast(monkeypatch, spot_id):
+    mock = Mock(wraps=forecast.get_spot_surf_rating)
+    monkeypatch.setattr(forecast, "get_spot_surf_rating", mock)
 
     with open(os.path.join("tests", "data", f"rating-{spot_id}.json")) as f, requests_mock.Mocker(real_http=True) as m:
         data = json.load(f)
         m.get(f"https://services.surfline.com/kbyg/spots/forecasts/rating?spotId={spot_id}&days=1&intervalHours=1", json=data)
         yield mock
 
+@pytest.fixture()
+def mock_weather_forecast(monkeypatch, spot_id):
+    mock = Mock(wraps=forecast.get_spot_weather)
+    monkeypatch.setattr(forecast, "get_spot_weather", mock)
+
+    with open(os.path.join("tests", "data", f"weather-{spot_id}.json")) as f, requests_mock.Mocker(real_http=True) as m:
+        data = json.load(f)
+        m.get(f"https://services.surfline.com/kbyg/spots/forecasts/weather?spotId={spot_id}&days=1&intervalHours=1", json=data)
+        yield mock
 
 @pytest.fixture()
 def mock_spot_info(spot_id, monkeypatch):
@@ -97,3 +107,11 @@ def seed(spot_id, seed_window):
     rows = seed_db(spot_id, *seed_window)
     return rows
 
+
+@pytest.fixture()
+def pretrained_model(seed):
+    x_train, x_test, y_train, y_test = Model.get_training_data(random_state=1)
+    model = Model.load()
+    model.train(x_train, y_train)
+    model.persist()
+    return model

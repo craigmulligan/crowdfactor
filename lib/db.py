@@ -1,5 +1,5 @@
 from typing import Optional, Union, Any, List
-from lib.graph import CrowdCount, CrowdPrediction
+from lib.graph import CrowdCount
 from lib.camera import Conditions
 from datetime import datetime
 import sqlite3
@@ -142,7 +142,7 @@ class DB:
         dt: str,
         model_version: int,
     ):
-        return self.query(
+        row = self.query(
             """
             insert into crowd_log (
                 timestamp, 
@@ -179,6 +179,8 @@ class DB:
             ),
             one=True
         )
+        self.commit()
+        return row
 
 
     def latest_reading(self, spot_id):
@@ -189,34 +191,6 @@ class DB:
             [spot_id],
             one=True,
         )
-
-    def predictions(
-        self, spot_id: str, start: datetime, end: datetime
-    ) -> List[CrowdPrediction]:
-        """
-        Get average of reading per hour for weekday, grouped by surf rating.
-        """
-        # NB isoweekday is needed not .weekday()
-        # This is because sqlite3 uses sunday as 0.
-        window_start = f"{start.isoweekday()}-{start.hour:02}"
-        window_end = f"{end.isoweekday()}-{end.hour:02}"
-        past = start.strftime(DATETIME_FORMAT)
-
-        return self.query(
-            f"""
-                select 
-                    avg(crowd_count) as avg_crowd_count, 
-                    strftime('%H', timestamp) as hour, 
-                    surf_rating, 
-                    strftime('%w-%H', timestamp) as weekday
-                from crowd_log
-                where spot_id = ? 
-                and timestamp < ?
-                and strftime('%w-%H', timestamp) BETWEEN ? AND ? 
-                group by strftime('%H', timestamp), surf_rating;
-            """,
-            [spot_id, past, window_start, window_end],
-        )  # type:ignore
 
     def readings(
         self, spot_id: str, start: datetime, end: datetime
@@ -250,10 +224,14 @@ class DB:
         return self.query("select * from training_log where name = ? order by timestamp desc limit 1", [name], one=True)
 
     def insert_training_log(self, timestamp: datetime, score: float, name):
-        return self.query("insert into training_log (timestamp, score, name) values (?, ?, ?)", [timestamp.strftime(DATETIME_FORMAT), score, name])
+        self.query("insert into training_log (timestamp, score, name) values (?, ?, ?)", [timestamp.strftime(DATETIME_FORMAT), score, name])
+        self.commit()
 
     def query(self, query, query_args=(), one=False) -> Union[Optional[Any], Any]:
         cur = self.conn.execute(query, query_args)
         rv = cur.fetchall()
         cur.close()
         return (rv[0] if rv else None) if one else rv
+
+    def commit(self):
+        self.conn.commit()

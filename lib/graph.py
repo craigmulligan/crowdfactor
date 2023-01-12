@@ -1,8 +1,6 @@
 from typing import List, Optional, TypedDict
-from lib.forecast import Forecast
-from lib import utils
 import pygal
-from datetime import datetime, timezone
+from datetime import datetime
 from pygal.style import CleanStyle
 
 
@@ -11,24 +9,11 @@ class CrowdCount(TypedDict):
     avg_crowd_count: float
 
 
-class CrowdPrediction(CrowdCount):
+class CrowdPrediction(TypedDict):
+    timestamp_utc: datetime
+    timestamp_local: datetime
     surf_rating: str
-
-
-def prediction_finder(input: List[CrowdPrediction]):
-    """
-    Input is a the average crowd count grouped by hour + surf_rating
-
-    This function returns the crowd_count for the hour and surf_rating supplied.
-    """
-
-    def inner(rating: str, hour: int) -> Optional[float]:
-        for i in input:
-            if int(i["hour"]) == hour and i["surf_rating"] == rating:
-                return round(i["avg_crowd_count"], 2)
-        return None
-
-    return inner
+    crowd_count_predicted: float 
 
 
 def reading_finder(input: List[CrowdCount]):
@@ -62,9 +47,8 @@ class Graph:
     def render(
         predictions: List[CrowdPrediction],
         readings: List[CrowdCount],
-        forecast: List[Forecast],
     ):
-        find_prediction = prediction_finder(predictions)
+        # find_prediction = prediction_finder(predictions)
         find_reading = reading_finder(readings)
 
         x_labels = []
@@ -73,13 +57,11 @@ class Graph:
         forecast_series = []
         values = []
 
-        for f in forecast:
-            ts = datetime.utcfromtimestamp(f["timestamp"]).replace(tzinfo=timezone.utc)
-            rating = f["rating"]["key"]
-            offset = f["utcOffset"]
-            local_ts = utils.local_timestamp(ts, offset)
-
-            prediction = find_prediction(rating, ts.hour)
+        for f in predictions:
+            ts = f["timestamp_utc"] 
+            rating = f["surf_rating"]
+            local_ts = f["timestamp_local"] 
+            prediction = f["crowd_count_predicted"] 
             reading = find_reading(ts.hour)
 
             if reading:

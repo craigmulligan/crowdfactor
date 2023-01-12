@@ -20,9 +20,15 @@ class SpotInfo(TypedDict):
     utcOffset: int
     href: str
 
+def get_spot_weather(spot_id) -> SpotInfo:
+    res = requests.get(
+        f"https://services.surfline.com/kbyg/spots/forecasts/weather?spotId={spot_id}&days=1&intervalHours=1"
+    )
+    res.raise_for_status()
+    return res.json()["data"]["weather"]
 
 # TODO add an expire arg to shelve_it and cache this.
-def get_latest(spot_id) -> List[Forecast]:
+def get_spot_surf_rating(spot_id) -> List[Forecast]:
     url = f"https://services.surfline.com/kbyg/spots/forecasts/rating?spotId={spot_id}&days=1&intervalHours=1"
     res = requests.get(url)
     res.raise_for_status()

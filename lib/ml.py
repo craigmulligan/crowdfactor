@@ -80,14 +80,11 @@ class Model:
         We might change it to read the old model if we need to do 
         incremental learning at some point.
         """
-        model = Model()
         try:
             with open(Model.get_url(),'rb') as f:
-                model.m = pickle.load(f)
+                return pickle.load(f)
         except FileNotFoundError:
-            pass 
-
-        return model
+            return Model()
 
     def log(self, score: float):
         """
@@ -102,9 +99,13 @@ class Model:
         Saves the model to disk.
         """ 
         with open(current_app.config["MODEL_URL"], 'wb') as f:
-            pickle.dump(self.m, f)
+            pickle.dump(self, f)
 
     def train(self, x_train, y_train):
+        """
+        NB: training currently wipes all previous data.
+        so we need to fit the 
+        """
         self.m.fit(x_train, y_train)
 
     def predict(self, x_data):

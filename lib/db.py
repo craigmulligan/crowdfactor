@@ -142,7 +142,7 @@ class DB:
         dt: str,
         model_version: int,
     ):
-        self.conn.execute(
+        return self.query(
             """
             insert into crowd_log (
                 timestamp, 
@@ -159,7 +159,7 @@ class DB:
                 weather_condition,
                 wave_height_min,
                 wave_height_max
-            ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning *
             """,
             (
                 dt,
@@ -177,9 +177,9 @@ class DB:
                 conditions.wave_height_min,
                 conditions.wave_height_max,
             ),
+            one=True
         )
 
-        self.conn.commit()
 
     def latest_reading(self, spot_id):
         return self.query(
@@ -189,9 +189,6 @@ class DB:
             [spot_id],
             one=True,
         )
-
-
-
 
     def predictions(
         self, spot_id: str, start: datetime, end: datetime

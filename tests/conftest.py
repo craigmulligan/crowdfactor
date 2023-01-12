@@ -94,4 +94,6 @@ def seed(spot_id, seed_window):
     """
     seed the db with dummy data.
     """
-    seed_db(spot_id, *seed_window)
+    rows = seed_db(spot_id, *seed_window)
+    return rows
+

@@ -44,12 +44,14 @@ def app(request, spot_id):
     """Session-wide test `Flask` application."""
     # Establish an application context before running the tests.
     cache_filename = os.path.join(tempfile.gettempdir(), str(uuid.uuid1()))
+    model_filename = os.path.join(tempfile.gettempdir(), str(uuid.uuid1()))
 
     flask_app.config.update(
         {
             "TESTING": True,
             "DB_URL": ":memory:",
             "CACHE_URL": cache_filename,
+            "MODEL_URL": model_filename,
             "SURFLINE_SPOT_ID": spot_id,
             "ROBOFLOW_API_KEY": "xyz",
         }
@@ -59,8 +61,10 @@ def app(request, spot_id):
 
     def teardown():
         ctx.pop()
-        if os.path.exists(cache_filename):
-            os.remove(cache_filename)
+
+        for f in [cache_filename, model_filename]:
+            if os.path.exists(f):
+                os.remove(f)
 
     request.addfinalizer(teardown)
     return flask_app

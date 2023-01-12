@@ -135,8 +135,8 @@ class Model:
     def train(self, x_train, y_train):
         self.m.partial_fit(x_train, y_train)
 
-    def predict(self, x_data) -> float:
-        prediction = self.m.predict(x_data)
+    def predict(self, surf_rating: int, weather_temp: int, weather_condition: int,  weekday: int, hour: int) -> float:
+        prediction = self.m.predict([[surf_rating, weather_temp, weather_condition, weekday, hour]])
         try:
             iterator = iter(prediction) # type: ignore
         except TypeError:

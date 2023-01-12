@@ -13,7 +13,7 @@ def test_train_and_persist(spot_id, db, seed, app):
     model = Model.load()
     model.train(x_train, y_train)
     i = [6, 29, 5, 1, 2]
-    prediction = model.predict([i])
+    prediction = model.predict(*i)
     assert isinstance(prediction, float)
     score = model.score(x_test, y_test)
     assert isinstance(score, float)
@@ -41,5 +41,5 @@ def test_train_and_persist(spot_id, db, seed, app):
     x_train, x_test, y_train, y_test = Model.get_training_data(random_state=1)
     model.train(x_train, y_train)
 
-    new_prediction = model.predict([i])
+    new_prediction = model.predict(*i)
     assert isinstance(new_prediction, float)

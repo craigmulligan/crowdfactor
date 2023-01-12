@@ -36,7 +36,10 @@ def index():
 
     # Group by hour + day of the week and surf_rating.
     # So we can predict based crowds based on the forecasted surf_rating
+    # TODO: Need to replace this with the ML model predictions.
+    # For each hour we need all the attributes.
     predictions = db.predictions(spot_id, window_start, window_end)
+
     readings = db.readings(spot_id, window_start, window_end)
 
     graph = Graph.render(predictions, readings, spot_forecast)

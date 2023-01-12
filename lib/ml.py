@@ -1,6 +1,6 @@
 from enum import Enum
 import numpy as np
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import PassiveAggressiveRegressor
 from sklearn.model_selection import train_test_split
 from lib.db import DB
 from datetime import datetime
@@ -29,14 +29,23 @@ class Model:
     see: https://datascience.stackexchange.com/questions/68599/incremental-learning-with-sklearn-warm-start-partial-fit-fit
     """
     def __init__(self) -> None:
-        self.m = LinearRegression()
+        # Note we set random_state here.
+        # So we have consistent results for testing.
+        # I assume we want to remove this when not in tests.
+        self.m = PassiveAggressiveRegressor(random_state=1, warm_start=True)
 
     @staticmethod
     def get_training_data(test_size=None, random_state=None):
+        """
+        Get todays new training data
+        then split it by test/training. 
+        """
         SURFLINE_SPOT_ID = current_app.config.get("SURFLINE_SPOT_ID")
 
         db = DB.get_db()
-        logs = db.logs(SURFLINE_SPOT_ID)
+        latest_log = db.latest_training_log(Model.get_url())
+        since = latest_log["timestamp"] if latest_log else None
+        logs = db.logs(SURFLINE_SPOT_ID, since)
 
         if not logs:
             raise Exception("No training data")
@@ -106,7 +115,7 @@ class Model:
         NB: training currently wipes all previous data.
         so we need to fit the 
         """
-        self.m.fit(x_train, y_train)
+        self.m.partial_fit(x_train, y_train)
 
     def predict(self, x_data):
         prediction = self.m.predict(x_data)
@@ -125,4 +134,4 @@ class Model:
         except TypeError:
             return score # type: ignore 
         else:
-            return next(iterator) 
+            return next(iterator)

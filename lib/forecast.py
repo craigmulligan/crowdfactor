@@ -32,14 +32,18 @@ def get_latest(spot_id) -> List[Forecast]:
 
 @shelve_it
 def get_spot_info(spot_id) -> SpotInfo:
-    res = requests.get(
-        f"https://services.surfline.com/kbyg/spots/reports?spotId={spot_id}&corrected=false"
-    )
-    res.raise_for_status()
-    data = res.json()
+    data = get_spot_report(spot_id) 
 
     return {
         "name": data["spot"]["name"],
         "utcOffset": data["associated"]["utcOffset"],
         "href": data["associated"]["href"],
     }
+
+
+def get_spot_report(spot_id):
+    res = requests.get(
+        f"https://services.surfline.com/kbyg/spots/reports?spotId={spot_id}&corrected=false"
+    )
+    res.raise_for_status()
+    return res.json()

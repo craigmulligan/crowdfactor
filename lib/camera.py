@@ -10,8 +10,8 @@ from dataclasses import dataclass
 # Third-party
 import av
 import ffmpeg
-import requests
 from roboflow import Roboflow
+from lib.forecast import get_spot_report
 
 ROBOFLOW_API_KEY = os.environ.get("ROBOFLOW_API_KEY")
 
@@ -156,11 +156,7 @@ class Camera:
         """
         Gets the camera stream url via spot URL.
         """
-        res = requests.get(
-            f"https://services.surfline.com/kbyg/spots/reports?spotId={spot_id}&corrected=false"
-        )
-        res.raise_for_status()
-        data = res.json()
+        data = get_spot_report(spot_id) 
         spot_data = data["spot"]
         forecast = data["forecast"]
 

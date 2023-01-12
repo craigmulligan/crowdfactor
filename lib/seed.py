@@ -81,20 +81,25 @@ def seed(spot_id, start: datetime, end: datetime):
             if h % factor == 0:
                 conditions.rotate(1)
             # for each hour in the day.
+            crowd_count = random.randint(0, conditions_max[conditions[0]])
+            temp = random.randint(0, 30)
+            wind_speed = random.randint(0, 40)
+            wave_height_min = random.randint(0, 3)
+            wind_gust = random.randint(0, 10)
+
 
             c = Conditions(
                 wind_direction=149.1,
-                wind_speed=34,
-                wind_gust=6,
-                water_temp_max=18,
-                water_temp_min=14,
-                weather_temp=22,
+                wind_speed=wind_speed,
+                wind_gust=wind_gust,
+                water_temp_max=temp - 2,
+                water_temp_min=temp - 6,
+                weather_temp=temp,
                 weather_condition="MIST",
-                wave_height_max=2,
-                wave_height_min=1,
+                wave_height_max=wave_height_min + 2,
+                wave_height_min=wave_height_min,
                 surf_rating=conditions[0],
             )
-            crowd_count = random.randint(0, conditions_max[conditions[0]])
 
             db.insert(
                 crowd_count,

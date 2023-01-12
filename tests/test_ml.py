@@ -5,13 +5,13 @@ from datetime import datetime, timedelta
 from lib.seed import seed as seed_db
 from lib.forecast import get_spot_surf_rating, get_spot_weather
 
-def test_predict(spot_id, pretrained_model):
+def test_predict(spot_id, pretrained_model, mock_surf_rating_forecast, mock_weather_forecast):
     """
     Given a spot_id, spot_forecast + weather_forecast.
     predict the crowd count for each day 
     """
-    weather_forecast = get_spot_weather(spot_id)
-    rating_forecast = get_spot_surf_rating(spot_id)
+    weather_forecast = mock_weather_forecast(spot_id)
+    rating_forecast = mock_surf_rating_forecast(spot_id)
     predictions = predict(rating_forecast, weather_forecast)
 
     assert len(predictions) == 24 

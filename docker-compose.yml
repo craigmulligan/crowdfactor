@@ -21,4 +21,4 @@ services:
        - ROBOFLOW_API_KEY
 
 volumes:
-    resin-data:
+    resin-data: 

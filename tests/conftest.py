@@ -59,7 +59,6 @@ def app(request, spot_id):
         {
             "TESTING": True,
             "DB_URL": ":memory:",
-            "CACHE_URL": cache_filename,
             "MODEL_URL": model_filename,
             "SURFLINE_SPOT_ID": spot_id,
             "ROBOFLOW_API_KEY": "xyz",

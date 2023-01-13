@@ -1,14 +1,20 @@
-from flask import current_app
-import shelve
-
+from lib.db import DB
+import pickle
 
 def shelve_it(func):
     def new_func(param):
         key = str(func.__code__) + param
-        file_name = current_app.config["CACHE_URL"]
-        with shelve.open(file_name) as d:
-            if key not in d:
-                d[key] = func(param)
-            return d[key]
+        db = DB.get_db()
+        result = db.get_cache(key)
+
+        if result is None:
+            value = func(param)
+            db.insert_cache(key, str(pickle.dumps(value)))
+            return value 
+
+        v = result["value"]
+        value = pickle.loads(v) 
+        return value
+
 
     return new_func

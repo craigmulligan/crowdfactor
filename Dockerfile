@@ -4,6 +4,8 @@ EXPOSE 8080
 
 WORKDIR /home/user/app
 
+# Note we have to manually add gnu-dbm. Because the balena images
+# Don't include them see: https://github.com/docker-library/buildpack-deps/pull/49
 RUN apt-get update && apt-get install ffmpeg -y && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir poetry

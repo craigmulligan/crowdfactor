@@ -1,6 +1,5 @@
 from typing import Optional, Union, Any, List
 from lib.graph import CrowdCount
-from lib.camera import Conditions
 from datetime import datetime
 import sqlite3
 from flask import g, current_app
@@ -57,7 +56,7 @@ class DB:
             raise Exception("no user_version is unexpected")
 
         version = user_version["user_version"]
-        latest_version = 3
+        latest_version = 4
 
         while True:
             logging.info(f"DB schema version:{version}")
@@ -87,6 +86,7 @@ class DB:
                 )
                 version += 1
                 self.query(f"PRAGMA user_version = {version}")
+                continue
             elif version == 1:
                 colums = [
                     ("wave_height_min", "REAL"),
@@ -109,6 +109,7 @@ class DB:
                     )
                 version += 1
                 self.query(f"PRAGMA user_version = {version}")
+                continue
             if version == 2:
                 # create a table to hold the last training job.
                 self.query(
@@ -127,17 +128,25 @@ class DB:
                 """
                 )
 
-
                 version += 1
                 self.query(f"PRAGMA user_version = {version}")
+                continue
+            if version == 3:
+                self.query("CREATE TABLE IF NOT EXISTS dbm (key TEXT PRIMARY KEY, value TEXT, timestamp TEXT);")
+                logging.info("created dbm")
+                version += 1
+                self.query(f"PRAGMA user_version = {version};")
+                continue
             if version == latest_version:
                 logging.info("DB schema up to date.")
                 break
 
+            self.commit()
+
     def insert(
         self,
         crowd_count: int,
-        conditions: Conditions,
+        conditions,
         spot_id: str,
         dt: str,
         model_version: int,
@@ -226,6 +235,14 @@ class DB:
     def insert_training_log(self, timestamp: datetime, score: float, name):
         self.query("insert into training_log (timestamp, score, name) values (?, ?, ?)", [timestamp.strftime(DATETIME_FORMAT), score, name])
         self.commit()
+
+    def insert_cache(self, key: str, value: str):
+        now = datetime.utcnow()
+        self.query("insert into dbm(timestamp, key, value) values (?, ?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value, timestamp=excluded.timestamp", [now.strftime(DATETIME_FORMAT), key, value])
+        self.commit()
+
+    def get_cache(self, key):
+        return self.query("select value from dbm where key = ?", [key], one=True)
 
     def query(self, query, query_args=(), one=False) -> Union[Optional[Any], Any]:
         cur = self.conn.execute(query, query_args)

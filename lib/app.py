@@ -6,7 +6,7 @@ from lib import utils
 from lib.config import Config
 from lib import ml
 from flask import render_template
-from datetime import datetime, timezone
+from datetime import datetime
 import logging
 
 logging.basicConfig(level=logging.INFO)

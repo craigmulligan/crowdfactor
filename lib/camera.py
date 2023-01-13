@@ -14,14 +14,6 @@ from lib.forecast import get_spot_report
 
 ROBOFLOW_API_KEY = os.environ.get("ROBOFLOW_API_KEY")
 
-
-class NightTimeError(Exception):
-    pass
-
-
-class CameraDownError(Exception):
-    pass
-
 @dataclass
 class Conditions:
     surf_rating: str 
@@ -39,6 +31,13 @@ class Conditions:
     wave_height_min: float
     wave_height_max: float
 
+
+class NightTimeError(Exception):
+    pass
+
+
+class CameraDownError(Exception):
+    pass
 
 class Camera:
     id: str

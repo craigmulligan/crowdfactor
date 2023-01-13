@@ -35,8 +35,6 @@ def get_spot_surf_rating(spot_id) -> List[Forecast]:
 
     return res.json()["data"]["rating"]
 
-
-@shelve_it
 def get_spot_info(spot_id) -> SpotInfo:
     data = get_spot_report(spot_id) 
 

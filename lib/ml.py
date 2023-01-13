@@ -11,6 +11,7 @@ import pickle
 class NoTraingDataError(Exception):
     pass
 
+# Note always add to the end of Enum
 SurfRating = Enum(
     "SurfRating",
     [
@@ -27,6 +28,7 @@ SurfRating = Enum(
     ],
 )
 
+# Note always add to the end of Enum
 WeatherConditions = Enum(
     "SurfRating",
     [
@@ -37,6 +39,7 @@ WeatherConditions = Enum(
         "NIGHT_BRIEF_SHOWERS",
         "NIGHT_OVERCAST",
         "NIGHT_CLOUDY",
+        "NIGHT_DRIZZLE",
         "CLEAR",
         "MIST",
         "LIGHT_SHOWERS",
@@ -44,6 +47,7 @@ WeatherConditions = Enum(
         "BRIEF_SHOWERS",
         "OVERCAST",
         "CLOUDY"
+        "DRIZZLE"
     ],
 )
 

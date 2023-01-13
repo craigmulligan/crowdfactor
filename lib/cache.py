@@ -1,3 +1,4 @@
+import logging
 from lib.db import DB
 import pickle
 
@@ -13,8 +14,13 @@ def shelve_it(func):
             return value 
 
         v = result["value"]
-        value = pickle.loads(bytes(v, "utf-8")) 
-        return value
+        try:
+            value = pickle.loads(bytes(v, "utf-8"))
+        except:
+            logging.warning("Failed to unpickle cached value")
+            value = func(param)
+            db.insert_cache(key, str(pickle.dumps(value)))
 
+        return value
 
     return new_func

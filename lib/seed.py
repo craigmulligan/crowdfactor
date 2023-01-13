@@ -5,27 +5,11 @@ import random
 from datetime import timedelta, datetime
 from lib.camera import Conditions
 from lib.ml import WeatherConditions, SurfRating
-import csv
 
 
 def daterange(date1, date2):
     for n in range(int((date2 - date1).days) + 1):
         yield date1 + timedelta(n)
-
-
-def seed_training_data():
-    db = DB.get_db()
-    db.setup()
-
-    with open("tests/data/training-data.csv") as f:
-        reader = csv.DictReader(f)
-        values = [tuple(r.values()) for r in reader]
-        db.conn.executemany(
-            f"""
-            INSERT INTO crowd_log (timestamp,crowd_count,surf_rating,spot_id,model_version,wave_height_min,wave_height_max,weather_temp,weather_condition,water_temp_max,water_temp_min,wind_direction,wind_gust,wind_speed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-        """,
-            values,
-        )
 
 
 def seed(spot_id, start: datetime, end: datetime):
@@ -72,13 +56,20 @@ def seed(spot_id, start: datetime, end: datetime):
         for h in r:
             if h % factor == 0:
                 conditions.rotate(1)
+
             # for each hour in the day.
-            weather_condition = random.choice(weather_conditions)
+            if 6 > h < 18:
+                weather_condition = random.choice([w for w in weather_conditions if "NIGHT" not in w])
+            else:
+                weather_condition = random.choice([w for w in weather_conditions if "NIGHT" in w])
+
             crowd_count = random.randint(0, conditions_max[conditions[0]])
             temp = random.randint(0, 30)
             wind_speed = random.randint(0, 40)
             wave_height_min = random.randint(0, 3)
             wind_gust = random.randint(0, 10)
+
+                
 
 
             c = Conditions(

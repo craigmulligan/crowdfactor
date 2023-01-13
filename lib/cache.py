@@ -13,7 +13,7 @@ def shelve_it(func):
             return value 
 
         v = result["value"]
-        value = pickle.loads(bytes(v)) 
+        value = pickle.loads(bytes(v, "utf-8")) 
         return value
 
 

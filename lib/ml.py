@@ -74,7 +74,7 @@ def predict(rating_forecast, weather_forecast):
         weather_condition = weather["condition"]
         weather_condition_value = WeatherConditions[weather_condition].value
 
-        if "night" in weather_condition:
+        if "NIGHT" in weather_condition:
             # We don't record at night
             # so we don't care about predictions.
             # But also "night" changes between

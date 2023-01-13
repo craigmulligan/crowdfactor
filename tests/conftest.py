@@ -2,7 +2,7 @@ from unittest.mock import Mock
 from lib.app import app as flask_app
 from lib import forecast
 from lib.db import DB
-from lib.seed import seed as seed_db, seed_training_data as seed_db_training_data
+from lib.seed import seed as seed_db
 from lib.ml import Model
 import pytest
 from datetime import datetime, timezone

@@ -29,8 +29,6 @@ def run():
         )
 
     db = DB.get_db()
-    # # ensure db schema
-    db.setup()
 
     camera = Camera.get(SURFLINE_SPOT_ID, ROBOFLOW_API_KEY)
 

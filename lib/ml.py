@@ -36,12 +36,14 @@ WeatherConditions = Enum(
         "NIGHT_MOSTLY_CLOUDY",
         "NIGHT_BRIEF_SHOWERS",
         "NIGHT_OVERCAST",
+        "NIGHT_CLOUDY",
         "CLEAR",
         "MIST",
         "LIGHT_SHOWERS",
         "MOSTLY_CLOUDY",
         "BRIEF_SHOWERS",
         "OVERCAST",
+        "CLOUDY"
     ],
 )
 

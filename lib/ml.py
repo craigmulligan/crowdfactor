@@ -74,7 +74,15 @@ def predict(rating_forecast, weather_forecast):
         weather_condition = weather["condition"]
         weather_condition_value = WeatherConditions[weather_condition].value
 
-        crowd_count_predicted = model.predict(rating_value, weather_temperature, weather_condition_value, weekday, hour)
+        if "night" in weather_condition:
+            # We don't record at night
+            # so we don't care about predictions.
+            # But also "night" changes between
+            # spots so we use the weather label 
+            # to determine this.
+            crowd_count_predicted = 0
+        else:
+            crowd_count_predicted = model.predict(rating_value, weather_temperature, weather_condition_value, weekday, hour)
 
         predictions.append({
             "timestamp_utc": ts,  

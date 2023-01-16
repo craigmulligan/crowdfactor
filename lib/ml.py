@@ -47,7 +47,9 @@ WeatherConditions = Enum(
         "BRIEF_SHOWERS",
         "OVERCAST",
         "CLOUDY",
-        "DRIZZLE"
+        "DRIZZLE",
+        "NIGHT_LIGHT_RAIN",
+        "LIGHT_RAIN"
     ],
 )
 

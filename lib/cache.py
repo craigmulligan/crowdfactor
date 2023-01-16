@@ -4,23 +4,16 @@ import pickle
 
 def shelve_it(func):
     def new_func(param):
-        key = str(func.__code__) + param
+        key = str(func.__code__) + "-" + param
         db = DB.get_db()
         result = db.get_cache(key)
 
         if result is None:
             value = func(param)
-            db.insert_cache(key, str(pickle.dumps(value)))
+            db.insert_cache(key, pickle.dumps(value))
             return value 
 
         v = result["value"]
-        try:
-            value = pickle.loads(bytes(v, "utf-8"))
-        except:
-            logging.warning("Failed to unpickle cached value")
-            value = func(param)
-            db.insert_cache(key, str(pickle.dumps(value)))
-
-        return value
+        return pickle.loads(v)
 
     return new_func

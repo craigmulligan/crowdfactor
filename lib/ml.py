@@ -56,6 +56,8 @@ WeatherConditions = Enum(
         "NIGHT_HEAVY_RAIN",
         "RAIN_AND_FOG",
         "NIGHT_RAIN_AND_FOG"
+        "FOG",
+        "NIGHT_FOG",
     ],
 )
 

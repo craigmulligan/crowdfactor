@@ -3,9 +3,6 @@ import glob, os
 from pathlib import Path
 import sqlite3
 
-for file in glob.glob("*.txt"):
-    print(file)
-
 
 def up(migration_dir: str, connection: sqlite3.Connection):
     if not os.path.exists(migration_dir):

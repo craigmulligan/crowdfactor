@@ -4,8 +4,7 @@ from datetime import datetime
 import sqlite3
 from flask import g, current_app
 from lib.utils import DATETIME_FORMAT
-import logging
-
+from lib.migration import up
 
 class DB:
     def __init__(self, filename) -> None:
@@ -45,107 +44,7 @@ class DB:
         """
         initializes schema
         """
-        user_version = self.query(
-            """
-            PRAGMA user_version;
-        """,
-            one=True,
-        )
-
-        if user_version is None:
-            raise Exception("no user_version is unexpected")
-
-        version = user_version["user_version"]
-        latest_version = 4
-
-        while True:
-            logging.info(f"DB schema version:{version}")
-            if version == 0:
-                self.query(
-                    """
-                    CREATE TABLE IF NOT EXISTS crowd_log (timestamp TEXT PRIMARY KEY, crowd_count INTEGER, surf_rating TEXT, spot_id TEXT, model_version INTEGER);
-                """
-                )
-
-                self.query(
-                    """
-                    CREATE INDEX IF NOT EXISTS crowd_log_crowd_count_idx ON crowd_log(crowd_count);
-                """
-                )
-
-                self.query(
-                    """
-                    CREATE INDEX IF NOT EXISTS crowd_log_spot_id_idx ON crowd_log(spot_id);
-                """
-                )
-
-                self.query(
-                    """
-                    CREATE INDEX IF NOT EXISTS crowd_log_surf_rating_idx ON crowd_log(surf_rating);
-                """
-                )
-                version += 1
-                self.query(f"PRAGMA user_version = {version}")
-                continue
-            elif version == 1:
-                colums = [
-                    ("wave_height_min", "REAL"),
-                    ("wave_height_max", "REAL"),
-                    ("weather_temp", "REAL"),
-                    ("weather_condition", "TEXT"),
-                    ("water_temp_max", "REAL"),
-                    ("water_temp_min", "REAL"),
-                    ("wind_direction", "REAL"),
-                    ("wind_gust", "REAL"),
-                    ("wind_speed", "REAL"),
-                ]
-
-                for column in colums:
-                    self.query(
-                        f"""
-                        ALTER TABLE crowd_log 
-                          ADD {column[0]} {column[1]};
-                    """
-                    )
-                    print(f"""
-                        ALTER TABLE crowd_log 
-                          ADD {column[0]} {column[1]};
-                    """)
-                version += 1
-                self.query(f"PRAGMA user_version = {version}")
-                continue
-            if version == 2:
-                # create a table to hold the last training job.
-                self.query(
-                    """
-                    CREATE TABLE IF NOT EXISTS training_log (timestamp TEXT, score REAL, name TEXT);
-                """
-                )
-                self.query(
-                    """
-                    CREATE INDEX IF NOT EXISTS training_log_timestamp_idx ON training_log(timestamp);
-                """
-                )
-                self.query(
-                    """
-                    CREATE INDEX IF NOT EXISTS training_log_name_idx ON training_log(name);
-                """
-                )
-
-                version += 1
-                self.query(f"PRAGMA user_version = {version}")
-                continue
-            if version == 3:
-                self.query("CREATE TABLE IF NOT EXISTS dbm (key TEXT PRIMARY KEY, value TEXT, timestamp TEXT);")
-                logging.info("created dbm")
-                version += 1
-                self.query(f"PRAGMA user_version = {version};")
-                continue
-            if version == latest_version:
-                logging.info("DB schema up to date.")
-                break
-
-            self.commit()
+        up("migrations", self.conn) 
 
     def insert(
         self,

@@ -8,9 +8,15 @@ for file in glob.glob("*.txt"):
 
 
 def up(migration_dir: str, connection: sqlite3.Connection):
-    
     if not os.path.exists(migration_dir):
         raise FileNotFoundError(f"{migration_dir} does not exist")
+
+    row_factory = None
+
+    if connection.row_factory: 
+        row_factory = connection.row_factory
+        connection.row_factory = None
+    
 
     cursor = connection.cursor()
     [current_version] = cursor.execute(
@@ -18,6 +24,8 @@ def up(migration_dir: str, connection: sqlite3.Connection):
         PRAGMA user_version;
     """
     ).fetchone()
+
+    current_version = int(current_version)
 
     for filename in sorted(glob.glob(os.path.join(migration_dir, "*.sql"))):
         p = Path(filename)
@@ -40,3 +48,6 @@ def up(migration_dir: str, connection: sqlite3.Connection):
                 except:
                     cursor.execute("ROLLBACK")
                     raise
+
+    # Add back any row factory.
+    connection.row_factory = row_factory

@@ -107,6 +107,10 @@ class DB:
                           ADD {column[0]} {column[1]};
                     """
                     )
+                    print(f"""
+                        ALTER TABLE crowd_log 
+                          ADD {column[0]} {column[1]};
+                    """)
                 version += 1
                 self.query(f"PRAGMA user_version = {version}")
                 continue

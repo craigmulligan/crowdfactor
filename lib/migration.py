@@ -7,7 +7,11 @@ for file in glob.glob("*.txt"):
     print(file)
 
 
-def up(migration_dir, connection):
+def up(migration_dir: str, connection: sqlite3.Connection):
+    
+    if not os.path.exists(migration_dir):
+        raise FileNotFoundError(f"{migration_dir} does not exist")
+
     cursor = connection.cursor()
     [current_version] = cursor.execute(
     """
@@ -18,6 +22,7 @@ def up(migration_dir, connection):
     for filename in sorted(glob.glob(os.path.join(migration_dir, "*.sql"))):
         p = Path(filename)
         v = int(p.stem)
+
         """
         PRAGMA user_version;
         """
@@ -26,4 +31,11 @@ def up(migration_dir, connection):
         else:
             logging.info(f"applying version: {v}")
             with open(filename) as f:
-                connection.executescript(f.read())
+                try:
+                    # We add a begin because.
+                    # Execute the SQL statements in sql_script. If there is a pending transaction, an implicit COMMIT statement is executed first. 
+                    # No other implicit transaction control is performed; any transaction control must be added to sql_script.
+                    cursor.executescript("BEGIN;\n" + f.read())
+                except:
+                    connection.execute("ROLLBACK")
+                    raise

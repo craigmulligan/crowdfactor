@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS dbm (key TEXT PRIMARY KEY, value TEXT, timestamp TEXT);

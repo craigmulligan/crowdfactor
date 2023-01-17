@@ -26,9 +26,4 @@ def up(migration_dir, connection):
         else:
             logging.info(f"applying version: {v}")
             with open(filename) as f:
-                connection.execute(f.read())
-
-
-if __name__ == "__main__":
-    con = sqlite3.connect(":memory:")
-    up("migrations", con)
+                connection.executescript(f.read())

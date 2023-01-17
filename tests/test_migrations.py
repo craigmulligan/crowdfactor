@@ -17,6 +17,14 @@ def test_up_success():
     column_names = [col[1] for col in columns]
     assert "category" in column_names
 
+    [current_version] = conn.execute(
+    """
+        PRAGMA user_version;
+    """
+    ).fetchone()
+    assert current_version == 2
+ 
+
 
 def test_up_fail():
     conn = sqlite3.connect(":memory:")
@@ -39,8 +47,23 @@ def test_up_fail():
     column_names = [col[1] for col in columns]
     assert "category" not in column_names
 
+    [current_version] = conn.execute(
+    """
+        PRAGMA user_version;
+    """
+    ).fetchone()
+    assert current_version == 1
+
+
 
 def test_fail_up_folder_not_exists():
     conn = sqlite3.connect(":memory:")
     with pytest.raises(FileNotFoundError):
         up("does/not/exist", conn)
+
+    [current_version] = conn.execute(
+    """
+        PRAGMA user_version;
+    """
+    ).fetchone()
+    assert current_version == 0

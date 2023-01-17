@@ -8,6 +8,7 @@ def test_latest_reading(client, db, seed, spot_id, mock_surf_rating_forecast):
     assert latest["surf_rating"] == last_record["surf_rating"]
     assert latest["crowd_count"] == last_record["crowd_count"] 
     assert latest["timestamp"] == last_record["timestamp"] 
+    assert False
 
 
 def test_readings(db, seed, spot_id, seed_window):

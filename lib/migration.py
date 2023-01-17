@@ -36,7 +36,7 @@ def up(migration_dir: str, connection: sqlite3.Connection):
                     # Execute the SQL statements in sql_script. If there is a pending transaction, an implicit COMMIT statement is executed first. 
                     # No other implicit transaction control is performed; any transaction control must be added to sql_script.
                     cursor.executescript("BEGIN;\n" + f.read())
-                    connection.execute(f"PRAGMA user_version = {v}")
+                    cursor.execute(f"PRAGMA user_version = {v}")
                 except:
-                    connection.execute("ROLLBACK")
+                    cursor.execute("ROLLBACK")
                     raise

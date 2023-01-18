@@ -1,4 +1,3 @@
-import logging
 from lib.db import DB
 import pickle
 

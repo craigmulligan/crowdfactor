@@ -27,8 +27,7 @@ def get_spot_weather(spot_id) -> SpotInfo:
     res.raise_for_status()
     return res.json()["data"]["weather"]
 
-# TODO add an expire arg to shelve_it and cache this.
-@shelve_it
+
 def get_spot_surf_rating(spot_id) -> List[Forecast]:
     url = f"https://services.surfline.com/kbyg/spots/forecasts/rating?spotId={spot_id}&days=1&intervalHours=1"
     res = requests.get(url)
@@ -36,6 +35,8 @@ def get_spot_surf_rating(spot_id) -> List[Forecast]:
 
     return res.json()["data"]["rating"]
 
+# TODO add an expire arg to shelve_it and cache this.
+@shelve_it
 def get_spot_info(spot_id) -> SpotInfo:
     data = get_spot_report(spot_id) 
 

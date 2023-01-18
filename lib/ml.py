@@ -30,7 +30,7 @@ SurfRating = Enum(
 
 # Note always add to the end of Enum
 WeatherConditions = Enum(
-    "SurfRating",
+    "WeatherConditions",
     [
         "NIGHT_CLEAR",
         "NIGHT_MIST",
@@ -59,7 +59,7 @@ WeatherConditions = Enum(
         "FOG",
         "NIGHT_FOG",
         "MOSTLY_CLEAR",
-        "NIGHT_MOSTLY_CLEAR"
+        "NIGHT_MOSTLY_CLEAR",
         "BRIEF_SHOWERS_POSSIBLE",
         "NIGHT_BRIEF_SHOWERS_POSSIBLE"
     ],

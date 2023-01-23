@@ -16,7 +16,7 @@ Every 10 mins, Crowdfactor will stream a minute of footage from a configured [su
 
 ![Vision model counting surfers](img/prediction.png)
 
-With this database you can then make predictions based on the day of the week, time and surf rating and weather. Everyday a regression model is trained against the existing recordings, which allows you to make increasingly accurate predictions about the future crowd count.
+With this database you can then make predictions based on the day of the week, time, weather and surf rating. Everyday a model is trained against the existing recordings, which allows you to make increasingly accurate predictions about the future crowd count.
 
 These predictions are visualised along side the real recordings and the forecasted [surf ratings](https://support.surfline.com/hc/en-us/articles/5402742348955-Surf-Conditions-Ratings-and-Colors) for the day on a [dashboard](https://9d6cb911e0cb153469c25e3e910ac831.balena-devices.com/).
 

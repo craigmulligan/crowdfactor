@@ -1,9 +1,9 @@
-from lib.ml import Model, predict
+from lib.ml import Model, predict, SurfRating, WeatherConditions
 import pytest
-import os.path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from lib.seed import seed as seed_db
-from lib.forecast import get_spot_surf_rating, get_spot_weather
+from lib.db import DATETIME_FORMAT
+import os
 
 def test_predict(spot_id, pretrained_model, mock_surf_rating_forecast, mock_weather_forecast):
     """
@@ -57,3 +57,28 @@ def test_train_and_persist(spot_id, db, seed, app):
 
     new_prediction = model.predict(*i)
     assert isinstance(new_prediction, float)
+
+@pytest.mark.skipif("DB_URL" not in os.environ,
+                    reason="requires DB_URL to be set")
+def test_real_data():
+    """
+    Use this test to tweak the model and run real data.
+    """
+
+    x_train, x_test, y_train, y_test = Model.get_training_data(random_state=42)
+    model = Model.load()
+    model.train(x_train, y_train)
+    print(y_train)
+
+    ts = datetime.strptime("2023-01-23 15:51:40", DATETIME_FORMAT).replace(tzinfo=timezone.utc)
+    weekday = ts.isoweekday()
+    hour = ts.hour
+    rating_value = SurfRating["FAIR"].value 
+    weather_temperature = int(9.0)
+    weather_condition_value = WeatherConditions["CLEAR"].value
+    expected_crowd_count = 0
+    
+    score = model.score(x_test, y_test)
+    prediction = model.predict(rating_value, weather_temperature, weather_condition_value, weekday, hour)
+    
+    assert abs(expected_crowd_count - prediction) < 1

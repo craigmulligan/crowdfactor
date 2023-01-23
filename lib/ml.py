@@ -139,7 +139,7 @@ class Model:
         # Note we set random_state here.
         # So we have consistent results for testing.
         # I assume we want to remove this when not in tests.
-        self.m = PassiveAggressiveRegressor(warm_start=True)
+        self.m = PassiveAggressiveRegressor(warm_start=True, shuffle=False)
 
     @staticmethod
     def get_training_data(test_size=None, random_state=None):

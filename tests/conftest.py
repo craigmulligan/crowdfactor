@@ -48,17 +48,19 @@ def spot_id():
 def surfline_url(spot_id):
     return f"https://www.surfline.com/surf-report/venice-breakwater/{spot_id}?camId=5834a1b6e411dc743a5d52f3"
 
+
 @pytest.fixture()
 def app(request, spot_id):
     """Session-wide test `Flask` application."""
     # Establish an application context before running the tests.
     cache_filename = os.path.join(tempfile.gettempdir(), str(uuid.uuid1()))
     model_filename = os.path.join(tempfile.gettempdir(), str(uuid.uuid1()))
+    db_url = os.environ.get("DB_URL", ":memory:")
 
     flask_app.config.update(
         {
             "TESTING": True,
-            "DB_URL": ":memory:",
+            "DB_URL": db_url,
             "MODEL_URL": model_filename,
             "SURFLINE_SPOT_ID": spot_id,
             "ROBOFLOW_API_KEY": "xyz",

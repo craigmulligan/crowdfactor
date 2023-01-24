@@ -1,11 +1,6 @@
 from enum import Enum
 import numpy as np
-from sklearn.linear_model import (
-    PassiveAggressiveRegressor,
-    SGDRegressor,
-    LinearRegression,
-)
-from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
+from sklearn.ensemble import RandomForestRegressor
 
 from sklearn.model_selection import train_test_split
 from lib.db import DB
@@ -114,12 +109,17 @@ def predict(rating_forecast, weather_forecast):
                 hour,
             )
 
+        crowd_count_predicted = round(crowd_count_predicted, 2)
+
+        if crowd_count_predicted < 0:
+            crowd_count_predicted = 0 
+
         predictions.append(
             {
                 "timestamp_utc": ts,
                 "timestamp_local": local_ts,
                 "surf_rating": rating_name,
-                "crowd_count_predicted": round(crowd_count_predicted),
+                "crowd_count_predicted": crowd_count_predicted,
             }
         )
 

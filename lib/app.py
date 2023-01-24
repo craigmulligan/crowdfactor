@@ -42,6 +42,7 @@ def index():
     # For each hour we need all the attributes.
     # TODO should the prediction take spot_id?
     predictions = ml.predict(surf_rating_forecast, weather_forecast)
+    print(predictions)
 
     readings = db.readings(spot_id, window_start, window_end)
 

@@ -76,7 +76,7 @@ def test_real_data():
 
     test_score = model.score(x_test, y_test)
     # Best possible score is 1.
-    assert 0 < test_score < 1.5
+    assert 0.5 < test_score < 1.5
     print(f"training score: {train_score}, test score: {test_score}")
 
     examples = [
@@ -93,6 +93,4 @@ def test_real_data():
         weather_condition_value = WeatherConditions[weather_condition].value
         
         prediction = model.predict(rating_value, weather_temperature, weather_condition_value, weekday, hour)
-        print(f"prediction: {prediction} expected: {expected_crowd_count}") 
-
-    assert False
+        print(f"prediction: {prediction} expected: {expected_crowd_count}")

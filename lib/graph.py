@@ -48,7 +48,6 @@ class Graph:
         predictions: List[CrowdPrediction],
         readings: List[CrowdCount],
     ):
-        # find_prediction = prediction_finder(predictions)
         find_reading = reading_finder(readings)
 
         x_labels = []
@@ -93,7 +92,7 @@ class Graph:
             readings_series.append(
                 {
                     "value": [reading, local_ts.hour, local_ts.hour + 1],
-                    "color": f"rgba({r}, {g}, {b}, 1)",
+                    "color": f"rgba({r}, {g}, {b}, 0.8)",
                     "label": f"conditions: {rating}, crowd: {reading}",
                 }
             )

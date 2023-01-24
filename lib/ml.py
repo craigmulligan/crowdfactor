@@ -1,6 +1,12 @@
 from enum import Enum
 import numpy as np
-from sklearn.linear_model import PassiveAggressiveRegressor
+from sklearn.linear_model import (
+    PassiveAggressiveRegressor,
+    SGDRegressor,
+    LinearRegression,
+)
+from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
+
 from sklearn.model_selection import train_test_split
 from lib.db import DB
 from datetime import datetime, timezone
@@ -8,8 +14,10 @@ from flask import current_app
 from lib import utils
 import pickle
 
+
 class NoTraingDataError(Exception):
     pass
+
 
 # Note always add to the end of Enum
 SurfRating = Enum(
@@ -52,11 +60,10 @@ WeatherConditions = Enum(
         "LIGHT_RAIN",
         "RAIN",
         "NIGHT_RAIN",
-        "HEAVY_RAIN", 
+        "HEAVY_RAIN",
         "NIGHT_HEAVY_RAIN",
         "RAIN_AND_FOG",
-        "NIGHT_RAIN_AND_FOG"
-        "FOG",
+        "NIGHT_RAIN_AND_FOG" "FOG",
         "NIGHT_FOG",
         "MOSTLY_CLEAR",
         "NIGHT_MOSTLY_CLEAR",
@@ -66,6 +73,7 @@ WeatherConditions = Enum(
         "NIGHT_HEAVY_SHOWERS",
     ],
 )
+
 
 def predict(rating_forecast, weather_forecast):
     """
@@ -77,7 +85,7 @@ def predict(rating_forecast, weather_forecast):
         raise Exception("Forecasts are not the same length.")
 
     predictions = []
-    for rating, weather in zip(rating_forecast, weather_forecast): 
+    for rating, weather in zip(rating_forecast, weather_forecast):
         ts = datetime.utcfromtimestamp(rating["timestamp"]).replace(tzinfo=timezone.utc)
         weekday = ts.isoweekday()
         offset = rating["utcOffset"]
@@ -86,7 +94,7 @@ def predict(rating_forecast, weather_forecast):
         rating_name = rating["rating"]["key"]
         rating_value = SurfRating[rating_name].value
 
-        weather_temperature = weather["temperature"] 
+        weather_temperature = weather["temperature"]
         weather_condition = weather["condition"]
         weather_condition_value = WeatherConditions[weather_condition].value
 
@@ -94,39 +102,48 @@ def predict(rating_forecast, weather_forecast):
             # We don't record at night
             # so we don't care about predictions.
             # But also "night" changes between
-            # spots so we use the weather label 
+            # spots so we use the weather label
             # to determine this.
             crowd_count_predicted = 0
         else:
-            crowd_count_predicted = model.predict(rating_value, weather_temperature, weather_condition_value, weekday, hour)
+            crowd_count_predicted = model.predict(
+                rating_value,
+                weather_temperature,
+                weather_condition_value,
+                weekday,
+                hour,
+            )
 
-        predictions.append({
-            "timestamp_utc": ts,  
-            "timestamp_local": local_ts,
-            "surf_rating": rating_name,
-            "crowd_count_predicted": round(crowd_count_predicted)
-        })
+        predictions.append(
+            {
+                "timestamp_utc": ts,
+                "timestamp_local": local_ts,
+                "surf_rating": rating_name,
+                "crowd_count_predicted": round(crowd_count_predicted),
+            }
+        )
 
     return predictions
 
+
 def train():
     """
-    Loads any new data since last training. 
+    Loads any new data since last training.
     trains the model
     persists it model to disk
     logs a training event with new score.
     """
+    model = Model.load()
     try:
-        x_train, x_test, y_train, y_test = Model.get_training_data()
+        x_train, x_test, y_train, y_test = model.get_training_data()
     except NoTraingDataError:
         return False
 
-    model = Model.load()
     model.train(x_train, y_train)
-
     model.persist()
     score = model.score(x_test, y_test)
     model.log(score)
+
     return True
 
 
@@ -135,17 +152,37 @@ class Model:
     A model that can be incrementally retrained.
     see: https://datascience.stackexchange.com/questions/68599/incremental-learning-with-sklearn-warm-start-partial-fit-fit
     """
+
     def __init__(self) -> None:
         # Note we set random_state here.
         # So we have consistent results for testing.
         # I assume we want to remove this when not in tests.
-        self.m = PassiveAggressiveRegressor(warm_start=True, shuffle=False)
+        # self.m = PassiveAggressiveRegressor(
+        #     warm_start=True, shuffle=False, average=True, fit_intercept=True
+        # )
 
-    @staticmethod
-    def get_training_data(test_size=None, random_state=None):
+        self.labels = [
+            "surf_rating",
+            "weather_temp",
+            "weather_condition",
+            "weekday",
+            "hour",
+            # "water_temp_max",
+            # "water_temp_min",
+            # "wave_height_max",
+            # "wave_height_min",
+            # "wind_direction",
+            # "wind_speed",
+            # "wind_gust"
+        ]
+        # self.m = LinearRegression()
+        # self.m = SGDRegressor(shuffle=False)
+        self.m = RandomForestRegressor()
+
+    def get_training_data(self, test_size=None, random_state=None):
         """
         Get todays new training data
-        then split it by test/training. 
+        then split it by test/training.
         """
         SURFLINE_SPOT_ID = current_app.config.get("SURFLINE_SPOT_ID")
 
@@ -157,7 +194,6 @@ class Model:
         if not logs:
             raise NoTraingDataError("No training data")
 
-        labels = ["surf_rating", "weather_temp", "weather_condition",  "weekday", "hour"]
         feature = "crowd_count"
 
         x_data = []
@@ -165,27 +201,30 @@ class Model:
 
         for log in logs:
             x = []
-            y = 0 
+            y = 0
 
             for key, value in log.items():
-                if key in labels:
+                if key in self.labels:
                     if key == "surf_rating":
-                       x.append(SurfRating[value].value) 
+                        x.append(SurfRating[value].value)
                     elif key == "weather_condition":
-                       x.append(WeatherConditions[value].value) 
+                        x.append(WeatherConditions[value].value)
                     else:
-                       x.append(value)
+                        x.append(value)
                 if key == feature:
                     y = value
 
             x_data.append(x)
-            y_data.append(y) 
+            y_data.append(y)
 
         X = np.array(x_data)
         Y = np.array(y_data)
 
-        return  train_test_split(
-         X, Y, test_size=test_size, random_state=random_state,
+        return train_test_split(
+            X,
+            Y,
+            test_size=test_size,
+            random_state=random_state,
         )
 
     @staticmethod
@@ -195,11 +234,11 @@ class Model:
     @staticmethod
     def load():
         """
-        We might change it to read the old model if we need to do 
+        We might change it to read the old model if we need to do
         incremental learning at some point.
         """
         try:
-            with open(Model.get_url(),'rb') as f:
+            with open(Model.get_url(), "rb") as f:
                 return pickle.load(f)
         except FileNotFoundError:
             return Model()
@@ -215,28 +254,36 @@ class Model:
     def persist(self):
         """
         Saves the model to disk.
-        """ 
-        with open(current_app.config["MODEL_URL"], 'wb') as f:
+        """
+        with open(current_app.config["MODEL_URL"], "wb") as f:
             pickle.dump(self, f)
 
     def train(self, x_train, y_train):
-        self.m.partial_fit(x_train, y_train)
+        self.m.fit(x_train, y_train)
 
-    def predict(self, surf_rating: int, weather_temp: int, weather_condition: int,  weekday: int, hour: int) -> float:
-        prediction = self.m.predict([[surf_rating, weather_temp, weather_condition, weekday, hour]])
+    def predict(
+        self,
+        surf_rating: int,
+        weather_temp: int,
+        weather_condition: int,
+        weekday: int,
+        hour: int,
+    ) -> float:
+        prediction = self.m.predict(
+            [[surf_rating, weather_temp, weather_condition, weekday, hour]]
+        )
         try:
-            iterator = iter(prediction) # type: ignore
+            iterator = iter(prediction)  # type: ignore
         except TypeError:
-            return prediction 
+            return prediction # type: ignore
         else:
-            return next(iterator) 
-
+            return next(iterator)
 
     def score(self, x_test, y_test) -> float:
         score = self.m.score(x_test, y_test)
         try:
-            iterator = iter(score) # type: ignore
+            iterator = iter(score)  # type: ignore
         except TypeError:
-            return score # type: ignore 
+            return score  # type: ignore
         else:
             return next(iterator)

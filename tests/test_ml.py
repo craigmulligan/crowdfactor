@@ -23,8 +23,8 @@ def test_train_and_persist(spot_id, db, seed, app):
     # Use all data we have on first train.
     # train on all but 1. And use random 1 to ensure it's the same randomness seed
     # on each call.
-    x_train, x_test, y_train, y_test = Model.get_training_data(random_state=1)
     model = Model.load()
+    x_train, x_test, y_train, y_test = model.get_training_data(random_state=1)
     model.train(x_train, y_train)
     i = [6, 29, 5, 1, 2]
     prediction = model.predict(*i)
@@ -44,7 +44,7 @@ def test_train_and_persist(spot_id, db, seed, app):
 
     # There shouldn't be anymore data.
     with pytest.raises(Exception, match="No training data"):
-        x_train, x_test, y_train, y_test = Model.get_training_data(random_state=1)
+        x_train, x_test, y_train, y_test = model.get_training_data(random_state=1)
 
     # lets add some more data random data.
     start = datetime.utcnow()
@@ -52,7 +52,7 @@ def test_train_and_persist(spot_id, db, seed, app):
     seed_db(spot_id, start, end)
 
     # There shouldn't be anymore data.
-    x_train, x_test, y_train, y_test = Model.get_training_data(random_state=1)
+    x_train, x_test, y_train, y_test = model.get_training_data(random_state=1)
     model.train(x_train, y_train)
 
     new_prediction = model.predict(*i)
@@ -64,21 +64,35 @@ def test_real_data():
     """
     Use this test to tweak the model and run real data.
     """
-
-    x_train, x_test, y_train, y_test = Model.get_training_data(random_state=42)
     model = Model.load()
+    x_train, x_test, y_train, y_test = model.get_training_data(random_state=42)
     model.train(x_train, y_train)
-    print(y_train)
 
-    ts = datetime.strptime("2023-01-23 15:51:40", DATETIME_FORMAT).replace(tzinfo=timezone.utc)
-    weekday = ts.isoweekday()
-    hour = ts.hour
-    rating_value = SurfRating["FAIR"].value 
-    weather_temperature = int(9.0)
-    weather_condition_value = WeatherConditions["CLEAR"].value
-    expected_crowd_count = 0
-    
-    score = model.score(x_test, y_test)
-    prediction = model.predict(rating_value, weather_temperature, weather_condition_value, weekday, hour)
-    
-    assert abs(expected_crowd_count - prediction) < 1
+    train_score = model.score(x_train, y_train)
+    # Best possible score is 1.
+    assert 0 < train_score < 1.5
+    print("training score", train_score)
+
+
+    test_score = model.score(x_test, y_test)
+    # Best possible score is 1.
+    assert 0 < test_score < 1.5
+    print(f"training score: {train_score}, test score: {test_score}")
+
+    examples = [
+        ("2023-01-23 15:51:40", "FAIR", 9, "CLEAR", 0)
+    ]
+
+    for e in examples:
+        print("predicting...")
+        ts, surf_rating, weather_temperature, weather_condition, expected_crowd_count = e 
+        dt = datetime.strptime(ts, DATETIME_FORMAT).replace(tzinfo=timezone.utc)
+        weekday = dt.isoweekday()
+        hour = dt.hour
+        rating_value = SurfRating[surf_rating].value 
+        weather_condition_value = WeatherConditions[weather_condition].value
+        
+        prediction = model.predict(rating_value, weather_temperature, weather_condition_value, weekday, hour)
+        print(f"prediction: {prediction} expected: {expected_crowd_count}") 
+
+    assert False

@@ -111,8 +111,8 @@ def seed(spot_id, seed_window):
 
 @pytest.fixture()
 def pretrained_model(seed):
-    x_train, x_test, y_train, y_test = Model.get_training_data(random_state=1)
     model = Model.load()
+    x_train, x_test, y_train, y_test = model.get_training_data(random_state=1)
     model.train(x_train, y_train)
     model.persist()
     return model

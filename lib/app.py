@@ -25,6 +25,12 @@ def index():
     surf_rating_forecast = forecast.get_spot_surf_rating(spot_id)
     weather_forecast = forecast.get_spot_weather(spot_id)
     spot_info = forecast.get_spot_info(spot_id)
+    wind_forecast = forecast.get_spot_wind(spot_id)
+    wave_forecast = forecast.get_spot_wave(spot_id)
+    tides_forecast = forecast.get_spot_tides(spot_id)
+    spot_report = forecast.get_spot_report(spot_id)
+    spot_info = forecast.get_spot_info(spot_id)
+
 
     window_start = utils.epoch_to_datetime(surf_rating_forecast[0]["timestamp"])
     window_end = utils.epoch_to_datetime(surf_rating_forecast[-1]["timestamp"])
@@ -41,7 +47,7 @@ def index():
     # TODO: Need to replace this with the ML model predictions.
     # For each hour we need all the attributes.
     # TODO should the prediction take spot_id?
-    predictions = ml.predict(surf_rating_forecast, weather_forecast)
+    predictions = ml.predict(spot_report, surf_rating_forecast, weather_forecast, tides_forecast, wave_forecast, wind_forecast)
 
     readings = db.readings(spot_id, window_start, window_end)
 

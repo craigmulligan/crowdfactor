@@ -5,20 +5,19 @@ from lib.seed import seed as seed_db
 from lib.db import DATETIME_FORMAT
 import os
 
-def test_predict(spot_id, pretrained_model, mock_surf_rating_forecast, mock_weather_forecast):
+def test_predict(spot_id, pretrained_model, mock_spot_report, mock_forecasts):
     """
     Given a spot_id, spot_forecast + weather_forecast.
     predict the crowd count for each day 
     """
-    weather_forecast = mock_weather_forecast(spot_id)
-    rating_forecast = mock_surf_rating_forecast(spot_id)
-    predictions = predict(rating_forecast, weather_forecast)
+    forecasts = [mock(spot_id) for mock in [mock_spot_report, *mock_forecasts]]
+    predictions = predict(*forecasts)
 
-    assert len(predictions) == 24 
+    assert len(predictions) == 24
     first_prediction = predictions[0]
     assert isinstance(first_prediction["crowd_count_predicted"], int)
 
-
+@pytest.mark.skip("No longer using online model")
 def test_train_and_persist(spot_id, db, seed, app):
     # Use all data we have on first train.
     # train on all but 1. And use random 1 to ensure it's the same randomness seed
@@ -76,21 +75,11 @@ def test_real_data():
 
     test_score = model.score(x_test, y_test)
     # Best possible score is 1.
-    assert 0.5 < test_score < 1.5
+    assert 0.7 < test_score < 1.4
     print(f"training score: {train_score}, test score: {test_score}")
 
-    examples = [
-        ("2023-01-23 15:51:40", "FAIR", 9, "CLEAR", 0)
-    ]
-
-    for e in examples:
-        print("predicting...")
-        ts, surf_rating, weather_temperature, weather_condition, expected_crowd_count = e 
-        dt = datetime.strptime(ts, DATETIME_FORMAT).replace(tzinfo=timezone.utc)
-        weekday = dt.isoweekday()
-        hour = dt.hour
-        rating_value = SurfRating[surf_rating].value 
-        weather_condition_value = WeatherConditions[weather_condition].value
-        
-        prediction = model.predict(rating_value, weather_temperature, weather_condition_value, weekday, hour)
-        print(f"prediction: {prediction} expected: {expected_crowd_count}")
+    for x, y in zip(x_test, y_test):
+        prediction = model.predict(*x)
+        diff = abs(prediction - y)
+        print(f"prediction: {prediction} expected: {y} diff: {diff}")
+        assert diff < 10 

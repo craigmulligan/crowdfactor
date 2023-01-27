@@ -1,7 +1,6 @@
 from enum import Enum
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
-
 from sklearn.model_selection import train_test_split
 from lib.db import DB
 from datetime import datetime, timezone
@@ -71,17 +70,17 @@ WeatherConditions = Enum(
 )
 
 
-def predict(rating_forecast, weather_forecast):
+def predict(spot_report, rating_forecast, weather_forecast, tides_forecast, wave_forecast, wind_forecast):
     """
     Given a spot_id, spot_forecast + weather_forecast.
     predict the crowd count for each day
     """
     model = Model.load()
-    if len(rating_forecast) != len(weather_forecast):
-        raise Exception("Forecasts are not the same length.")
+    spot_forecast = spot_report["forecast"]
+
 
     predictions = []
-    for rating, weather in zip(rating_forecast, weather_forecast):
+    for rating, weather, wind, wave, tide  in zip(rating_forecast, weather_forecast, wind_forecast, wave_forecast, tides_forecast):
         ts = datetime.utcfromtimestamp(rating["timestamp"]).replace(tzinfo=timezone.utc)
         weekday = ts.isoweekday()
         offset = rating["utcOffset"]
@@ -93,6 +92,17 @@ def predict(rating_forecast, weather_forecast):
         weather_temperature = weather["temperature"]
         weather_condition = weather["condition"]
         weather_condition_value = WeatherConditions[weather_condition].value
+
+        # this isn't provided hour by hour.
+        # So we just take the spot daily forecast
+        water_temp_max = spot_forecast["waterTemp"]["max"]
+        water_temp_min = spot_forecast["waterTemp"]["min"]
+
+        wave_height_max = wave["surf"]["max"] 
+        wave_height_min = wave["surf"]["min"] 
+        wind_direction = wind["direction"]
+        wind_speed = wind["speed"] 
+        wind_gust = wind["gust"] 
 
         if "NIGHT" in weather_condition:
             # We don't record at night
@@ -108,6 +118,13 @@ def predict(rating_forecast, weather_forecast):
                 weather_condition_value,
                 weekday,
                 hour,
+                water_temp_max,
+                water_temp_min,
+                wave_height_max,
+                wave_height_min,
+                wind_direction,
+                wind_speed,
+                wind_gust
             )
 
         crowd_count_predicted = round(crowd_count_predicted, 2)
@@ -158,27 +175,21 @@ class Model:
         # Note we set random_state here.
         # So we have consistent results for testing.
         # I assume we want to remove this when not in tests.
-        # self.m = PassiveAggressiveRegressor(
-        #     warm_start=True, shuffle=False, average=True, fit_intercept=True
-        # )
-
         self.labels = [
             "surf_rating",
             "weather_temp",
             "weather_condition",
             "weekday",
             "hour",
-            # "water_temp_max",
-            # "water_temp_min",
-            # "wave_height_max",
-            # "wave_height_min",
-            # "wind_direction",
-            # "wind_speed",
-            # "wind_gust"
+            "water_temp_max",
+            "water_temp_min",
+            "wave_height_max",
+            "wave_height_min",
+            "wind_direction",
+            "wind_speed",
+            "wind_gust"
         ]
-        # self.m = LinearRegression()
-        # self.m = SGDRegressor(shuffle=False)
-        self.m = RandomForestRegressor()
+        self.m = RandomForestRegressor(random_state=42)
 
     def get_training_data(self, test_size=None, random_state=None):
         """
@@ -220,7 +231,6 @@ class Model:
 
         X = np.array(x_data)
         Y = np.array(y_data)
-
         return train_test_split(
             X,
             Y,
@@ -264,14 +274,10 @@ class Model:
 
     def predict(
         self,
-        surf_rating: int,
-        weather_temp: int,
-        weather_condition: int,
-        weekday: int,
-        hour: int,
+        *args,
     ) -> float:
         prediction = self.m.predict(
-            [[surf_rating, weather_temp, weather_condition, weekday, hour]]
+            [args]
         )
         try:
             iterator = iter(prediction)  # type: ignore

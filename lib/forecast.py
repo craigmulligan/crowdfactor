@@ -1,4 +1,4 @@
-from typing import TypedDict, List
+from typing import TypedDict, List, Dict
 import requests
 from lib.cache import shelve_it
 import json
@@ -26,6 +26,28 @@ def get_spot_weather(spot_id) -> SpotInfo:
     )
     res.raise_for_status()
     return res.json()["data"]["weather"]
+
+
+def get_spot_tides(spot_id) -> SpotInfo:
+    res = requests.get(
+        f"https://services.surfline.com/kbyg/spots/forecasts/tides?spotId={spot_id}&days=1&intervalHours=1"
+    )
+    res.raise_for_status()
+    return res.json()["data"]["tides"]
+
+def get_spot_wave(spot_id) -> List[Dict]:
+    res = requests.get(
+        f"https://services.surfline.com/kbyg/spots/forecasts/wave?spotId={spot_id}&days=1&intervalHours=1"
+    )
+    res.raise_for_status()
+    return res.json()["data"]["wave"]
+
+def get_spot_wind(spot_id) -> List[Dict]:
+    res = requests.get(
+        f"https://services.surfline.com/kbyg/spots/forecasts/wind?spotId={spot_id}&days=1&intervalHours=1"
+    )
+    res.raise_for_status()
+    return res.json()["data"]["wind"]
 
 
 def get_spot_surf_rating(spot_id) -> List[Forecast]:

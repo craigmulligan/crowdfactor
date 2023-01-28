@@ -104,6 +104,7 @@ def predict(spot_report, rating_forecast, weather_forecast, tides_forecast, wave
         wind_direction = wind["direction"]
         wind_speed = wind["speed"] 
         wind_gust = wind["gust"] 
+        tide_height = tide["height"]
 
         if "NIGHT" in weather_condition:
             # We don't record at night
@@ -125,7 +126,8 @@ def predict(spot_report, rating_forecast, weather_forecast, tides_forecast, wave
                 wave_height_min,
                 wind_direction,
                 wind_speed,
-                wind_gust
+                wind_gust,
+                tide_height
             )
 
         crowd_count_predicted = round(crowd_count_predicted, 2)
@@ -196,7 +198,8 @@ class Model:
             "wave_height_min",
             "wind_direction",
             "wind_speed",
-            "wind_gust"
+            "wind_gust", 
+            "tide_height"
         ]
         self.m = RandomForestRegressor(random_state=42)
 

@@ -7,7 +7,7 @@ from lib.config import Config
 from lib import ml
 from lib.cache import cache
 from flask import render_template
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -24,6 +24,9 @@ cache.init_app(app)
 def index():
     # get current datetime
     spot_id = app.config["SURFLINE_SPOT_ID"]
+    
+    # TODO we should probs run this is parrellel.
+    # but they do come from a cache.
     surf_rating_forecast = forecast.get_spot_surf_rating(spot_id)
     weather_forecast = forecast.get_spot_weather(spot_id)
     spot_info = forecast.get_spot_info(spot_id)
@@ -33,30 +36,25 @@ def index():
     spot_report = forecast.get_spot_report(spot_id)
     spot_info = forecast.get_spot_info(spot_id)
 
-
     window_start = utils.epoch_to_datetime(surf_rating_forecast[0]["timestamp"])
     window_end = utils.epoch_to_datetime(surf_rating_forecast[-1]["timestamp"])
 
     db = DB.get_db()
-    reading = db.latest_reading(spot_id)
-    if not reading:
+    last_reading = db.latest_reading(spot_id)
+    if not last_reading:
         raise Exception(f"No readings for {spot_id} yet.")
+    
+    last_training = db.latest_training_log(ml.Model.get_url())
 
-    ts = datetime.strptime(reading["timestamp"], utils.DATETIME_FORMAT)
-
-    # Group by hour + day of the week and surf_rating.
-    # So we can predict based crowds based on the forecasted surf_rating
-    # TODO: Need to replace this with the ML model predictions.
-    # For each hour we need all the attributes.
-    # TODO should the prediction take spot_id?
     predictions = ml.predict(spot_report, surf_rating_forecast, weather_forecast, tides_forecast, wave_forecast, wind_forecast)
-
     readings = db.readings(spot_id, window_start, window_end)
 
     graph = Graph.render(predictions, readings)
 
-    # Make sure reading is in local tz.
-    reading["timestamp"] = utils.local_timestamp(ts, spot_info["utcOffset"]).strftime(
-        utils.DATETIME_FORMAT
-    )
-    return render_template("index.html", **reading, graph=graph, spot_info=spot_info)
+    # Make sure last_reading + last_training is in spots local tz.
+    last_reading["timestamp"] =  utils.str_to_local_timestamp(last_reading["timestamp"], spot_info["utcOffset"])
+
+    if last_training:
+        last_training["timestamp"] = utils.str_to_local_timestamp(last_training["timestamp"], spot_info["utcOffset"])
+
+    return render_template("index.html", last_reading=last_reading, graph=graph, spot_info=spot_info, last_training=last_training)

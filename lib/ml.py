@@ -4,7 +4,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from lib.db import DB
 from datetime import datetime, timezone
-from flask import current_app, g
+from flask import current_app
 from lib import utils
 import pickle
 
@@ -13,7 +13,6 @@ class NoTraingDataError(Exception):
 
 class TrainingIntervalError(Exception):
     pass
-
 
 # Note always add to the end of Enum
 SurfRating = Enum(
@@ -253,13 +252,13 @@ class Model:
     @staticmethod
     def load():
         """
-        We might change it to read the old model if we need to do
-        incremental learning at some point.
+        load for inference 
         """
-        model = getattr(g, "_model", None)
-        if model is None:
-            model = g._model = Model() 
-        return model 
+        try:
+            with open(Model.get_url(),'rb') as f:
+                return pickle.load(f)
+        except FileNotFoundError:
+            return Model()
 
     def log(self, score: float):
         """

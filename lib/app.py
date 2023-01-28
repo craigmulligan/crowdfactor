@@ -5,6 +5,7 @@ from lib import forecast
 from lib import utils
 from lib.config import Config
 from lib import ml
+from lib.cache import cache
 from flask import render_template
 from datetime import datetime
 import logging
@@ -16,6 +17,7 @@ app = Flask(__name__)
 app.config.from_object(Config())
 # Ensure the db connection is torn down..
 app.teardown_appcontext(DB.tear_down)
+cache.init_app(app)
 
 
 @app.route("/")

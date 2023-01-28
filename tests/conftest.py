@@ -4,6 +4,7 @@ from lib import forecast
 from lib.db import DB
 from lib.seed import seed as seed_db
 from lib.ml import Model
+from lib.cache import cache
 import pytest
 from datetime import datetime, timezone
 import tempfile, os, uuid
@@ -94,7 +95,6 @@ def surfline_url(spot_id):
 def app(request, spot_id):
     """Session-wide test `Flask` application."""
     # Establish an application context before running the tests.
-    cache_filename = os.path.join(tempfile.gettempdir(), str(uuid.uuid1()))
     model_filename = os.path.join(tempfile.gettempdir(), str(uuid.uuid1()))
     db_url = os.environ.get("DB_URL", ":memory:")
 
@@ -105,15 +105,17 @@ def app(request, spot_id):
             "MODEL_URL": model_filename,
             "SURFLINE_SPOT_ID": spot_id,
             "ROBOFLOW_API_KEY": "xyz",
+            "CACHE_TYPE": "SimpleCache" 
         }
     )
     ctx = flask_app.app_context()
     ctx.push()
 
     def teardown():
+        cache.clear()
         ctx.pop()
 
-        for f in [cache_filename, model_filename]:
+        for f in [model_filename]:
             if os.path.exists(f):
                 os.remove(f)
 

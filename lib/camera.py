@@ -31,6 +31,8 @@ class Conditions:
     wave_height_min: float
     wave_height_max: float
 
+    tide_height: float
+
 
 class NightTimeError(Exception):
     pass
@@ -175,7 +177,8 @@ class Camera:
             weather_temp = forecast["weather"]["temperature"] ,
             weather_condition = forecast["weather"]["condition"] ,
             wave_height_min = forecast["waveHeight"]["min"],
-            wave_height_max = forecast["waveHeight"]["max"]
+            wave_height_max = forecast["waveHeight"]["max"],
+            tide_height = forecast["tide"]["current"]["height"]
         )
 
 

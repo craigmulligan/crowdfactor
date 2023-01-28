@@ -70,8 +70,9 @@ class DB:
                 weather_temp,
                 weather_condition,
                 wave_height_min,
-                wave_height_max
-            ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning *
+                wave_height_max,
+                tide_height
+            ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning *
             """,
             (
                 dt,
@@ -88,6 +89,7 @@ class DB:
                 conditions.weather_condition,
                 conditions.wave_height_min,
                 conditions.wave_height_max,
+                conditions.tide_height
             ),
             one=True
         )
@@ -124,7 +126,7 @@ class DB:
     def logs(self, spot_id):
         return self.query(
             """
-                select *, cast(strftime('%w', timestamp) as INTEGER) as weekday, cast(strftime("%H") as INTEGER) as hour from crowd_log where spot_id = ? and wind_speed is not NULL order by timestamp desc;
+                select *, cast(strftime('%w', timestamp) as INTEGER) as weekday, cast(strftime("%H") as INTEGER) as hour from crowd_log where spot_id = ? and tide_height is not NULL order by timestamp desc;
             """,
             [spot_id],
         )

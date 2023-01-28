@@ -83,6 +83,7 @@ def seed(spot_id, start: datetime, end: datetime):
                 wave_height_max=wave_height_min + 2,
                 wave_height_min=wave_height_min,
                 surf_rating=conditions[0],
+                tide_height=0.4
             )
 
             row = db.insert(

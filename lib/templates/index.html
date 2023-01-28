@@ -8,6 +8,7 @@
     }
 
     .spot-check,
+    .model-train,
     .header {
       margin: auto 0;
       text-align: center;
@@ -24,8 +25,17 @@
   <div><embed src={{ graph|safe }} /></div>
   <div class="spot-check">
     <h1>Last spot check</h1>
-    <h2>surf rating: {{surf_rating}}</h2>
-    <h2>crowd count: {{crowd_count}}</h2>
-    <h3>ran at: {{timestamp}}</h3>
+    <h2>surf rating: {{last_reading["surf_rating"]}}</h2>
+    <h2>crowd count: {{last_reading["crowd_count"]}}</h2>
+    <h3>ran at: {{last_reading["timestamp"]}}</h3>
   </div>
+  <br/>
+  <br/>
+  {% if last_training %} 
+  <div class="model-train">
+    <h1>Last model training</h1>
+    <h2>score: {{last_training["score"] | round(2)}}</h2>
+    <h3>ran at: {{last_training["timestamp"]}}</h3>
+  </div>
+  {% endif %}
 </body>

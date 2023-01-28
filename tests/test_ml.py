@@ -1,8 +1,7 @@
-from lib.ml import Model, predict, SurfRating, WeatherConditions
+from lib.ml import Model, predict
 import pytest
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from lib.seed import seed as seed_db
-from lib.db import DATETIME_FORMAT
 import os
 
 def test_predict(spot_id, pretrained_model, mock_spot_report, mock_forecasts):
@@ -17,7 +16,7 @@ def test_predict(spot_id, pretrained_model, mock_spot_report, mock_forecasts):
     first_prediction = predictions[0]
     assert isinstance(first_prediction["crowd_count_predicted"], int)
 
-@pytest.mark.skip("No longer using online model")
+@pytest.mark.skip("No longer using online model - keeping this test incase it turns out to be useful.")
 def test_train_and_persist(spot_id, db, seed, app):
     # Use all data we have on first train.
     # train on all but 1. And use random 1 to ensure it's the same randomness seed

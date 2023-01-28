@@ -7,13 +7,15 @@ from time import sleep
 from lib.camera import CameraDownError, NightTimeError
 
 if __name__ == "__main__":
-    interval = 600
     with app.app_context():
         db = DB.get_db()
         db.setup()
         try:
             logging.info("training model")
             ml.train()
+            logging.info("training complete")
+        except (ml.TrainingIntervalError, ml.NoTraingDataError) as e: 
+            logging.warning(e) 
         except Exception as e:
             logging.exception("Unexpected error training model")
 
@@ -22,10 +24,11 @@ if __name__ == "__main__":
                 worker.run()
             except NightTimeError as e:  
                 logging.warning(e)
-
                 logging.info("training model")
                 try:
                     ml.train()
+                except (ml.TrainingIntervalError, ml.NoTraingDataError) as e: 
+                    logging.warning(e) 
                 except Exception as e:
                     logging.exception("Unexpected error training model")
 
@@ -34,4 +37,4 @@ if __name__ == "__main__":
             except Exception as e:
                 logging.exception("Unexpected error running worker")
 
-            sleep(interval)
+            sleep(app.config["INTERVAL_CAMERA"])

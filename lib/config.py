@@ -18,3 +18,5 @@ class Config:
         self.SURFLINE_SPOT_ID = SURFLINE_SPOT_ID
         self.DB_URL = DB_URL
         self.MODEL_URL = MODEL_URL
+        self.INTERVAL_CAMERA = 600 # 10mins
+        self.INTERVAL_TRAINING = 86400 # 1 day

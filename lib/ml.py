@@ -4,12 +4,14 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from lib.db import DB
 from datetime import datetime, timezone
-from flask import current_app
+from flask import current_app, g
 from lib import utils
 import pickle
 
-
 class NoTraingDataError(Exception):
+    pass
+
+class TrainingIntervalError(Exception):
     pass
 
 
@@ -152,10 +154,18 @@ def train():
     logs a training event with new score.
     """
     model = Model.load()
-    try:
-        x_train, x_test, y_train, y_test = model.get_training_data()
-    except NoTraingDataError:
-        return False
+
+    db = DB.get_db()
+    latest_log = db.latest_training_log(Model.get_url())
+    since = latest_log["timestamp"] if latest_log else None
+    training_interval = current_app.config["INTERVAL_TRAINING"]
+
+    if since:
+        seconds_since_last_train = (datetime.utcnow() - datetime.strptime(since, utils.DATETIME_FORMAT) ).total_seconds()
+        if seconds_since_last_train < training_interval:
+            raise TrainingIntervalError(f"Not training model last_training is within training interval: {training_interval} only {seconds_since_last_train} seconds have passed.") 
+
+    x_train, x_test, y_train, y_test = model.get_training_data()
 
     model.train(x_train, y_train)
     model.persist()
@@ -199,12 +209,10 @@ class Model:
         SURFLINE_SPOT_ID = current_app.config.get("SURFLINE_SPOT_ID")
 
         db = DB.get_db()
-        latest_log = db.latest_training_log(Model.get_url())
-        since = latest_log["timestamp"] if latest_log else None
-        logs = db.logs(SURFLINE_SPOT_ID, since)
+        logs = db.logs(SURFLINE_SPOT_ID)
 
         if not logs:
-            raise NoTraingDataError("No training data")
+            raise NoTraingDataError("No training data available")
 
         feature = "crowd_count"
 
@@ -248,11 +256,10 @@ class Model:
         We might change it to read the old model if we need to do
         incremental learning at some point.
         """
-        try:
-            with open(Model.get_url(), "rb") as f:
-                return pickle.load(f)
-        except FileNotFoundError:
-            return Model()
+        model = getattr(g, "_model", None)
+        if model is None:
+            model = g._model = Model() 
+        return model 
 
     def log(self, score: float):
         """

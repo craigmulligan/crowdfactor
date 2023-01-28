@@ -121,15 +121,12 @@ class DB:
             [start.strftime(DATETIME_FORMAT), end.strftime(DATETIME_FORMAT), spot_id],
         )  # type:ignore
 
-    def logs(self, spot_id, since: Optional[str] = None):
-        if since is None: 
-            since = "1970-01-01 00:00:00"
-
+    def logs(self, spot_id):
         return self.query(
             """
-                select *, cast(strftime('%w', timestamp) as INTEGER) as weekday, cast(strftime("%H") as INTEGER) as hour from crowd_log where spot_id = ? and timestamp > ? and wind_speed is not NULL order by timestamp desc;
+                select *, cast(strftime('%w', timestamp) as INTEGER) as weekday, cast(strftime("%H") as INTEGER) as hour from crowd_log where spot_id = ? and wind_speed is not NULL order by timestamp desc;
             """,
-            [spot_id, since],
+            [spot_id],
         )
 
     def latest_training_log(self, name):

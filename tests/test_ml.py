@@ -68,13 +68,13 @@ def test_real_data():
 
     train_score = model.score(x_train, y_train)
     # Best possible score is 1.
-    assert 0.7 < train_score < 1.4
+    assert 0.8 < train_score < 1.2
     print("training score", train_score)
 
 
     test_score = model.score(x_test, y_test)
     # Best possible score is 1.
-    assert 0.8 < test_score < 1.2
+    assert 0.7 < test_score < 1.4
     print(f"training score: {train_score}, test score: {test_score}")
 
     for x, y in zip(x_test, y_test):

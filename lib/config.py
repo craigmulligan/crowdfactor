@@ -12,7 +12,7 @@ class Config:
         SURFLINE_SPOT_ID = os.environ.get("SURFLINE_SPOT_ID", "")
 
         DB_URL = os.environ.get("DB_URL", "data/crowdfactor.db")
-        MODEL_URL = os.environ.get("MODEL_URL", "data/model")
+        MODEL_URL = os.environ.get("MODEL_URL", "data/model-v2")
         CACHE_URL = os.environ.get("CACHE_URL", "data/cache/")
 
         self.ROBOFLOW_API_KEY = ROBOFLOW_API_KEY

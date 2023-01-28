@@ -13,6 +13,7 @@ class Config:
 
         DB_URL = os.environ.get("DB_URL", "data/crowdfactor.db")
         MODEL_URL = os.environ.get("MODEL_URL", "data/model")
+        CACHE_URL = os.environ.get("CACHE_URL", "data/cache/")
 
         self.ROBOFLOW_API_KEY = ROBOFLOW_API_KEY
         self.SURFLINE_SPOT_ID = SURFLINE_SPOT_ID
@@ -20,3 +21,6 @@ class Config:
         self.MODEL_URL = MODEL_URL
         self.INTERVAL_CAMERA = 600 # 10mins
         self.INTERVAL_TRAINING = 86400 # 1 day
+        self.CACHE_TYPE = "FileSystemCache" 
+        self.CACHE_DIR = CACHE_URL 
+        self.CACHE_DEFAULT_TIMEOUT = 300 # 5mins 

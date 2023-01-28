@@ -160,7 +160,8 @@ class Camera:
         """
         Gets the camera stream url via spot URL.
         """
-        data = get_spot_report(spot_id) 
+        # always use the uncached data.
+        data = get_spot_report.uncached(spot_id) 
         spot_data = data["spot"]
         forecast = data["forecast"]
 

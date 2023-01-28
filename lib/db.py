@@ -136,14 +136,6 @@ class DB:
         self.query("insert into training_log (timestamp, score, name) values (?, ?, ?)", [timestamp.strftime(DATETIME_FORMAT), score, name])
         self.commit()
 
-    def insert_cache(self, key: str, value: bytes):
-        now = datetime.utcnow()
-        self.query("insert into dbm(timestamp, key, value) values (?, ?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value, timestamp=excluded.timestamp", [now.strftime(DATETIME_FORMAT), key, value])
-        self.commit()
-
-    def get_cache(self, key):
-        return self.query("select value from dbm where key = ?", [key], one=True)
-
     def query(self, query, query_args=(), one=False) -> Union[Optional[Any], Any]:
         cur = self.conn.execute(query, query_args)
         rv = cur.fetchall()

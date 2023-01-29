@@ -1,18 +1,23 @@
+import pandas as pd
 from enum import Enum
-import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from lib.db import DB
 from datetime import datetime, timezone
 from flask import current_app
 from lib import utils
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OrdinalEncoder
 import pickle
+
 
 class NoTraingDataError(Exception):
     pass
 
+
 class TrainingIntervalError(Exception):
     pass
+
 
 # Note always add to the end of Enum
 SurfRating = Enum(
@@ -71,7 +76,14 @@ WeatherConditions = Enum(
 )
 
 
-def predict(spot_report, rating_forecast, weather_forecast, tides_forecast, wave_forecast, wind_forecast):
+def predict(
+    spot_report,
+    rating_forecast,
+    weather_forecast,
+    tides_forecast,
+    wave_forecast,
+    wind_forecast,
+):
     """
     Given a spot_id, spot_forecast + weather_forecast.
     predict the crowd count for each day
@@ -79,9 +91,10 @@ def predict(spot_report, rating_forecast, weather_forecast, tides_forecast, wave
     model = Model.load()
     spot_forecast = spot_report["forecast"]
 
-
     predictions = []
-    for rating, weather, wind, wave, tide  in zip(rating_forecast, weather_forecast, wind_forecast, wave_forecast, tides_forecast):
+    for rating, weather, wind, wave, tide in zip(
+        rating_forecast, weather_forecast, wind_forecast, wave_forecast, tides_forecast
+    ):
         ts = datetime.utcfromtimestamp(rating["timestamp"]).replace(tzinfo=timezone.utc)
         weekday = ts.isoweekday()
         offset = rating["utcOffset"]
@@ -99,11 +112,11 @@ def predict(spot_report, rating_forecast, weather_forecast, tides_forecast, wave
         water_temp_max = spot_forecast["waterTemp"]["max"]
         water_temp_min = spot_forecast["waterTemp"]["min"]
 
-        wave_height_max = wave["surf"]["max"] 
-        wave_height_min = wave["surf"]["min"] 
+        wave_height_max = wave["surf"]["max"]
+        wave_height_min = wave["surf"]["min"]
         wind_direction = wind["direction"]
-        wind_speed = wind["speed"] 
-        wind_gust = wind["gust"] 
+        wind_speed = wind["speed"]
+        wind_gust = wind["gust"]
         tide_height = tide["height"]
 
         if "NIGHT" in weather_condition:
@@ -127,13 +140,13 @@ def predict(spot_report, rating_forecast, weather_forecast, tides_forecast, wave
                 wind_direction,
                 wind_speed,
                 wind_gust,
-                tide_height
+                tide_height,
             )
 
         crowd_count_predicted = round(crowd_count_predicted, 2)
 
         if crowd_count_predicted < 0:
-            crowd_count_predicted = 0 
+            crowd_count_predicted = 0
 
         predictions.append(
             {
@@ -162,9 +175,13 @@ def train():
     training_interval = current_app.config["INTERVAL_TRAINING"]
 
     if since:
-        seconds_since_last_train = (datetime.utcnow() - datetime.strptime(since, utils.DATETIME_FORMAT) ).total_seconds()
+        seconds_since_last_train = (
+            datetime.utcnow() - datetime.strptime(since, utils.DATETIME_FORMAT)
+        ).total_seconds()
         if seconds_since_last_train < training_interval:
-            raise TrainingIntervalError(f"Not training model last_training is within training interval: {training_interval} only {seconds_since_last_train} seconds have passed.") 
+            raise TrainingIntervalError(
+                f"Not training model last_training is within training interval: {training_interval} only {seconds_since_last_train} seconds have passed."
+            )
 
     x_train, x_test, y_train, y_test = model.get_training_data()
 
@@ -198,8 +215,8 @@ class Model:
             "wave_height_min",
             "wind_direction",
             "wind_speed",
-            "wind_gust", 
-            "tide_height"
+            "wind_gust",
+            "tide_height",
         ]
         self.m = RandomForestRegressor(random_state=42)
 
@@ -216,37 +233,32 @@ class Model:
         if not logs:
             raise NoTraingDataError("No training data available")
 
-        feature = "crowd_count"
+        x = pd.DataFrame.from_records(logs, columns=self.labels)
+        y = pd.DataFrame.from_records(logs, columns=["crowd_count"])
 
-        x_data = []
-        y_data = []
+        category_columns = ["surf_rating", "weather_condition"]
+        numeric_colums = [
+            label for label in self.labels if label not in category_columns
+        ]
 
-        for log in logs:
-            x = []
-            y = 0
+        pipeline = ColumnTransformer(
+            transformers=[
+               ("numeric_colums", StandardScaler(), numeric_colums),
+                ("category_columns", OrdinalEncoder(), category_columns),
+            ],
+            remainder="passthrough",
+            sparse_threshold=0,
+        )
 
-            for key, value in log.items():
-                if key in self.labels:
-                    if key == "surf_rating":
-                        x.append(SurfRating[value].value)
-                    elif key == "weather_condition":
-                        x.append(WeatherConditions[value].value)
-                    else:
-                        x.append(value)
-                if key == feature:
-                    y = value
+        x = pipeline.fit_transform(x)
 
-            x_data.append(x)
-            y_data.append(y)
-
-        X = np.array(x_data)
-        Y = np.array(y_data)
         return train_test_split(
-            X,
-            Y,
+            x,
+            y.values,
             test_size=test_size,
             random_state=random_state,
         )
+
 
     @staticmethod
     def get_url() -> str:
@@ -255,10 +267,10 @@ class Model:
     @staticmethod
     def load():
         """
-        load for inference 
+        load for inference
         """
         try:
-            with open(Model.get_url(),'rb') as f:
+            with open(Model.get_url(), "rb") as f:
                 return pickle.load(f)
         except FileNotFoundError:
             return Model()
@@ -285,13 +297,11 @@ class Model:
         self,
         *args,
     ) -> float:
-        prediction = self.m.predict(
-            [args]
-        )
+        prediction = self.m.predict([args])
         try:
             iterator = iter(prediction)  # type: ignore
         except TypeError:
-            return prediction # type: ignore
+            return prediction  # type: ignore
         else:
             return next(iterator)
 

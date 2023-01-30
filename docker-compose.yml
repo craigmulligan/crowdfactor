@@ -11,7 +11,7 @@ services:
        - SURFLINE_SPOT_ID 
        - ROBOFLOW_API_KEY
        - DB_URL=/data/crowdfactor.db
-       - MODEL_URL=/data/crowdfactor.db
+       - MODEL_URL=/data/model-v2
 
   worker:
     build: .
@@ -22,7 +22,7 @@ services:
        - SURFLINE_SPOT_ID 
        - ROBOFLOW_API_KEY
        - DB_URL=/data/crowdfactor.db
-       - MODEL_URL=/data/crowdfactor.db
+       - MODEL_URL=/data/model-v2
       
 volumes:
     resin-data:

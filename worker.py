@@ -12,9 +12,10 @@ if __name__ == "__main__":
         db.setup()
         try:
             logging.info("training model")
-            ml.train()
+            # Always try train on first boot.
+            ml.train(force=True)
             logging.info("training complete")
-        except (ml.TrainingIntervalError, ml.NoTraingDataError) as e: 
+        except (ml.NoTraingDataError) as e: 
             logging.warning(e) 
         except Exception as e:
             logging.exception("Unexpected error training model")

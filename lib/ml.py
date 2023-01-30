@@ -160,7 +160,7 @@ def predict(
     return predictions
 
 
-def train():
+def train(force=False):
     """
     Loads any new data since last training.
     trains the model
@@ -172,16 +172,18 @@ def train():
     db = DB.get_db()
     latest_log = db.latest_training_log(Model.get_url())
     since = latest_log["timestamp"] if latest_log else None
-    training_interval = current_app.config["INTERVAL_TRAINING"]
 
-    if since:
-        seconds_since_last_train = (
-            datetime.utcnow() - datetime.strptime(since, utils.DATETIME_FORMAT)
-        ).total_seconds()
-        if seconds_since_last_train < training_interval:
-            raise TrainingIntervalError(
-                f"Not training model last_training is within training interval: {training_interval} only {seconds_since_last_train} seconds have passed."
-            )
+    if not force: 
+        training_interval = current_app.config["INTERVAL_TRAINING"]
+
+        if since:
+            seconds_since_last_train = (
+                datetime.utcnow() - datetime.strptime(since, utils.DATETIME_FORMAT)
+            ).total_seconds()
+            if seconds_since_last_train < training_interval:
+                raise TrainingIntervalError(
+                    f"Not training model last_training is within training interval: {training_interval} only {seconds_since_last_train} seconds have passed."
+                )
 
     x_train, x_test, y_train, y_test = model.get_training_data()
 

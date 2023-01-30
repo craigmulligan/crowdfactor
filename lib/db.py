@@ -126,7 +126,7 @@ class DB:
     def logs(self, spot_id):
         return self.query(
             """
-                select *, cast(strftime('%w', timestamp) as INTEGER) as weekday, cast(strftime("%H") as INTEGER) as hour from crowd_log where spot_id = ? and tide_height is not NULL order by timestamp desc;
+                select *, cast(strftime('%w', timestamp) as INTEGER) as weekday, cast(strftime("%H") as INTEGER) as hour from crowd_log where spot_id = ? and wind_gust is not NULL order by timestamp desc;
             """,
             [spot_id],
         )

@@ -233,7 +233,7 @@ class Model:
         if not logs:
             raise NoTraingDataError("No training data available")
 
-        x = pd.DataFrame.from_records(logs, columns=self.labels)
+        x = pd.DataFrame.from_records(logs, columns=self.labels).fillna(0)
         y = pd.DataFrame.from_records(logs, columns=["crowd_count"])
 
         category_columns = ["surf_rating", "weather_condition"]

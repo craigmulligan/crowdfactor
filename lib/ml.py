@@ -72,6 +72,8 @@ WeatherConditions = Enum(
         "NIGHT_BRIEF_SHOWERS_POSSIBLE",
         "HEAVY_SHOWERS",
         "NIGHT_HEAVY_SHOWERS",
+        "SHOWERS",
+        "NIGHT_SHOWERS",
     ],
 )
 
@@ -173,7 +175,7 @@ def train(force=False):
     latest_log = db.latest_training_log(Model.get_url())
     since = latest_log["timestamp"] if latest_log else None
 
-    if not force: 
+    if not force:
         training_interval = current_app.config["INTERVAL_TRAINING"]
 
         if since:
@@ -245,7 +247,7 @@ class Model:
 
         pipeline = ColumnTransformer(
             transformers=[
-               ("numeric_colums", StandardScaler(), numeric_colums),
+                ("numeric_colums", StandardScaler(), numeric_colums),
                 ("category_columns", OrdinalEncoder(), category_columns),
             ],
             remainder="passthrough",
@@ -260,7 +262,6 @@ class Model:
             test_size=test_size,
             random_state=random_state,
         )
-
 
     @staticmethod
     def get_url() -> str:

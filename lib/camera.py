@@ -14,19 +14,20 @@ from lib.forecast import get_spot_report
 
 ROBOFLOW_API_KEY = os.environ.get("ROBOFLOW_API_KEY")
 
+
 @dataclass
 class Conditions:
-    surf_rating: str 
+    surf_rating: str
 
-    wind_speed: float 
-    wind_gust: float 
-    wind_direction: float 
+    wind_speed: float
+    wind_gust: float
+    wind_direction: float
 
     water_temp_max: float
     water_temp_min: float
 
     weather_temp: float
-    weather_condition: str 
+    weather_condition: str
 
     wave_height_min: float
     wave_height_max: float
@@ -41,6 +42,7 @@ class NightTimeError(Exception):
 class CameraDownError(Exception):
     pass
 
+
 class Camera:
     id: str
     spot_id: str
@@ -50,7 +52,6 @@ class Camera:
     conditions: Conditions
     frame_rate: int
     duration: int
-
 
     def __init__(
         self,
@@ -76,39 +77,35 @@ class Camera:
     def data_dir(self):
         return f"data/{self.id}"
 
-    @property
-    def video_file_name(self):
-        return f"{self.data_dir}/output.mp4"
-
     def workspace(self):
         if os.path.isdir(self.data_dir):
+            # If the directory exists
+            # nuke it.
             shutil.rmtree(self.data_dir)
-            # if the demo_folder2 directory is
-            # not present then create it.
 
+        # if the directory is
+        # not present then create it.
         os.makedirs(self.data_dir)
 
     def write_video(self):
         # Given cam url download the stream to a file.
-        if os.path.exists(self.video_file_name):
-            os.remove(self.video_file_name)
-
-        ffmpeg.input(self.url).trim(duration=self.duration).output(
-            self.video_file_name
-        ).run()
         try:
-            (ffmpeg.input(self.url)
-                  .trim(duration=self.duration)
-                  .filter('fps', fps=self.frame_rate)
-                  .output(f"{self.data_dir}/frame-%04d.jpg", 
-                          video_bitrate='5000k',
-                          s='64x64',
-                          sws_flags='bilinear',
-                          start_number=0)
-                  .run(capture_stdout=True, capture_stderr=True))
+            (
+                ffmpeg.input(self.url)
+                .trim(duration=self.duration)
+                .filter("fps", fps=self.frame_rate)
+                .output(
+                    f"{self.data_dir}/frame-%04d.jpg",
+                    video_bitrate="5000k",
+                    s="64x64",
+                    sws_flags="bilinear",
+                    start_number=0,
+                )
+                .run(capture_stdout=True, capture_stderr=True)
+            )
         except ffmpeg.Error as e:
-            logging.info('stdout:', e.stdout.decode('utf8'))
-            logging.error('stderr:', e.stderr.decode('utf8'))
+            logging.info("stdout:", e.stdout.decode("utf8"))
+            logging.error("stderr:", e.stderr.decode("utf8"))
 
     def analyze(self, model_version):
         rf = Roboflow(api_key=self.roboflow_api_key)
@@ -163,31 +160,32 @@ class Camera:
         Gets the camera stream url via spot URL.
         """
         # always use the uncached data.
-        data = get_spot_report.uncached(spot_id) 
+        data = get_spot_report.uncached(spot_id)
         spot_data = data["spot"]
         forecast = data["forecast"]
 
         conditions = Conditions(
-            surf_rating = forecast["conditions"]["value"],
-            wind_speed = forecast["wind"]["speed"],
-            wind_gust = forecast["wind"]["gust"],
-            wind_direction = forecast["wind"]["direction"],
-            water_temp_max = forecast["waterTemp"]["max"] ,
-            water_temp_min = forecast["waterTemp"]["min"] ,
-            weather_temp = forecast["weather"]["temperature"] ,
-            weather_condition = forecast["weather"]["condition"] ,
-            wave_height_min = forecast["waveHeight"]["min"],
-            wave_height_max = forecast["waveHeight"]["max"],
-            tide_height = forecast["tide"]["current"]["height"]
+            surf_rating=forecast["conditions"]["value"],
+            wind_speed=forecast["wind"]["speed"],
+            wind_gust=forecast["wind"]["gust"],
+            wind_direction=forecast["wind"]["direction"],
+            water_temp_max=forecast["waterTemp"]["max"],
+            water_temp_min=forecast["waterTemp"]["min"],
+            weather_temp=forecast["weather"]["temperature"],
+            weather_condition=forecast["weather"]["condition"],
+            wave_height_min=forecast["waveHeight"]["min"],
+            wave_height_max=forecast["waveHeight"]["max"],
+            tide_height=forecast["tide"]["current"]["height"],
         )
 
-
-        logging.info(f"found: {spot_data['name']} - with current rating: {conditions.surf_rating}")
+        logging.info(
+            f"found: {spot_data['name']} - with current rating: {conditions.surf_rating}"
+        )
 
         if not len(spot_data["cameras"]):
             raise Exception(f"Surf spot: {spot_id} does not have a camera.")
 
-        # Default to the first one. 
+        # Default to the first one.
         camera = spot_data["cameras"][0]
 
         if camera_id is not None:
@@ -211,5 +209,5 @@ class Camera:
             url=camera["streamUrl"],
             spot_id=spot_data["_id"],
             roboflow_api_key=roboflow_api_key,
-            conditions=conditions
+            conditions=conditions,
         )

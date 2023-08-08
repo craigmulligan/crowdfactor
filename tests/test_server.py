@@ -1,5 +1,11 @@
-
-def test_index(client, spot_id, mock_spot_report, mock_forecasts, pretrained_model, mock_surf_rating_forecast):
+def test_index(
+    client,
+    spot_id,
+    mock_spot_report,
+    mock_forecasts,
+    pretrained_model,
+    mock_surf_rating_forecast,
+):
     """
     Asserts the index page renders data correctly from the db.
     """

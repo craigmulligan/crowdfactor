@@ -59,18 +59,19 @@ def seed(spot_id, start: datetime, end: datetime):
 
             # for each hour in the day.
             if 6 > h < 18:
-                weather_condition = random.choice([w for w in weather_conditions if "NIGHT" not in w])
+                weather_condition = random.choice(
+                    [w for w in weather_conditions if "NIGHT" not in w]
+                )
             else:
-                weather_condition = random.choice([w for w in weather_conditions if "NIGHT" in w])
+                weather_condition = random.choice(
+                    [w for w in weather_conditions if "NIGHT" in w]
+                )
 
             crowd_count = random.randint(0, conditions_max[conditions[0]])
             temp = random.randint(0, 30)
             wind_speed = random.randint(0, 40)
             wave_height_min = random.randint(0, 3)
             wind_gust = random.randint(0, 10)
-
-                
-
 
             c = Conditions(
                 wind_direction=149.1,
@@ -83,7 +84,7 @@ def seed(spot_id, start: datetime, end: datetime):
                 wave_height_max=wave_height_min + 2,
                 wave_height_min=wave_height_min,
                 surf_rating=conditions[0],
-                tide_height=0.4
+                tide_height=0.4,
             )
 
             row = db.insert(
@@ -96,4 +97,4 @@ def seed(spot_id, start: datetime, end: datetime):
 
             rows.append(row)
 
-    return rows 
+    return rows

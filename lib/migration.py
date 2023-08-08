@@ -10,14 +10,13 @@ def up(migration_dir: str, connection: sqlite3.Connection):
 
     row_factory = None
 
-    if connection.row_factory: 
+    if connection.row_factory:
         row_factory = connection.row_factory
         connection.row_factory = None
-    
 
     cursor = connection.cursor()
     [current_version] = cursor.execute(
-    """
+        """
         PRAGMA user_version;
     """
     ).fetchone()
@@ -38,7 +37,7 @@ def up(migration_dir: str, connection: sqlite3.Connection):
             with open(filename) as f:
                 try:
                     # We add a begin because.
-                    # Execute the SQL statements in sql_script. If there is a pending transaction, an implicit COMMIT statement is executed first. 
+                    # Execute the SQL statements in sql_script. If there is a pending transaction, an implicit COMMIT statement is executed first.
                     # No other implicit transaction control is performed; any transaction control must be added to sql_script.
                     cursor.executescript("BEGIN;\n" + f.read())
                     cursor.execute(f"PRAGMA user_version = {v}")

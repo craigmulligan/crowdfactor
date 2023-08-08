@@ -4,10 +4,11 @@ from datetime import datetime, timedelta
 from lib.seed import seed as seed_db
 import os
 
+
 def test_predict(spot_id, pretrained_model, mock_spot_report, mock_forecasts):
     """
     Given a spot_id, spot_forecast + weather_forecast.
-    predict the crowd count for each day 
+    predict the crowd count for each day
     """
     forecasts = [mock(spot_id) for mock in [mock_spot_report, *mock_forecasts]]
     predictions = predict(*forecasts)
@@ -16,7 +17,10 @@ def test_predict(spot_id, pretrained_model, mock_spot_report, mock_forecasts):
     first_prediction = predictions[0]
     assert isinstance(first_prediction["crowd_count_predicted"], int)
 
-@pytest.mark.skip("No longer using online model - keeping this test incase it turns out to be useful.")
+
+@pytest.mark.skip(
+    "No longer using online model - keeping this test incase it turns out to be useful."
+)
 def test_train_and_persist(spot_id, db, seed, app):
     # Use all data we have on first train.
     # train on all but 1. And use random 1 to ensure it's the same randomness seed
@@ -56,8 +60,8 @@ def test_train_and_persist(spot_id, db, seed, app):
     new_prediction = model.predict(*i)
     assert isinstance(new_prediction, float)
 
-@pytest.mark.skipif("DB_URL" not in os.environ,
-                    reason="requires DB_URL to be set")
+
+@pytest.mark.skipif("DB_URL" not in os.environ, reason="requires DB_URL to be set")
 def test_real_data():
     """
     Use this test to tweak the model and run real data.
@@ -71,7 +75,6 @@ def test_real_data():
     assert 0.8 < train_score < 1.2
     print("training score", train_score)
 
-
     test_score = model.score(x_test, y_test)
     # Best possible score is 1.
     assert 0.6 < test_score < 1.4
@@ -81,4 +84,4 @@ def test_real_data():
         prediction = model.predict(*x)
         diff = abs(prediction - y)
         print(f"prediction: {prediction} expected: {y} diff: {diff}")
-        assert diff < 10 
+        assert diff < 10

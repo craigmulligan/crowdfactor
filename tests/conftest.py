@@ -11,44 +11,68 @@ import tempfile, os, uuid
 import requests_mock
 import json
 
+
 @pytest.fixture()
 def mock_surf_rating_forecast(monkeypatch, spot_id):
     mock = Mock(wraps=forecast.get_spot_surf_rating)
     monkeypatch.setattr(forecast, "get_spot_surf_rating", mock)
 
-    with open(os.path.join("tests", "data", f"rating-{spot_id}.json")) as f, requests_mock.Mocker(real_http=True) as m:
+    with open(
+        os.path.join("tests", "data", f"rating-{spot_id}.json")
+    ) as f, requests_mock.Mocker(real_http=True) as m:
         data = json.load(f)
-        m.get(f"https://services.surfline.com/kbyg/spots/forecasts/rating?spotId={spot_id}&days=1&intervalHours=1", json=data)
+        m.get(
+            f"https://services.surfline.com/kbyg/spots/forecasts/rating?spotId={spot_id}&days=1&intervalHours=1",
+            json=data,
+        )
         yield mock
+
 
 @pytest.fixture()
 def mock_weather_forecast(monkeypatch, spot_id):
     mock = Mock(wraps=forecast.get_spot_weather)
     monkeypatch.setattr(forecast, "get_spot_weather", mock)
 
-    with open(os.path.join("tests", "data", f"weather-{spot_id}.json")) as f, requests_mock.Mocker(real_http=True) as m:
+    with open(
+        os.path.join("tests", "data", f"weather-{spot_id}.json")
+    ) as f, requests_mock.Mocker(real_http=True) as m:
         data = json.load(f)
-        m.get(f"https://services.surfline.com/kbyg/spots/forecasts/weather?spotId={spot_id}&days=1&intervalHours=1", json=data)
+        m.get(
+            f"https://services.surfline.com/kbyg/spots/forecasts/weather?spotId={spot_id}&days=1&intervalHours=1",
+            json=data,
+        )
         yield mock
+
 
 @pytest.fixture()
 def mock_wave_forecast(monkeypatch, spot_id):
     mock = Mock(wraps=forecast.get_spot_wave)
     monkeypatch.setattr(forecast, "get_spot_wave", mock)
 
-    with open(os.path.join("tests", "data", f"wave-{spot_id}.json")) as f, requests_mock.Mocker(real_http=True) as m:
+    with open(
+        os.path.join("tests", "data", f"wave-{spot_id}.json")
+    ) as f, requests_mock.Mocker(real_http=True) as m:
         data = json.load(f)
-        m.get(f"https://services.surfline.com/kbyg/spots/forecasts/wave?spotId={spot_id}&days=1&intervalHours=1", json=data)
+        m.get(
+            f"https://services.surfline.com/kbyg/spots/forecasts/wave?spotId={spot_id}&days=1&intervalHours=1",
+            json=data,
+        )
         yield mock
+
 
 @pytest.fixture()
 def mock_wind_forecast(monkeypatch, spot_id):
     mock = Mock(wraps=forecast.get_spot_wind)
     monkeypatch.setattr(forecast, "get_spot_wind", mock)
 
-    with open(os.path.join("tests", "data", f"wind-{spot_id}.json")) as f, requests_mock.Mocker(real_http=True) as m:
+    with open(
+        os.path.join("tests", "data", f"wind-{spot_id}.json")
+    ) as f, requests_mock.Mocker(real_http=True) as m:
         data = json.load(f)
-        m.get(f"https://services.surfline.com/kbyg/spots/forecasts/wind?spotId={spot_id}&days=1&intervalHours=1", json=data)
+        m.get(
+            f"https://services.surfline.com/kbyg/spots/forecasts/wind?spotId={spot_id}&days=1&intervalHours=1",
+            json=data,
+        )
         yield mock
 
 
@@ -57,24 +81,49 @@ def mock_tides_forecast(monkeypatch, spot_id):
     mock = Mock(wraps=forecast.get_spot_tides)
     monkeypatch.setattr(forecast, "get_spot_tides", mock)
 
-    with open(os.path.join("tests", "data", f"tides-{spot_id}.json")) as f, requests_mock.Mocker(real_http=True) as m:
+    with open(
+        os.path.join("tests", "data", f"tides-{spot_id}.json")
+    ) as f, requests_mock.Mocker(real_http=True) as m:
         data = json.load(f)
-        m.get(f"https://services.surfline.com/kbyg/spots/forecasts/tides?spotId={spot_id}&days=1&intervalHours=1", json=data)
+        m.get(
+            f"https://services.surfline.com/kbyg/spots/forecasts/tides?spotId={spot_id}&days=1&intervalHours=1",
+            json=data,
+        )
         yield mock
 
+
 @pytest.fixture()
-def mock_forecasts(mock_surf_rating_forecast, mock_weather_forecast, mock_tides_forecast, mock_wave_forecast, mock_wind_forecast):
-    return mock_surf_rating_forecast, mock_weather_forecast, mock_tides_forecast, mock_wave_forecast, mock_wind_forecast
+def mock_forecasts(
+    mock_surf_rating_forecast,
+    mock_weather_forecast,
+    mock_tides_forecast,
+    mock_wave_forecast,
+    mock_wind_forecast,
+):
+    return (
+        mock_surf_rating_forecast,
+        mock_weather_forecast,
+        mock_tides_forecast,
+        mock_wave_forecast,
+        mock_wind_forecast,
+    )
+
 
 @pytest.fixture()
 def mock_spot_report(spot_id, monkeypatch):
     mock = Mock(wraps=forecast.get_spot_report)
     monkeypatch.setattr(forecast, "get_spot_report", mock)
 
-    with open(os.path.join("tests", "data", f"spot-info-{spot_id}.json")) as f, requests_mock.Mocker(real_http=True) as m:
+    with open(
+        os.path.join("tests", "data", f"spot-info-{spot_id}.json")
+    ) as f, requests_mock.Mocker(real_http=True) as m:
         data = json.load(f)
-        m.get(f"https://services.surfline.com/kbyg/spots/reports?spotId={spot_id}&corrected=false", json=data)
+        m.get(
+            f"https://services.surfline.com/kbyg/spots/reports?spotId={spot_id}&corrected=false",
+            json=data,
+        )
         yield mock
+
 
 @pytest.fixture()
 def mock_spot_info(spot_id, monkeypatch, mock_spot_report):
@@ -82,9 +131,11 @@ def mock_spot_info(spot_id, monkeypatch, mock_spot_report):
     monkeypatch.setattr(forecast, "get_spot_info", mock)
     yield mock
 
+
 @pytest.fixture(scope="session")
 def spot_id():
     return "590927576a2e4300134fbed8"
+
 
 @pytest.fixture()
 def surfline_url(spot_id):
@@ -105,7 +156,7 @@ def app(request, spot_id):
             "MODEL_URL": model_filename,
             "SURFLINE_SPOT_ID": spot_id,
             "ROBOFLOW_API_KEY": "xyz",
-            "CACHE_TYPE": "SimpleCache" 
+            "CACHE_TYPE": "SimpleCache",
         }
     )
     ctx = flask_app.app_context()

@@ -22,11 +22,13 @@ def epoch_to_datetime(timestamp: int) -> datetime:
     """
     return datetime.utcfromtimestamp(timestamp).replace(tzinfo=timezone.utc)
 
+
 def str_to_timestamp(timestamp: str) -> datetime:
     """
-    Returns utc datetime from string 
+    Returns utc datetime from string
     """
     return datetime.strptime(timestamp, DATETIME_FORMAT).replace(tzinfo=timezone.utc)
+
 
 def str_to_local_timestamp(timestamp: str, offset: int) -> datetime:
     dt = str_to_timestamp(timestamp)

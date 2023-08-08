@@ -1,16 +1,19 @@
-from lib.migration import up  
+from lib.migration import up
 import sqlite3
 import pytest
 
+
 def test_up_success():
     conn = sqlite3.connect(":memory:")
-    table_name = "account" 
+    table_name = "account"
 
     up("tests/data/migrations", conn)
 
-    cur = conn.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}';")
+    cur = conn.execute(
+        f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}';"
+    )
     [row] = cur.fetchone()
-    assert row == table_name 
+    assert row == table_name
 
     cur = conn.execute(f"pragma table_info({table_name});")
     columns = cur.fetchall()
@@ -18,28 +21,29 @@ def test_up_success():
     assert "category" in column_names
 
     [current_version] = conn.execute(
-    """
+        """
         PRAGMA user_version;
     """
     ).fetchone()
     assert current_version == 2
- 
 
 
 def test_up_fail():
     conn = sqlite3.connect(":memory:")
-    table_name = "account" 
-    
+    table_name = "account"
+
     try:
         up("tests/data/migration-fail", conn)
     except sqlite3.OperationalError:
-        # These will fail as there is a 
+        # These will fail as there is a
         # syntax issue in the second script.
         pass
 
-    cur = conn.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}';")
+    cur = conn.execute(
+        f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}';"
+    )
     [row] = cur.fetchone()
-    assert row == table_name 
+    assert row == table_name
 
     # Make sure 2.sql is rolled back.
     cur = conn.execute(f"pragma table_info({table_name});")
@@ -48,12 +52,11 @@ def test_up_fail():
     assert "category" not in column_names
 
     [current_version] = conn.execute(
-    """
+        """
         PRAGMA user_version;
     """
     ).fetchone()
     assert current_version == 1
-
 
 
 def test_fail_up_folder_not_exists():
@@ -62,7 +65,7 @@ def test_fail_up_folder_not_exists():
         up("does/not/exist", conn)
 
     [current_version] = conn.execute(
-    """
+        """
         PRAGMA user_version;
     """
     ).fetchone()

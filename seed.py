@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 if __name__ == "__main__":
     """
     This is useful for development.
-    It seeds the db with data and trains the 
+    It seeds the db with data and trains the
     prediction model.
     """
     # Running in flask app

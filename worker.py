@@ -15,25 +15,25 @@ if __name__ == "__main__":
             # Always try train on first boot.
             ml.train(force=True)
             logging.info("training complete")
-        except (ml.NoTraingDataError) as e: 
-            logging.warning(e) 
+        except ml.NoTraingDataError as e:
+            logging.warning(e)
         except Exception as e:
             logging.exception("Unexpected error training model")
 
         while True:
             try:
                 worker.run()
-            except NightTimeError as e:  
+            except NightTimeError as e:
                 logging.warning(e)
                 logging.info("training model")
                 try:
                     ml.train()
-                except (ml.TrainingIntervalError, ml.NoTraingDataError) as e: 
-                    logging.warning(e) 
+                except (ml.TrainingIntervalError, ml.NoTraingDataError) as e:
+                    logging.warning(e)
                 except Exception as e:
                     logging.exception("Unexpected error training model")
 
-            except (CameraDownError) as e:
+            except CameraDownError as e:
                 logging.warning(e)
             except Exception as e:
                 logging.exception("Unexpected error running worker")

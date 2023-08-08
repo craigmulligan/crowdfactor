@@ -13,7 +13,7 @@ class CrowdPrediction(TypedDict):
     timestamp_utc: datetime
     timestamp_local: datetime
     surf_rating: str
-    crowd_count_predicted: float 
+    crowd_count_predicted: float
 
 
 def reading_finder(input: List[CrowdCount]):
@@ -57,10 +57,10 @@ class Graph:
         values = []
 
         for f in predictions:
-            ts = f["timestamp_utc"] 
+            ts = f["timestamp_utc"]
             rating = f["surf_rating"]
-            local_ts = f["timestamp_local"] 
-            prediction = f["crowd_count_predicted"] 
+            local_ts = f["timestamp_local"]
+            prediction = f["crowd_count_predicted"]
             reading = find_reading(ts.hour)
 
             if reading:

@@ -6,6 +6,7 @@ from flask import g, current_app
 from lib.utils import DATETIME_FORMAT
 from lib.migration import up
 
+
 class DB:
     def __init__(self, filename) -> None:
         self.conn = sqlite3.connect(filename)
@@ -44,7 +45,7 @@ class DB:
         """
         initializes schema
         """
-        up("migrations", self.conn) 
+        up("migrations", self.conn)
 
     def insert(
         self,
@@ -89,13 +90,12 @@ class DB:
                 conditions.weather_condition,
                 conditions.wave_height_min,
                 conditions.wave_height_max,
-                conditions.tide_height
+                conditions.tide_height,
             ),
-            one=True
+            one=True,
         )
         self.commit()
         return row
-
 
     def latest_reading(self, spot_id):
         return self.query(
@@ -132,10 +132,17 @@ class DB:
         )
 
     def latest_training_log(self, name):
-        return self.query("select * from training_log where name = ? order by timestamp desc limit 1", [name], one=True)
+        return self.query(
+            "select * from training_log where name = ? order by timestamp desc limit 1",
+            [name],
+            one=True,
+        )
 
     def insert_training_log(self, timestamp: datetime, score: float, name):
-        self.query("insert into training_log (timestamp, score, name) values (?, ?, ?)", [timestamp.strftime(DATETIME_FORMAT), score, name])
+        self.query(
+            "insert into training_log (timestamp, score, name) values (?, ?, ?)",
+            [timestamp.strftime(DATETIME_FORMAT), score, name],
+        )
         self.commit()
 
     def query(self, query, query_args=(), one=False) -> Union[Optional[Any], Any]:

@@ -61,7 +61,7 @@ class Camera:
         spot_id,
         roboflow_api_key,
         conditions,
-        frame_rate=2,
+        frame_rate=1,
         duration=30,
     ):
         self.id = id
@@ -96,9 +96,7 @@ class Camera:
                 .filter("fps", fps=self.frame_rate)
                 .output(
                     f"{self.data_dir}/frame-%04d.jpg",
-                    video_bitrate="5000k",
                     s="64x64",
-                    sws_flags="bilinear",
                     start_number=0,
                 )
                 .run(capture_stdout=True, capture_stderr=True)

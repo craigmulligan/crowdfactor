@@ -1,0 +1,33 @@
+# fly.toml app configuration file generated for crowdfactor on 2024-05-30T17:12:20-04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'crowdfactor'
+primary_region = 'atl'
+
+[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[processes]
+  app = "bash ./start.sh"
+
+[env]
+DB_URL = "/data/crowdfactor.db"
+MODEL_URL = "/data/model-v2"
+CACHE_URL = "/data/cache/"
+
+[mounts]
+  source = "crowdfactor_data"
+  destination = "/data"

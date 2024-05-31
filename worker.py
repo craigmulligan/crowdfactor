@@ -17,7 +17,7 @@ if __name__ == "__main__":
             logging.info("training complete")
         except ml.NoTraingDataError as e:
             logging.warning(e)
-        except Exception as e:
+        except Exception:
             logging.exception("Unexpected error training model")
 
         while True:
@@ -30,12 +30,12 @@ if __name__ == "__main__":
                     ml.train()
                 except (ml.TrainingIntervalError, ml.NoTraingDataError) as e:
                     logging.warning(e)
-                except Exception as e:
+                except Exception:
                     logging.exception("Unexpected error training model")
 
             except CameraDownError as e:
                 logging.warning(e)
-            except Exception as e:
+            except Exception:
                 logging.exception("Unexpected error running worker")
 
             sleep(app.config["INTERVAL_CAMERA"])

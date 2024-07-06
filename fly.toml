@@ -27,6 +27,7 @@ primary_region = 'atl'
 DB_URL = "/data/crowdfactor.db"
 MODEL_URL = "/data/model-v2"
 CACHE_URL = "/data/cache/"
+INTERVAL_CAMERA = "3600"
 
 [mounts]
   source = "crowdfactor_data"

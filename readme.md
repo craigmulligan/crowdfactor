@@ -1,3 +1,5 @@
+
+
 # Crowd Factor
 
 > Surf crowd predictions
@@ -26,7 +28,7 @@ These predictions are visualised along side the real recordings and the forecast
 
 First find your spot on [surfline](https://www.surfline.com), copy the spot_id from the URL. Then create a [roboflow account](https://roboflow.com/) and get an API key.
 
-Then run it the project with docker-compose:
+Then run the project with docker-compose:
 
 ```
 SURFLINE_SPOT_ID=<spot_id> ROBOFLOW_API_KEY=<roboflow_key> docker-compose up -d
